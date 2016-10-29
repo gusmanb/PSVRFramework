@@ -23,3 +23,7 @@ Any code taken from these sources are property of their creators.
 This code is published under MIT license (do whatever you want with it but don't blame me if it burns out your computer XD).
 
 (I promise I will write a better info, but not now, it's too late XD).
+
+If you just want to try the toolbox you can download this package: http://www.megafileupload.com/c16m/PSVRToolbox.rar
+
+You need the .net Framework 4.5.2 or newer installed to make it work and also need to follow the instructions on the HowTo.txt file on this repository.
