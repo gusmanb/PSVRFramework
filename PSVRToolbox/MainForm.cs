@@ -5,6 +5,7 @@ using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using PSVRFramework;
@@ -28,6 +29,7 @@ namespace PSVRToolbox
                 vrSet.SensorDataUpdate += VrSet_SensorDataUpdate;
                 vrSet.SendCommand(PSVRCommand.GetHeadsetOn());
                 vrSet.SendCommand(PSVRCommand.GetEnterVRMode());
+                Thread.Sleep(1500);
                 vrSet.SendCommand(PSVRCommand.GetExitVRMode());
                 detectTimer.Enabled = false;
                 lblStatus.Text = "VR set found";
@@ -70,6 +72,7 @@ namespace PSVRToolbox
         private void button6_Click(object sender, EventArgs e)
         {
             vrSet.SendCommand(PSVRCommand.GetEnterVRMode());
+            Thread.Sleep(1500);
             vrSet.SendCommand(PSVRCommand.GetExitVRMode());
         }
 
