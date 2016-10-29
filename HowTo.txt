@@ -1,0 +1,11 @@
+To make all this work you need to:
+
+1-Exactly as you had set up the PS VR with your PS4 set it up with your PC, connect the HDMI output from your PC to the HDMI PS4 input at the vr box.
+2-Connect the USB to your PC.
+3-Power on the PS VR set.
+4-Windows will detect some devices, audio one will get correctly installed, there will be three more without driver.
+5-Download libusb installer and install it as filter for the devices with VID 0x054C and PID 0x09AF (there will be four and the audio one).
+
+You're done, now you can use the toolbox.
+
+Happy VR!!

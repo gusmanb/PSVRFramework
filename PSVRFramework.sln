@@ -1,0 +1,33 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PSVRFramework", "PSVRFramework\PSVRFramework.csproj", "{2FE9F4C1-268E-4126-A2B5-56D54882933B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PSVRToolbox", "PSVRToolbox\PSVRToolbox.csproj", "{71E38225-4FA8-4D01-962C-31E56F39F6DA}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{F65759D6-C6D1-4370-AABD-DE73A71BA2F3}"
+	ProjectSection(SolutionItems) = preProject
+		HowTo.txt = HowTo.txt
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2FE9F4C1-268E-4126-A2B5-56D54882933B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2FE9F4C1-268E-4126-A2B5-56D54882933B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2FE9F4C1-268E-4126-A2B5-56D54882933B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2FE9F4C1-268E-4126-A2B5-56D54882933B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{71E38225-4FA8-4D01-962C-31E56F39F6DA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{71E38225-4FA8-4D01-962C-31E56F39F6DA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{71E38225-4FA8-4D01-962C-31E56F39F6DA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{71E38225-4FA8-4D01-962C-31E56F39F6DA}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
