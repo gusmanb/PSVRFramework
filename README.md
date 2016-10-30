@@ -26,6 +26,6 @@ You need the .net Framework 4.5.2 or newer installed to make it work and also ne
 - Added the possibility to create global shortcuts to the VR functions
 - Added UDP broadcast server with sensor data
 
-####To configure the new options just the gear icon.
+####To configure the new options click the gear icon.
 
 ###New download URL: http://www.megafileupload.com/c1iu/PSVRToolbox.rar
