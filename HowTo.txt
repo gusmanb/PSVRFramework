@@ -4,7 +4,11 @@ To make all this work you need to:
 2-Connect the USB to your PC.
 3-Power on the PS VR set.
 4-Windows will detect some devices, audio one will get correctly installed, there will be three more without driver.
-5-Download libusb installer and install it as filter for the devices with VID 0x054C and PID 0x09AF (there will be four and the audio one).
+5-Download libusb installer from here: https://sourceforge.net/projects/libusb-win32/?source=typ_redirect.
+6-Uncompress the package and enter to the bin/x86 folder.
+6-Locate the "install-filter-win.exe" program and run it.
+7-On the first screen choose "Install a device filter".
+8-On the next screen you will be presented with a list of all your USB devices, find the one named "vid:054c pid:09af rev:107", you will find some more like this, but having at the end "mi:xx", install only on the one without that tail.
 
 You're done, now you can use the toolbox.
 
