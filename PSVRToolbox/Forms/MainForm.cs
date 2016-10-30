@@ -27,8 +27,8 @@ namespace PSVRToolbox
         {
             InitializeComponent();
 
-            //hookedEvents = Hook.GlobalEvents();
-            //hookedEvents.KeyDown += HookedEvents_KeyDown;
+            hookedEvents = Hook.GlobalEvents();
+            hookedEvents.KeyDown += HookedEvents_KeyDown;
         }
         
         #region Button handlers
