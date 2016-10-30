@@ -8,7 +8,8 @@ To make all this work you need to:
 6-Uncompress the package and enter to the bin/x86 folder.
 6-Locate the "install-filter-win.exe" program and run it.
 7-On the first screen choose "Install a device filter".
-8-On the next screen you will be presented with a list of all your USB devices, find the one named "vid:054c pid:09af rev:107", you will find some more like this, but having at the end "mi:xx", install only on the one without that tail.
+8-On the next screen you will be presented with a list of all your USB devices, find the one named "vid:054c pid:09af rev:107"
+9-Install the filter on the selected device.
 
 You're done, now you can use the toolbox.
 
