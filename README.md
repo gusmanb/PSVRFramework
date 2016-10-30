@@ -28,4 +28,4 @@ You need the .net Framework 4.5.2 or newer installed to make it work and also ne
 
 ####To configure the new options click the gear icon.
 
-###New download URL: http://www.megafileupload.com/c1iu/PSVRToolbox.rar
+###Download binaries now available in the [Releases](https://github.com/gusmanb/PSVRFramework/releases) section
