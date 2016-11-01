@@ -20,16 +20,20 @@ You need the .net Framework 4.5.2 or newer installed to make it work and also ne
 
 ##UPDATES
 
+###V0.1.1
+
+- Added cinematic mode settings
+- Changed recenter cinematic routine
+
+###V0.1.0
+
 - The program will start minimized and stay on a tray icon, to open it double click the icon.
 - The program can now start with Windows
 - Enabled device removal detection
 - Added the possibility to create global shortcuts to the VR functions
 - Added UDP broadcast server with sensor data
 
-###V0.1.1
 
-- Added cinematic mode settings
-- Changed recenter cinematic routine
 
 ####To configure the new options click the gear icon.
 
