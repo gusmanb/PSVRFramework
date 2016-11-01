@@ -280,6 +280,7 @@ namespace PSVRToolbox
                 ApplyCinematicSettings();                
                 lblStatus.Text = "VR set found";
                 grpFunctions.Enabled = true;
+                grpCinematic.Enabled = true;
             }
             catch { detectTimer.Enabled = true; }
         }
@@ -293,6 +294,7 @@ namespace PSVRToolbox
             BeginInvoke((Action)(() =>
             {
                 grpFunctions.Enabled = false;
+                grpCinematic.Enabled = false;
                 vrSet = null;
                 lblStatus.Text = "Waiting for PS VR...";
                 detectTimer.Enabled = true;

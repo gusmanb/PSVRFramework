@@ -48,7 +48,7 @@
             this.button12 = new System.Windows.Forms.Button();
             this.button13 = new System.Windows.Forms.Button();
             this.button14 = new System.Windows.Forms.Button();
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.grpCinematic = new System.Windows.Forms.GroupBox();
             this.button15 = new System.Windows.Forms.Button();
             this.pictureBox3 = new System.Windows.Forms.PictureBox();
             this.pictureBox2 = new System.Windows.Forms.PictureBox();
@@ -59,7 +59,7 @@
             this.label1 = new System.Windows.Forms.Label();
             this.btnSettings = new System.Windows.Forms.Button();
             this.grpFunctions.SuspendLayout();
-            this.groupBox1.SuspendLayout();
+            this.grpCinematic.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox3)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
@@ -123,7 +123,7 @@
             this.button5.Name = "button5";
             this.button5.Size = new System.Drawing.Size(167, 23);
             this.button5.TabIndex = 4;
-            this.button5.Text = "Enable Theater";
+            this.button5.Text = "Enable Cinematic";
             this.button5.UseVisualStyleBackColor = true;
             this.button5.Click += new System.EventHandler(this.button5_Click);
             // 
@@ -238,22 +238,23 @@
             this.button14.Text = "Vol. mic";
             this.button14.UseVisualStyleBackColor = true;
             // 
-            // groupBox1
+            // grpCinematic
             // 
-            this.groupBox1.Controls.Add(this.button15);
-            this.groupBox1.Controls.Add(this.pictureBox3);
-            this.groupBox1.Controls.Add(this.pictureBox2);
-            this.groupBox1.Controls.Add(this.pictureBox1);
-            this.groupBox1.Controls.Add(this.trkBrightness);
-            this.groupBox1.Controls.Add(this.trkSize);
-            this.groupBox1.Controls.Add(this.trkDistance);
-            this.groupBox1.Controls.Add(this.label1);
-            this.groupBox1.Location = new System.Drawing.Point(197, 35);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(178, 227);
-            this.groupBox1.TabIndex = 15;
-            this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Cinematic mode";
+            this.grpCinematic.Controls.Add(this.button15);
+            this.grpCinematic.Controls.Add(this.pictureBox3);
+            this.grpCinematic.Controls.Add(this.pictureBox2);
+            this.grpCinematic.Controls.Add(this.pictureBox1);
+            this.grpCinematic.Controls.Add(this.trkBrightness);
+            this.grpCinematic.Controls.Add(this.trkSize);
+            this.grpCinematic.Controls.Add(this.trkDistance);
+            this.grpCinematic.Controls.Add(this.label1);
+            this.grpCinematic.Enabled = false;
+            this.grpCinematic.Location = new System.Drawing.Point(197, 35);
+            this.grpCinematic.Name = "grpCinematic";
+            this.grpCinematic.Size = new System.Drawing.Size(178, 227);
+            this.grpCinematic.TabIndex = 15;
+            this.grpCinematic.TabStop = false;
+            this.grpCinematic.Text = "Cinematic mode";
             // 
             // button15
             // 
@@ -399,7 +400,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(389, 303);
-            this.Controls.Add(this.groupBox1);
+            this.Controls.Add(this.grpCinematic);
             this.Controls.Add(this.button14);
             this.Controls.Add(this.button13);
             this.Controls.Add(this.button12);
@@ -420,8 +421,8 @@
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
             this.Load += new System.EventHandler(this.MainForm_Load);
             this.grpFunctions.ResumeLayout(false);
-            this.groupBox1.ResumeLayout(false);
-            this.groupBox1.PerformLayout();
+            this.grpCinematic.ResumeLayout(false);
+            this.grpCinematic.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox3)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
@@ -451,7 +452,7 @@
         private System.Windows.Forms.Button button12;
         private System.Windows.Forms.Button button13;
         private System.Windows.Forms.Button button14;
-        private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.GroupBox grpCinematic;
         private System.Windows.Forms.Label label1;
         private XComponent.SliderBar.MACTrackBar trkDistance;
         private XComponent.SliderBar.MACTrackBar trkBrightness;
