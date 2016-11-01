@@ -26,6 +26,11 @@ You need the .net Framework 4.5.2 or newer installed to make it work and also ne
 - Added the possibility to create global shortcuts to the VR functions
 - Added UDP broadcast server with sensor data
 
+###V0.1.1
+
+- Added cinematic mode settings
+- Changed recenter cinematic routine
+
 ####To configure the new options click the gear icon.
 
 ###Download binaries now available in the [Releases](https://github.com/gusmanb/PSVRFramework/releases) section
