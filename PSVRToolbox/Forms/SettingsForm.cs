@@ -29,8 +29,11 @@ namespace PSVRToolbox
             chkMinimized.Checked = set.StartMinimized;
             chkShift.Checked = set.ShiftModifier;
             chkStartup.Checked = Utils.IsStartupEnabled();
+            chkOpenTrack.Checked = set.EnableOpenTrackSender;
+
             txtBroadcastAddress.Text = set.UDPBroadcastAddress;
             txtBroadcastPort.Text = set.UDPBroadcastPort.ToString();
+            txtOTPort.Text = set.OpenTrackPort.ToString();
 
             string[] keyNames = Enum.GetNames(typeof(Keys)).OrderBy(s => s).ToArray();
 
@@ -76,10 +79,19 @@ namespace PSVRToolbox
                 return;
             }
 
+            int portOT;
+
+            if (!int.TryParse(txtOTPort.Text, out portOT))
+            {
+                MessageBox.Show("Invalid OpenTrack port");
+                return;
+            }
+
             var set = new Settings();
             
             set.UDPBroadcastPort = port;
-
+            set.OpenTrackPort = portOT;
+            set.EnableOpenTrackSender = chkOpenTrack.Checked;
             set.AltModifier = chkAlt.Checked;
             set.EnableUDPBroadcast = chkBroadcast.Checked;
             set.ControlModifier = chkControl.Checked;

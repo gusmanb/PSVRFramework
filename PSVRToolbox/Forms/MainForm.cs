@@ -21,6 +21,7 @@ namespace PSVRToolbox
         IKeyboardMouseEvents hookedEvents;
         PSVR vrSet;
         SensorBroadcaster broadcaster;
+        OpenTrackSender sender;
         object locker = new object();
 
         public MainForm()
@@ -94,6 +95,16 @@ namespace PSVRToolbox
             }
         }
 
+        private void button15_Click(object sender, EventArgs e)
+        {
+            Settings set = Settings.Instance;
+            set.ScreenDistance = (byte)trkDistance.Value;
+            set.ScreenSize = (byte)trkSize.Value;
+            set.Brightness = (byte)trkBrightness.Value;
+            Settings.SaveSettings();
+            ApplyCinematicSettings();
+        }
+
         #endregion
 
         #region Misc. event handlers
@@ -113,6 +124,9 @@ namespace PSVRToolbox
             if (set.EnableUDPBroadcast)
                 broadcaster = new SensorBroadcaster(set.UDPBroadcastAddress, set.UDPBroadcastPort);
 
+            trkDistance.Value = set.ScreenDistance;
+            trkSize.Value = set.ScreenSize;
+            trkBrightness.Value = set.Brightness;
         }
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
@@ -219,14 +233,31 @@ namespace PSVRToolbox
         }
         private void Recenter()
         {
-            vrSet.SendCommand(PSVRCommand.GetEnterVRMode());
-            Thread.Sleep(1500);
-            vrSet.SendCommand(PSVRCommand.GetExitVRMode());
+
+            byte current = Settings.Instance.ScreenSize;
+
+            byte fake = 0;
+            if (current < 50)
+                fake = (byte)(current + 1);
+            else
+                fake = (byte)(current - 1);
+
+            Settings.Instance.ScreenSize = fake;
+            ApplyCinematicSettings();
+            Settings.Instance.ScreenSize = current;
+            ApplyCinematicSettings();
         }
         private void Shutdown()
         {
             vrSet.SendCommand(PSVRCommand.GetHeadsetOff());
             vrSet.SendCommand(PSVRCommand.GetBoxOff());
+        }
+
+        private void ApplyCinematicSettings()
+        {
+            Settings set = Settings.Instance;
+            var cmd = PSVRCommand.GetSetCinematicConfiguration(set.ScreenDistance, set.ScreenSize , set.Brightness , set.MicVol, false);
+            vrSet.SendCommand(cmd);
         }
 
         #endregion
@@ -237,6 +268,7 @@ namespace PSVRToolbox
         {
             try
             {
+                detectTimer.Enabled = false;
                 vrSet = new PSVR();
                 vrSet.SensorDataUpdate += VrSet_SensorDataUpdate;
                 vrSet.Removed += VrSet_Removed;
@@ -244,7 +276,8 @@ namespace PSVRToolbox
                 vrSet.SendCommand(PSVRCommand.GetEnterVRMode());
                 Thread.Sleep(1500);
                 vrSet.SendCommand(PSVRCommand.GetExitVRMode());
-                detectTimer.Enabled = false;
+                Thread.Sleep(1500);
+                ApplyCinematicSettings();                
                 lblStatus.Text = "VR set found";
                 grpFunctions.Enabled = true;
             }
@@ -277,5 +310,6 @@ namespace PSVRToolbox
 
         #endregion
 
+        
     }
 }

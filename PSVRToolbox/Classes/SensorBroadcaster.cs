@@ -33,4 +33,28 @@ namespace PSVRToolbox
             client.Close();
         }
     }
+
+    public class OpenTrackSender : IDisposable
+    {
+        UdpClient client;
+        IPEndPoint ep;
+        public OpenTrackSender(int Port)
+        {
+            IPAddress address = IPAddress.Any;
+            ep = new IPEndPoint(address, Port);
+            client = new UdpClient();
+            client.EnableBroadcast = true;
+        }
+
+        public void Broadcast(PSVRSensor SensorData)
+        {
+            byte[] data = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(SensorData));
+            client.Send(data, data.Length, ep);
+        }
+
+        public void Dispose()
+        {
+            client.Close();
+        }
+    }
 }

@@ -49,6 +49,8 @@
             this.cbHeadsetOn = new System.Windows.Forms.ComboBox();
             this.chkControl = new System.Windows.Forms.CheckBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.txtBroadcastPort = new System.Windows.Forms.TextBox();
+            this.label10 = new System.Windows.Forms.Label();
             this.txtBroadcastAddress = new System.Windows.Forms.TextBox();
             this.label9 = new System.Windows.Forms.Label();
             this.chkBroadcast = new System.Windows.Forms.CheckBox();
@@ -57,11 +59,13 @@
             this.chkStartup = new System.Windows.Forms.CheckBox();
             this.button1 = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
-            this.txtBroadcastPort = new System.Windows.Forms.TextBox();
-            this.label10 = new System.Windows.Forms.Label();
+            this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.txtOTPort = new System.Windows.Forms.TextBox();
+            this.chkOpenTrack = new System.Windows.Forms.CheckBox();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
+            this.groupBox4.SuspendLayout();
             this.SuspendLayout();
             // 
             // groupBox1
@@ -270,6 +274,23 @@
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Sensor broadcast";
             // 
+            // txtBroadcastPort
+            // 
+            this.txtBroadcastPort.Location = new System.Drawing.Point(111, 75);
+            this.txtBroadcastPort.Name = "txtBroadcastPort";
+            this.txtBroadcastPort.Size = new System.Drawing.Size(96, 20);
+            this.txtBroadcastPort.TabIndex = 6;
+            this.txtBroadcastPort.Text = "9090";
+            // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(6, 78);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(76, 13);
+            this.label10.TabIndex = 5;
+            this.label10.Text = "Broadcast port";
+            // 
             // txtBroadcastAddress
             // 
             this.txtBroadcastAddress.Location = new System.Drawing.Point(111, 49);
@@ -301,9 +322,9 @@
             // 
             this.groupBox3.Controls.Add(this.chkMinimized);
             this.groupBox3.Controls.Add(this.chkStartup);
-            this.groupBox3.Location = new System.Drawing.Point(254, 124);
+            this.groupBox3.Location = new System.Drawing.Point(254, 168);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(216, 70);
+            this.groupBox3.Size = new System.Drawing.Size(216, 44);
             this.groupBox3.TabIndex = 3;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Miscellaneous settings";
@@ -311,7 +332,7 @@
             // chkMinimized
             // 
             this.chkMinimized.AutoSize = true;
-            this.chkMinimized.Location = new System.Drawing.Point(6, 42);
+            this.chkMinimized.Location = new System.Drawing.Point(111, 19);
             this.chkMinimized.Name = "chkMinimized";
             this.chkMinimized.Size = new System.Drawing.Size(96, 17);
             this.chkMinimized.TabIndex = 3;
@@ -348,28 +369,40 @@
             this.button2.UseVisualStyleBackColor = true;
             this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
-            // txtBroadcastPort
+            // groupBox4
             // 
-            this.txtBroadcastPort.Location = new System.Drawing.Point(111, 75);
-            this.txtBroadcastPort.Name = "txtBroadcastPort";
-            this.txtBroadcastPort.Size = new System.Drawing.Size(96, 20);
-            this.txtBroadcastPort.TabIndex = 6;
-            this.txtBroadcastPort.Text = "255.255.255.255";
+            this.groupBox4.Controls.Add(this.txtOTPort);
+            this.groupBox4.Controls.Add(this.chkOpenTrack);
+            this.groupBox4.Location = new System.Drawing.Point(254, 124);
+            this.groupBox4.Name = "groupBox4";
+            this.groupBox4.Size = new System.Drawing.Size(216, 38);
+            this.groupBox4.TabIndex = 6;
+            this.groupBox4.TabStop = false;
+            this.groupBox4.Text = "OpenTrack sender";
             // 
-            // label10
+            // txtOTPort
             // 
-            this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(6, 78);
-            this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(76, 13);
-            this.label10.TabIndex = 5;
-            this.label10.Text = "Broadcast port";
+            this.txtOTPort.Location = new System.Drawing.Point(141, 18);
+            this.txtOTPort.Name = "txtOTPort";
+            this.txtOTPort.Size = new System.Drawing.Size(64, 20);
+            this.txtOTPort.TabIndex = 6;
+            // 
+            // chkOpenTrack
+            // 
+            this.chkOpenTrack.AutoSize = true;
+            this.chkOpenTrack.Location = new System.Drawing.Point(6, 18);
+            this.chkOpenTrack.Name = "chkOpenTrack";
+            this.chkOpenTrack.Size = new System.Drawing.Size(116, 17);
+            this.chkOpenTrack.TabIndex = 1;
+            this.chkOpenTrack.Text = "Enable OpenTrack";
+            this.chkOpenTrack.UseVisualStyleBackColor = true;
             // 
             // SettingsForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(485, 263);
+            this.Controls.Add(this.groupBox4);
             this.Controls.Add(this.button2);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.groupBox3);
@@ -389,6 +422,8 @@
             this.groupBox2.PerformLayout();
             this.groupBox3.ResumeLayout(false);
             this.groupBox3.PerformLayout();
+            this.groupBox4.ResumeLayout(false);
+            this.groupBox4.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -425,5 +460,8 @@
         private System.Windows.Forms.ComboBox cbHeadsetOff;
         private System.Windows.Forms.TextBox txtBroadcastPort;
         private System.Windows.Forms.Label label10;
+        private System.Windows.Forms.GroupBox groupBox4;
+        private System.Windows.Forms.TextBox txtOTPort;
+        private System.Windows.Forms.CheckBox chkOpenTrack;
     }
 }

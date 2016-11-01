@@ -416,10 +416,7 @@ namespace PSVRFramework
             cmd.r_id = 0x17;
             cmd.magic = 0xaa;
             cmd.length = 4;
-            byte[] data = new byte[4];
-            byte[] tmp = BitConverter.GetBytes(0x00000001);
-            Buffer.BlockCopy(tmp, 0, data, 0, 4);
-            cmd.data = data;
+            cmd.data = BitConverter.GetBytes(0x00000001);
 
             return cmd;
         }
@@ -431,10 +428,7 @@ namespace PSVRFramework
             cmd.r_id = 0x17;
             cmd.magic = 0xaa;
             cmd.length = 4;
-            byte[] data = new byte[4];
-            byte[] tmp = BitConverter.GetBytes(0x00000000);
-            Buffer.BlockCopy(tmp, 0, data, 0, 4);
-            cmd.data = data;
+            cmd.data = BitConverter.GetBytes(0x00000000);
 
             return cmd;
         }
@@ -446,10 +440,7 @@ namespace PSVRFramework
             cmd.r_id = 0x23;
             cmd.magic = 0xaa;
             cmd.length = 4;
-            byte[] data = new byte[4];
-            byte[] tmp = BitConverter.GetBytes(0x00000001);
-            Buffer.BlockCopy(tmp, 0, data, 0, 4);
-            cmd.data = data;
+            cmd.data = BitConverter.GetBytes(0x00000001);
 
             return cmd;
         }
@@ -461,10 +452,7 @@ namespace PSVRFramework
             cmd.r_id = 0x23;
             cmd.magic = 0xaa;
             cmd.length = 4;
-            byte[] data = new byte[4];
-            byte[] tmp = BitConverter.GetBytes(0x00000000);
-            Buffer.BlockCopy(tmp, 0, data, 0, 4);
-            cmd.data = data;
+            cmd.data = BitConverter.GetBytes(0x00000000);
 
             return cmd;
         }
@@ -476,10 +464,7 @@ namespace PSVRFramework
             cmd.r_id = id;
             cmd.magic = 0xaa;
             cmd.length = 4;
-            byte[] data = new byte[4];
-            byte[] tmp = BitConverter.GetBytes(0x00000000);
-            Buffer.BlockCopy(tmp, 0, data, 0, 4);
-            cmd.data = data;
+            cmd.data = BitConverter.GetBytes(0x00000000);
 
             return cmd;
         }
@@ -491,10 +476,7 @@ namespace PSVRFramework
             cmd.r_id = id;
             cmd.magic = 0xaa;
             cmd.length = 4;
-            byte[] data = new byte[4];
-            byte[] tmp = BitConverter.GetBytes(0x00000001);
-            Buffer.BlockCopy(tmp, 0, data, 0, 4);
-            cmd.data = data;
+            cmd.data = BitConverter.GetBytes(0x00000001);
 
             return cmd;
         }
@@ -506,14 +488,22 @@ namespace PSVRFramework
             cmd.r_id = 0x13;
             cmd.magic = 0xaa;
             cmd.length = 4;
-            byte[] data = new byte[4];
-            byte[] tmp = BitConverter.GetBytes(0x00000001);
-            Buffer.BlockCopy(tmp, 0, data, 0, 4);
-            cmd.data = data;
+            cmd.data = BitConverter.GetBytes(0x00000001);
 
             return cmd;
         }
 
+        public static PSVRCommand GetSetCinematicConfiguration(byte ScreenDistance, byte ScreenSize, byte Brightness, byte MicVolume, bool UnknownVRSetting)
+        {
+            PSVRCommand cmd = new PSVRCommand();
+
+            cmd.r_id = 0x21;
+            cmd.magic = 0xaa;
+            cmd.length = 16;
+            cmd.data = new byte[] { 0, ScreenSize, ScreenDistance, 0, 0, 0, 0, 0, 0, 0, Brightness, MicVolume, 0, 0, (byte)(UnknownVRSetting ? 0 : 1), 0 };
+
+            return cmd;
+        }
 
     };
 }

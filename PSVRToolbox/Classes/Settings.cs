@@ -63,6 +63,13 @@ namespace PSVRToolbox
         public bool EnableUDPBroadcast { get; set; }
         public string UDPBroadcastAddress { get; set; } = "255.255.255.255";
         public int UDPBroadcastPort { get; set; } = 9090;
+        public bool EnableOpenTrackSender { get; set; }
+        public int OpenTrackPort { get; set; } = 4242;
         public bool StartMinimized { get; set; } = true;
+        public byte ScreenSize { get; set; } = 0x29;
+        public byte ScreenDistance { get; set; } = 0x32;
+        public byte Brightness { get; set; } = 0x20;
+        public byte MicVol { get; set; } = 0;
+
     }
 }
