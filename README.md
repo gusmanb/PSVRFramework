@@ -14,11 +14,24 @@ Information sources:
 
 Any code taken from these sources are property of their creators.
 
+Additional resources:
+
+* VLC library
+* GLEW
+* GLFW
+* GLM
+
+I promise I will add all the required licenses ;)
+
 This code is published under MIT license (do whatever you want with it but don't blame me if it burns out your computer XD).
 
 You need the .net Framework 4.5.2 or newer installed to make it work and also need to follow the instructions on the HowTo.txt file on this repository.
 
 ##UPDATES
+
+###V0.2.0
+
+- Added VR Player
 
 ###V0.1.1
 
