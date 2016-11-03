@@ -79,6 +79,10 @@
     <ApplicationIcon>psvr.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -115,6 +119,7 @@
     <None Include="eyeBall.obj">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -129,6 +134,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\PSVRFramework\PSVRFramework.csproj">
+      <Project>{2fe9f4c1-268e-4126-a2b5-56d54882933b}</Project>
+      <Name>PSVRFramework</Name>
+    </ProjectReference>
     <ProjectReference Include="..\VRVideoPlayer\VRVideoPlayer.vcxproj">
       <Project>{16fcbda3-0c18-4f11-af62-510b051fdbfb}</Project>
       <Name>VRVideoPlayer</Name>

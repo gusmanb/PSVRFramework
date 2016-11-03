@@ -6,6 +6,9 @@
 #include <glm\glm.hpp>
 #include <glm\gtc\matrix_transform.hpp>
 #include <glm/gtx/euler_angles.hpp>
+#include <glm/gtc/quaternion.hpp>
+#include <glm/gtx/quaternion.hpp>
+
 #include <stdio.h>
 #include <vector>
 
@@ -28,7 +31,7 @@ void createMesh(const GLfloat* positions, const GLfloat* uvs, int vertexCount, m
 	glBufferData(GL_ARRAY_BUFFER, outMesh->vertexCount * 2 * sizeof(GLfloat), uvs, GL_STATIC_DRAW);
 	
 	outMesh->world = glm::mat4(1.0f);
-	outMesh->rotation = glm::vec3(0);
+	outMesh->rotation = glm::quat(1.0, 0, 0, 0);
 	outMesh->translation = glm::vec3(0);
 }
 
@@ -132,13 +135,13 @@ void loadMesh(mesh* mesh, const char* meshFile)
 	createMesh(&final_vertices[0][0], &final_uvs[0][0], vertexIndices.size(), mesh);
 }
 
-void rotateMesh(mesh* mesh, glm::vec3 rotation)
+void rotateMesh(mesh* mesh, glm::quat rotation)
 {
-	mesh->rotation += rotation;
+	mesh->rotation *= rotation;
 	mesh->needsUpdate = true;
 }
 
-void orientateMesh(mesh* mesh, glm::vec3 rotation)
+void orientateMesh(mesh* mesh, glm::quat rotation)
 {
 	mesh->rotation = rotation;
 	mesh->needsUpdate = true;
@@ -189,7 +192,7 @@ void renderMesh(mesh* mesh, camera* camera,  GLuint programId)
 	if (mesh->needsUpdate)
 	{
 		mesh->needsUpdate = false;
-		mesh->world = glm::translate(glm::orientate4(mesh->rotation), mesh->translation);
+		mesh->world = glm::translate(glm::toMat4(mesh->rotation), mesh->translation);
 	}
 
 	auto wvp = camera->viewProjection * mesh->world;

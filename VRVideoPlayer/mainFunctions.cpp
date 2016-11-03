@@ -86,7 +86,7 @@ bool initOpenGL()
 
 																   // Open a window and create its OpenGL context
 	 // (In the accompanying source code, this variable is global)
-	window = glfwCreateWindow(1920, 1080, "", glfwGetPrimaryMonitor(), NULL);//glfwGetPrimaryMonitor()
+	window = glfwCreateWindow(1920, 1080, "",NULL, NULL);//glfwGetPrimaryMonitor()
 
 	glfwSwapInterval(1);
 
@@ -109,6 +109,14 @@ bool initOpenGL()
 
 }
 
+struct mesh eyeMesh;
+glm::quat extRot;
+
+void extRotate(float quat[])
+{
+	extRot = glm::quat(quat[1], quat[2], quat[3], quat[0]);
+}
+
 void runLoop(const char* videoFile)
 {
 	endLoop = false;
@@ -123,7 +131,7 @@ void runLoop(const char* videoFile)
 
 	setupCamera(90, 960, 1080, 0.0001f, 100, vec3(0, 0, 0), vec3(0, 0, -10), &camera);
 
-	struct mesh eyeMesh;
+	
 
 	loadMesh(&eyeMesh, "eyeBall.obj");
 	auto shaderId = createShader(vertexShader, fragmentShader);
@@ -140,8 +148,8 @@ void runLoop(const char* videoFile)
 
 	auto vctx = initVideo(videoFile);//"file:///c:/temp/video.mp4");
 
-	auto rotRight = glm::vec3(0, 0, M_PI_2 + M_PI); 
-	auto rotLeft = glm::vec3(0, 0, M_PI_2);
+	auto rotRight = glm::quat(glm::vec3(0, M_PI_2 + M_PI, 0));
+	auto rotLeft = glm::quat(glm::vec3(0, M_PI_2, 0));
 	auto ipdControl = glm::vec3(0, 0, 0);
 
 	unsigned char currentFrame = 0;
@@ -155,7 +163,7 @@ void runLoop(const char* videoFile)
 
 		glfwGetCursorPos(window, &nxpos, &nypos);
 
-		if (nxpos != xpos)
+		/*if (nxpos != xpos)
 		{
 			delta = (nxpos - xpos) / 1000;
 			xpos = nxpos;
@@ -169,7 +177,7 @@ void runLoop(const char* videoFile)
 			ypos = nypos;
 			rotRight.y += delta;
 			rotLeft.y -= delta;
-		}
+		}*/
 
 		if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS && 
 			((glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) | glfwGetKey(window, GLFW_KEY_RIGHT_CONTROL)) == GLFW_PRESS))
@@ -217,12 +225,12 @@ void runLoop(const char* videoFile)
 		glClear(GL_COLOR_BUFFER_BIT);
 
 		glViewport(0, 0, 960, 1080);
-		orientateMesh(&eyeMesh, rotLeft);
+		orientateMesh(&eyeMesh, extRot * rotLeft);
 		placeMesh(&eyeMesh, ipdControl);
 		renderMesh(&eyeMesh, &camera, shaderId);
 
 		glViewport(960, 0, 960, 1080);
-		orientateMesh(&eyeMesh, rotRight);
+		orientateMesh(&eyeMesh, extRot * rotRight);
 		placeMesh(&eyeMesh, ipdControl);
 		renderMesh(&eyeMesh, &camera, shaderId);
 		

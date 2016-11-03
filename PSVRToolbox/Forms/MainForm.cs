@@ -4,6 +4,8 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
+using System.Numerics;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -21,17 +23,17 @@ namespace PSVRToolbox
         IKeyboardMouseEvents hookedEvents;
         PSVR vrSet;
         SensorBroadcaster broadcaster;
-        OpenTrackSender sender;
+
         object locker = new object();
 
         public MainForm()
         {
             InitializeComponent();
-
+            
             hookedEvents = Hook.GlobalEvents();
             hookedEvents.KeyDown += HookedEvents_KeyDown;
         }
-        
+
         #region Button handlers
 
         private void button1_Click(object sender, EventArgs e)
@@ -269,7 +271,7 @@ namespace PSVRToolbox
             try
             {
                 detectTimer.Enabled = false;
-                vrSet = new PSVR();
+                vrSet = new PSVR(Settings.Instance.UseLibUSB);
                 vrSet.SensorDataUpdate += VrSet_SensorDataUpdate;
                 vrSet.Removed += VrSet_Removed;
                 vrSet.SendCommand(PSVRCommand.GetHeadsetOn());
@@ -300,9 +302,10 @@ namespace PSVRToolbox
                 detectTimer.Enabled = true;
             }));
         }
-
+        
         private void VrSet_SensorDataUpdate(object sender, PSVRSensorEventArgs e)
         {
+
             lock (locker)
             {
                 if (broadcaster != null)
@@ -310,8 +313,7 @@ namespace PSVRToolbox
             }
         }
 
-        #endregion
 
-        
+        #endregion
     }
 }

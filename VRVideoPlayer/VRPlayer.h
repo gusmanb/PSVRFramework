@@ -46,6 +46,11 @@ namespace VRVideoPlayer {
 			return true;
 		}
 
+		void RotateMesh(float quat[])
+		{
+			extRotate(quat);
+		}
+
 		property String^ FileName
 		{
 			String^ get()

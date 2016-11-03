@@ -17,4 +17,5 @@
 
 bool initOpenGL(void);
 void runLoop(const char* videoFile);
+void extRotate(float quat[]);
 void endOpenGL();

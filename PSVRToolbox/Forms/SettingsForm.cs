@@ -29,11 +29,9 @@ namespace PSVRToolbox
             chkMinimized.Checked = set.StartMinimized;
             chkShift.Checked = set.ShiftModifier;
             chkStartup.Checked = Utils.IsStartupEnabled();
-            chkOpenTrack.Checked = set.EnableOpenTrackSender;
 
             txtBroadcastAddress.Text = set.UDPBroadcastAddress;
             txtBroadcastPort.Text = set.UDPBroadcastPort.ToString();
-            txtOTPort.Text = set.OpenTrackPort.ToString();
 
             string[] keyNames = Enum.GetNames(typeof(Keys)).OrderBy(s => s).ToArray();
 
@@ -52,7 +50,7 @@ namespace PSVRToolbox
             cbTheater.SelectedItem = set.EnableTheater.ToString();
             cbTracking.SelectedItem = set.EnableVRAndTracking.ToString();
             cbVR.SelectedItem = set.EnableVR.ToString();
-
+            cbDriver.SelectedIndex = set.UseLibUSB ? 1 : 0;
         }
 
         private void button2_Click(object sender, EventArgs e)
@@ -80,18 +78,10 @@ namespace PSVRToolbox
             }
 
             int portOT;
-
-            if (!int.TryParse(txtOTPort.Text, out portOT))
-            {
-                MessageBox.Show("Invalid OpenTrack port");
-                return;
-            }
-
+            
             var set = new Settings();
             
             set.UDPBroadcastPort = port;
-            set.OpenTrackPort = portOT;
-            set.EnableOpenTrackSender = chkOpenTrack.Checked;
             set.AltModifier = chkAlt.Checked;
             set.EnableUDPBroadcast = chkBroadcast.Checked;
             set.ControlModifier = chkControl.Checked;
@@ -112,6 +102,7 @@ namespace PSVRToolbox
             set.EnableVRAndTracking = (Keys)Enum.Parse(typeof(Keys), cbTracking.SelectedItem.ToString());
             set.EnableVR = (Keys)Enum.Parse(typeof(Keys), cbVR.SelectedItem.ToString());
 
+            set.UseLibUSB = cbDriver.SelectedIndex == 1;
 
             Settings.Instance = set;
             Settings.SaveSettings();
