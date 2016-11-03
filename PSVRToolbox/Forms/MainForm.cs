@@ -272,14 +272,19 @@ namespace PSVRToolbox
             {
                 detectTimer.Enabled = false;
                 vrSet = new PSVR(Settings.Instance.UseLibUSB);
-                vrSet.SensorDataUpdate += VrSet_SensorDataUpdate;
-                vrSet.Removed += VrSet_Removed;
-                vrSet.SendCommand(PSVRCommand.GetHeadsetOn());
-                vrSet.SendCommand(PSVRCommand.GetEnterVRMode());
-                Thread.Sleep(1500);
-                vrSet.SendCommand(PSVRCommand.GetExitVRMode());
-                Thread.Sleep(1500);
-                ApplyCinematicSettings();                
+
+                Task.Run(() =>
+                {
+                    vrSet.SensorDataUpdate += VrSet_SensorDataUpdate;
+                    vrSet.Removed += VrSet_Removed;
+                    vrSet.SendCommand(PSVRCommand.GetHeadsetOn());
+                    vrSet.SendCommand(PSVRCommand.GetEnterVRMode());
+                    Thread.Sleep(1500);
+                    vrSet.SendCommand(PSVRCommand.GetExitVRMode());
+                    Thread.Sleep(1500);
+                    ApplyCinematicSettings();
+                });
+
                 lblStatus.Text = "VR set found";
                 grpFunctions.Enabled = true;
                 grpCinematic.Enabled = true;
