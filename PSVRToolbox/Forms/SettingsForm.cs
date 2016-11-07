@@ -50,7 +50,6 @@ namespace PSVRToolbox
             cbTheater.SelectedItem = set.EnableTheater.ToString();
             cbTracking.SelectedItem = set.EnableVRAndTracking.ToString();
             cbVR.SelectedItem = set.EnableVR.ToString();
-            cbDriver.SelectedIndex = set.UseLibUSB ? 1 : 0;
         }
 
         private void button2_Click(object sender, EventArgs e)
@@ -101,9 +100,7 @@ namespace PSVRToolbox
             set.EnableTheater = (Keys)Enum.Parse(typeof(Keys), cbTheater.SelectedItem.ToString());
             set.EnableVRAndTracking = (Keys)Enum.Parse(typeof(Keys), cbTracking.SelectedItem.ToString());
             set.EnableVR = (Keys)Enum.Parse(typeof(Keys), cbVR.SelectedItem.ToString());
-
-            set.UseLibUSB = cbDriver.SelectedIndex == 1;
-
+            
             Settings.Instance = set;
             Settings.SaveSettings();
 

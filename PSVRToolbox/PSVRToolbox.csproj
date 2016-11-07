@@ -70,6 +70,7 @@
     <Compile Include="Classes\BMI055Fusion.cs" />
     <Compile Include="Classes\KalmanFilter.cs" />
     <Compile Include="Classes\SensorBroadcaster.cs" />
+    <Compile Include="Classes\X11Hotkey.cs" />
     <Compile Include="Forms\MainForm.cs">
       <SubType>Form</SubType>
     </Compile>

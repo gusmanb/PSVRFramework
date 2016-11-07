@@ -70,7 +70,6 @@ namespace PSVRToolbox
         public byte ScreenDistance { get; set; } = 0x32;
         public byte Brightness { get; set; } = 0x20;
         public byte MicVol { get; set; } = 0;
-        public bool UseLibUSB { get; set; }
 
     }
 }

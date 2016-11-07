@@ -29,9 +29,16 @@ namespace PSVRToolbox
         public MainForm()
         {
             InitializeComponent();
-            
-            hookedEvents = Hook.GlobalEvents();
-            hookedEvents.KeyDown += HookedEvents_KeyDown;
+
+            try
+            {
+                if (CurrentOS.IsWindows)
+                {
+                    hookedEvents = Hook.GlobalEvents();
+                    hookedEvents.KeyDown += HookedEvents_KeyDown;
+                }
+            }
+            catch { }
         }
 
         #region Button handlers
@@ -140,12 +147,24 @@ namespace PSVRToolbox
                 e.Cancel = true;
                 return;
             }
-
+            
             if (vrSet != null)
                 vrSet.Dispose();
-
-            hookedEvents.KeyDown -= HookedEvents_KeyDown;
+            
+            try
+            {
+                if (hookedEvents != null)
+                {
+                    hookedEvents.KeyDown -= HookedEvents_KeyDown;
+                    hookedEvents.Dispose();
+                }
+            }
+            catch { }
+            
             trayIcon.Visible = false;
+            
+            if(CurrentOS.IsLinux)
+                Environment.Exit(0);
         }
 
         private void HookedEvents_KeyDown(object sender, KeyEventArgs e)
@@ -271,7 +290,7 @@ namespace PSVRToolbox
             try
             {
                 detectTimer.Enabled = false;
-                vrSet = new PSVR(Settings.Instance.UseLibUSB);
+                vrSet = new PSVR();
 
                 Task.Run(() =>
                 {
@@ -289,7 +308,7 @@ namespace PSVRToolbox
                 grpFunctions.Enabled = true;
                 grpCinematic.Enabled = true;
             }
-            catch { detectTimer.Enabled = true; }
+            catch(Exception ex) { detectTimer.Enabled = true; }
         }
 
         #endregion

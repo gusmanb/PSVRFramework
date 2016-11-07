@@ -59,8 +59,6 @@
             this.chkStartup = new System.Windows.Forms.CheckBox();
             this.button1 = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
-            this.label11 = new System.Windows.Forms.Label();
-            this.cbDriver = new System.Windows.Forms.ComboBox();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -318,13 +316,11 @@
             // 
             // groupBox3
             // 
-            this.groupBox3.Controls.Add(this.cbDriver);
-            this.groupBox3.Controls.Add(this.label11);
             this.groupBox3.Controls.Add(this.chkMinimized);
             this.groupBox3.Controls.Add(this.chkStartup);
             this.groupBox3.Location = new System.Drawing.Point(254, 124);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(216, 100);
+            this.groupBox3.Size = new System.Drawing.Size(216, 38);
             this.groupBox3.TabIndex = 3;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Miscellaneous settings";
@@ -368,27 +364,6 @@
             this.button2.Text = "Save";
             this.button2.UseVisualStyleBackColor = true;
             this.button2.Click += new System.EventHandler(this.button2_Click);
-            // 
-            // label11
-            // 
-            this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(6, 47);
-            this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(58, 13);
-            this.label11.TabIndex = 4;
-            this.label11.Text = "Driver type";
-            // 
-            // cbDriver
-            // 
-            this.cbDriver.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cbDriver.FormattingEnabled = true;
-            this.cbDriver.Items.AddRange(new object[] {
-            "WinUSB",
-            "LibUSB"});
-            this.cbDriver.Location = new System.Drawing.Point(6, 66);
-            this.cbDriver.Name = "cbDriver";
-            this.cbDriver.Size = new System.Drawing.Size(201, 21);
-            this.cbDriver.TabIndex = 5;
             // 
             // SettingsForm
             // 
@@ -450,7 +425,5 @@
         private System.Windows.Forms.ComboBox cbHeadsetOff;
         private System.Windows.Forms.TextBox txtBroadcastPort;
         private System.Windows.Forms.Label label10;
-        private System.Windows.Forms.ComboBox cbDriver;
-        private System.Windows.Forms.Label label11;
     }
 }

@@ -5,7 +5,9 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using LibUsbDotNet;
+using LibUsbDotNet.LudnMonoLibUsb;
 using LibUsbDotNet.WinUsb;
+using MonoLibUsb;
 
 namespace PSVRFramework
 {
@@ -79,6 +81,19 @@ namespace PSVRFramework
     
     public class PSVR : IDisposable
     {
+
+#if DEBUG
+        static PSVR()
+        {
+            UsbDevice.UsbErrorEvent += UsbDevice_UsbErrorEvent;
+        }
+
+        private static void UsbDevice_UsbErrorEvent(object sender, UsbError e)
+        {
+            Console.WriteLine("Error USB: " + e.Win32ErrorNumber + " - " + e.Description);
+        }
+#endif
+
         UsbEndpointWriter writer;
         UsbEndpointReader reader;
         UsbDevice controlDevice;
@@ -89,13 +104,12 @@ namespace PSVRFramework
 
         Timer aliveTimer;
         
-        public PSVR(bool UseLibUSB)
+        public PSVR()
         {
 
-            if (!UseLibUSB)
+            if (CurrentOS.IsWindows)
             {
-
-                var ndev = UsbDevice.AllWinUsbDevices.Where(d => d.Vid == 0x54C && d.Name == "PS VR Control (Interface 5)").FirstOrDefault();
+                var ndev = UsbDevice.AllDevices.Where(d => d.Vid == 0x54C && d.Pid == 0x09AF && d.SymbolicName.ToLower().Contains("mi_05")).FirstOrDefault();
 
                 if (ndev == null)
                     throw new InvalidOperationException("No Control device found");
@@ -103,7 +117,7 @@ namespace PSVRFramework
                 if (!ndev.Open(out controlDevice))
                     throw new InvalidOperationException("Device in use");
 
-                ndev = UsbDevice.AllWinUsbDevices.Where(d => d.Vid == 0x54C && d.Name == "PS VR Sensor (Interface 4)").FirstOrDefault();
+                ndev = UsbDevice.AllDevices.Where(d => d.Vid == 0x54C && d.Pid == 0x09AF && d.SymbolicName.ToLower().Contains("mi_04")).FirstOrDefault();
 
                 if (ndev == null)
                 {
@@ -124,58 +138,57 @@ namespace PSVRFramework
 
                 aliveTimer = new Timer(is_alive);
                 aliveTimer.Change(2000, 2000);
-
-
             }
             else
             {
-                LibUsbDotNet.Main.UsbDeviceFinder find = new LibUsbDotNet.Main.UsbDeviceFinder(0x054C, 0x09AF);
-                controlDevice = LibUsbDotNet.UsbDevice.OpenUsbDevice(find);
+                var found = UsbDevice.AllDevices.Where(d => d.Vid == 0x54C && d.Pid == 0x09AF).FirstOrDefault();
 
-                if (controlDevice == null)
-                    throw new InvalidOperationException("No device found");
+                controlDevice = found.Device;
+                
+                var dev = (MonoUsbDevice)controlDevice;
 
-                var dev = (IUsbDevice)controlDevice;
+                var handle = new MonoUsbDeviceHandle(dev.Profile.ProfileHandle);
 
-                for (int ifa = 0; ifa < controlDevice.Configs[0].InterfaceInfoList.Count; ifa++)
+                MonoUsbApi.DetachKernelDriver(handle, 5);
+                MonoUsbApi.DetachKernelDriver(handle, 4);
+
+                if (!dev.ClaimInterface(5))
                 {
-                    var iface = controlDevice.Configs[0].InterfaceInfoList[ifa];
-
-                    if (iface.Descriptor.InterfaceID == 5)
-                    {
-                        dev.SetConfiguration(1);
-
-                        var res = dev.ClaimInterface(5);
-                        res = dev.ClaimInterface(4);
-
-                        writer = dev.OpenEndpointWriter(LibUsbDotNet.Main.WriteEndpointID.Ep04);
-
-                        reader = dev.OpenEndpointReader(LibUsbDotNet.Main.ReadEndpointID.Ep03, 64);
-                        reader.DataReceived += Reader_DataReceived;
-                        reader.DataReceivedEnabled = true;
-                        
-                        aliveTimer = new Timer(is_alive);
-                        aliveTimer.Change(2000, 2000);
-
-                        return;
-                    }
+                    controlDevice.Close();
+                    throw new InvalidOperationException("Device in use");
                 }
 
-                throw new InvalidOperationException("Device does not match descriptor");
+                if (!dev.ClaimInterface(4))
+                {
+                    controlDevice.Close();
+                    throw new InvalidOperationException("Device in use");
+                }
+
+                writer = dev.OpenEndpointWriter(LibUsbDotNet.Main.WriteEndpointID.Ep04);
+
+                reader = dev.OpenEndpointReader(LibUsbDotNet.Main.ReadEndpointID.Ep03, 64);
+                reader.DataReceived += Reader_DataReceived;
+                reader.DataReceivedEnabled = true;
+                                
             }
+            
         }
         
         void is_alive(object state)
         {
-            if (!controlDevice.UsbRegistryInfo.IsAlive)
+            try
             {
-                aliveTimer.Change(Timeout.Infinite, Timeout.Infinite);
+                if (!controlDevice.UsbRegistryInfo.IsAlive)
+                {
+                    aliveTimer.Change(Timeout.Infinite, Timeout.Infinite);
 
-                if (Removed != null)
-                    Removed(this, EventArgs.Empty);
+                    if (Removed != null)
+                        Removed(this, EventArgs.Empty);
 
-                Dispose();
+                    Dispose();
+                }
             }
+            catch { }
         }
 
         private void Reader_DataReceived(object sender, LibUsbDotNet.Main.EndpointDataEventArgs e)
@@ -192,7 +205,9 @@ namespace PSVRFramework
         {
             var data = Command.Serialize();
             int len;
+
             return writer.Write(data, 1000, out len) == LibUsbDotNet.Main.ErrorCode.None;
+            
         }
 
         public static PSVRState parse(byte[] data)
@@ -288,15 +303,32 @@ namespace PSVRFramework
 
         public void Dispose()
         {
-            aliveTimer.Change(Timeout.Infinite, Timeout.Infinite);
-            reader.Dispose();
-            writer.Dispose();
+            try
+            {
+                if(aliveTimer != null)
+                    aliveTimer.Change(Timeout.Infinite, Timeout.Infinite);
+            }
+            catch { }
+
+            try
+            {
+                reader.Dispose();
+                writer.Dispose();
+            }
+            catch { }
+
             try
             {
                 controlDevice.Close();
             }
             catch { }
 
+            try
+            {
+                sensorDevice.Close();
+            }
+            catch { }
+            
             controlDevice = null;
 
             SensorDataUpdate = null;
@@ -318,7 +350,7 @@ namespace PSVRFramework
         public byte[] data;
         public byte[] Serialize()
         {
-            byte[] data = new byte[length + 4];
+            byte[] data = new byte[64];
             data[0] = r_id;
             data[1] = command_status;
             data[2] = magic;
@@ -429,7 +461,7 @@ namespace PSVRFramework
 
             return cmd;
         }
-
+        
         public static PSVRCommand GetSetCinematicConfiguration(byte ScreenDistance, byte ScreenSize, byte Brightness, byte MicVolume, bool UnknownVRSetting)
         {
             PSVRCommand cmd = new PSVRCommand();
