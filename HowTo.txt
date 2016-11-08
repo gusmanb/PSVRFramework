@@ -1,16 +1,20 @@
 To make all this work you need to:
 
-1-Exactly as you had set up the PS VR with your PS4 set it up with your PC, connect the HDMI output from your PC to the HDMI PS4 input at the vr box.
-2-Connect the USB to your PC.
-3-Power on the PS VR set.
-4-Windows will detect some devices, audio one will get correctly installed, there will be three more without driver.
-5-Download libusb installer from here: https://sourceforge.net/projects/libusb-win32/?source=typ_redirect.
-6-Uncompress the package and enter to the bin/x86 folder.
-6-Locate the "install-filter-win.exe" program and run it.
-7-On the first screen choose "Install a device filter".
-8-On the next screen you will be presented with a list of all your USB devices, find the one named "vid:054c pid:09af rev:107"
-9-Install the filter on the selected device.
+Installation instructions for Windows
 
-You're done, now you can use the toolbox.
+    If you had installed any libusb filter or winusb driver remove all prior to installation
+    Download PSVRToolboxSetup.exe and DriverPackages.zip
+    Uncompress DriverPackages.zip, you will find two folders, WinUSB and LibUSB, preferred driver under windows is WinUSB but you can install LibUSB in case of trouble
+    Inside each driver type you will find two folders, oe for sensor driver and other for control driver
+    Execute the installers on these folders.
+    In case of any problem try with the other optio (if you installed winusb driver try with libusbdriver and vice-versa)
+    Execute PSVRToolboxSetup.exe and follow instructions
+
+If you prefer to not install the program you can download the portable version but remember you need the .net Framework V4.5.2 or higher.
+Installation instructions for Linux
+
+    The program requires mono-complete 4.4 or higher with libgdi support (recommended 4.6), libusb-1.0 and libusb-1.0-0-dev packages to run.
+    Program must be run under an X11 session and run it with elevated privileges.
+    To install uncompress the PSVRToolboxPortable.zip wherever you perfer and run ./runtoolbox.sh
 
 Happy VR!!
