@@ -57,12 +57,20 @@
             this.trkSize = new XComponent.SliderBar.MACTrackBar();
             this.trkDistance = new XComponent.SliderBar.MACTrackBar();
             this.label1 = new System.Windows.Forms.Label();
+            this.button16 = new System.Windows.Forms.Button();
+            this.pictureBox4 = new System.Windows.Forms.PictureBox();
             this.btnSettings = new System.Windows.Forms.Button();
+            this.grpLeds = new System.Windows.Forms.GroupBox();
+            this.button17 = new System.Windows.Forms.Button();
+            this.cbLeds = new System.Windows.Forms.ComboBox();
+            this.trkLedIntensity = new XComponent.SliderBar.MACTrackBar();
             this.grpFunctions.SuspendLayout();
             this.grpCinematic.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox3)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox4)).BeginInit();
+            this.grpLeds.SuspendLayout();
             this.SuspendLayout();
             // 
             // detectTimer
@@ -171,7 +179,7 @@
             // 
             this.button8.Location = new System.Drawing.Point(12, 268);
             this.button8.Name = "button8";
-            this.button8.Size = new System.Drawing.Size(363, 23);
+            this.button8.Size = new System.Drawing.Size(629, 23);
             this.button8.TabIndex = 7;
             this.button8.Text = "Exit";
             this.button8.UseVisualStyleBackColor = true;
@@ -186,7 +194,7 @@
             // 
             // button9
             // 
-            this.button9.Location = new System.Drawing.Point(392, 15);
+            this.button9.Location = new System.Drawing.Point(847, 15);
             this.button9.Name = "button9";
             this.button9.Size = new System.Drawing.Size(75, 23);
             this.button9.TabIndex = 9;
@@ -195,7 +203,7 @@
             // 
             // button10
             // 
-            this.button10.Location = new System.Drawing.Point(392, 44);
+            this.button10.Location = new System.Drawing.Point(847, 44);
             this.button10.Name = "button10";
             this.button10.Size = new System.Drawing.Size(75, 23);
             this.button10.TabIndex = 10;
@@ -204,7 +212,7 @@
             // 
             // button11
             // 
-            this.button11.Location = new System.Drawing.Point(392, 73);
+            this.button11.Location = new System.Drawing.Point(847, 73);
             this.button11.Name = "button11";
             this.button11.Size = new System.Drawing.Size(75, 23);
             this.button11.TabIndex = 11;
@@ -213,7 +221,7 @@
             // 
             // button12
             // 
-            this.button12.Location = new System.Drawing.Point(392, 102);
+            this.button12.Location = new System.Drawing.Point(847, 102);
             this.button12.Name = "button12";
             this.button12.Size = new System.Drawing.Size(75, 23);
             this.button12.TabIndex = 12;
@@ -222,7 +230,7 @@
             // 
             // button13
             // 
-            this.button13.Location = new System.Drawing.Point(392, 141);
+            this.button13.Location = new System.Drawing.Point(847, 141);
             this.button13.Name = "button13";
             this.button13.Size = new System.Drawing.Size(75, 23);
             this.button13.TabIndex = 13;
@@ -231,7 +239,7 @@
             // 
             // button14
             // 
-            this.button14.Location = new System.Drawing.Point(392, 170);
+            this.button14.Location = new System.Drawing.Point(847, 170);
             this.button14.Name = "button14";
             this.button14.Size = new System.Drawing.Size(75, 23);
             this.button14.TabIndex = 14;
@@ -383,23 +391,114 @@
             this.label1.Text = "Screen size";
             this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
+            // button16
+            // 
+            this.button16.Location = new System.Drawing.Point(846, 199);
+            this.button16.Name = "button16";
+            this.button16.Size = new System.Drawing.Size(75, 23);
+            this.button16.TabIndex = 16;
+            this.button16.Text = "Luz";
+            this.button16.UseVisualStyleBackColor = true;
+            // 
+            // pictureBox4
+            // 
+            this.pictureBox4.Image = global::PSVRToolbox.Properties.Resources.LEDIdentification;
+            this.pictureBox4.Location = new System.Drawing.Point(6, 19);
+            this.pictureBox4.Name = "pictureBox4";
+            this.pictureBox4.Size = new System.Drawing.Size(245, 127);
+            this.pictureBox4.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.pictureBox4.TabIndex = 17;
+            this.pictureBox4.TabStop = false;
+            // 
             // btnSettings
             // 
             this.btnSettings.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnSettings.ForeColor = System.Drawing.SystemColors.Control;
             this.btnSettings.Image = global::PSVRToolbox.Properties.Resources.config;
-            this.btnSettings.Location = new System.Drawing.Point(340, 0);
+            this.btnSettings.Location = new System.Drawing.Point(606, 3);
             this.btnSettings.Name = "btnSettings";
-            this.btnSettings.Size = new System.Drawing.Size(35, 37);
+            this.btnSettings.Size = new System.Drawing.Size(35, 33);
             this.btnSettings.TabIndex = 8;
             this.btnSettings.UseVisualStyleBackColor = true;
             this.btnSettings.Click += new System.EventHandler(this.btnSettings_Click);
+            // 
+            // grpLeds
+            // 
+            this.grpLeds.Controls.Add(this.button17);
+            this.grpLeds.Controls.Add(this.cbLeds);
+            this.grpLeds.Controls.Add(this.trkLedIntensity);
+            this.grpLeds.Controls.Add(this.pictureBox4);
+            this.grpLeds.Enabled = false;
+            this.grpLeds.Location = new System.Drawing.Point(381, 35);
+            this.grpLeds.Name = "grpLeds";
+            this.grpLeds.Size = new System.Drawing.Size(260, 227);
+            this.grpLeds.TabIndex = 18;
+            this.grpLeds.TabStop = false;
+            this.grpLeds.Text = "LED Setup";
+            // 
+            // button17
+            // 
+            this.button17.Location = new System.Drawing.Point(173, 195);
+            this.button17.Name = "button17";
+            this.button17.Size = new System.Drawing.Size(78, 21);
+            this.button17.TabIndex = 20;
+            this.button17.Text = "Set";
+            this.button17.UseVisualStyleBackColor = true;
+            this.button17.Click += new System.EventHandler(this.button17_Click);
+            // 
+            // cbLeds
+            // 
+            this.cbLeds.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cbLeds.FormattingEnabled = true;
+            this.cbLeds.Items.AddRange(new object[] {
+            "Led A",
+            "Led B",
+            "Led C",
+            "Led D",
+            "Led E",
+            "Led F",
+            "Led G",
+            "Led H",
+            "Led I",
+            "All"});
+            this.cbLeds.Location = new System.Drawing.Point(6, 195);
+            this.cbLeds.Name = "cbLeds";
+            this.cbLeds.Size = new System.Drawing.Size(161, 21);
+            this.cbLeds.TabIndex = 19;
+            this.cbLeds.SelectedIndexChanged += new System.EventHandler(this.cbLeds_SelectedIndexChanged);
+            // 
+            // trkLedIntensity
+            // 
+            this.trkLedIntensity.BackColor = System.Drawing.Color.Transparent;
+            this.trkLedIntensity.BorderColor = System.Drawing.SystemColors.ActiveBorder;
+            this.trkLedIntensity.Font = new System.Drawing.Font("Verdana", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.trkLedIntensity.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(123)))), ((int)(((byte)(125)))), ((int)(((byte)(123)))));
+            this.trkLedIntensity.IndentHeight = 6;
+            this.trkLedIntensity.Location = new System.Drawing.Point(6, 152);
+            this.trkLedIntensity.Maximum = 100;
+            this.trkLedIntensity.Minimum = 0;
+            this.trkLedIntensity.Name = "trkLedIntensity";
+            this.trkLedIntensity.Size = new System.Drawing.Size(245, 33);
+            this.trkLedIntensity.TabIndex = 18;
+            this.trkLedIntensity.TextTickStyle = System.Windows.Forms.TickStyle.None;
+            this.trkLedIntensity.TickColor = System.Drawing.Color.FromArgb(((int)(((byte)(148)))), ((int)(((byte)(146)))), ((int)(((byte)(148)))));
+            this.trkLedIntensity.TickFrequency = 10;
+            this.trkLedIntensity.TickHeight = 4;
+            this.trkLedIntensity.TickStyle = System.Windows.Forms.TickStyle.TopLeft;
+            this.trkLedIntensity.TrackerColor = System.Drawing.Color.FromArgb(((int)(((byte)(24)))), ((int)(((byte)(130)))), ((int)(((byte)(198)))));
+            this.trkLedIntensity.TrackerSize = new System.Drawing.Size(16, 16);
+            this.trkLedIntensity.TrackLineColor = System.Drawing.Color.FromArgb(((int)(((byte)(90)))), ((int)(((byte)(93)))), ((int)(((byte)(90)))));
+            this.trkLedIntensity.TrackLineHeight = 3;
+            this.trkLedIntensity.TrackLineSelectedColor = System.Drawing.Color.FromArgb(((int)(((byte)(90)))), ((int)(((byte)(93)))), ((int)(((byte)(90)))));
+            this.trkLedIntensity.Value = 72;
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(389, 303);
+            this.ClientSize = new System.Drawing.Size(650, 303);
+            this.Controls.Add(this.grpLeds);
+            this.Controls.Add(this.button16);
             this.Controls.Add(this.grpCinematic);
             this.Controls.Add(this.button14);
             this.Controls.Add(this.button13);
@@ -426,6 +525,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox3)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox4)).EndInit();
+            this.grpLeds.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -461,6 +562,12 @@
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.PictureBox pictureBox3;
         private System.Windows.Forms.Button button15;
+        private System.Windows.Forms.Button button16;
+        private System.Windows.Forms.PictureBox pictureBox4;
+        private System.Windows.Forms.GroupBox grpLeds;
+        private System.Windows.Forms.Button button17;
+        private System.Windows.Forms.ComboBox cbLeds;
+        private XComponent.SliderBar.MACTrackBar trkLedIntensity;
     }
 }
 

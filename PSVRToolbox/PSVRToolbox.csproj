@@ -67,10 +67,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Classes\BMI055Fusion.cs" />
-    <Compile Include="Classes\KalmanFilter.cs" />
+    <Compile Include="Classes\RemoteCommandListener.cs" />
     <Compile Include="Classes\SensorBroadcaster.cs" />
-    <Compile Include="Classes\X11Hotkey.cs" />
+    <Compile Include="Classes\PSVRController.cs" />
     <Compile Include="Forms\MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -125,6 +124,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="psvr.ico" />
+    <None Include="Resources\LEDIdentification.png" />
     <None Include="Resources\icoBrigtness.png" />
     <None Include="Resources\icoDistance.png" />
     <None Include="Resources\icoSize.png" />

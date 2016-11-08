@@ -21,8 +21,8 @@ namespace PSVRToolbox
 
         bool exit = false;
         IKeyboardMouseEvents hookedEvents;
-        PSVR vrSet;
         SensorBroadcaster broadcaster;
+        RemoteCommandListener cmdListen;
 
         object locker = new object();
 
@@ -39,43 +39,50 @@ namespace PSVRToolbox
                 }
             }
             catch { }
+
+            cmdListen = new RemoteCommandListener(14598);
         }
 
         #region Button handlers
 
         private void button1_Click(object sender, EventArgs e)
         {
-            HeadsetOn();
+            PSVRController.HeadsetOn();
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
-            HeadsetOff();
+            PSVRController.HeadsetOff();
         }
 
         private void button3_Click(object sender, EventArgs e)
         {
-            EnableVRTracking();
+            Task.Run(async () =>
+            {
+                PSVRController.EnableVRTracking();
+                await Task.Delay(1500);
+                PSVRController.ApplyLedSettings();
+            });
         }
         
         private void button4_Click(object sender, EventArgs e)
         {
-            EnableVRMode();
+            PSVRController.EnableVRMode();
         }
         
         private void button5_Click(object sender, EventArgs e)
         {
-            EnableTheaterMode();
+            PSVRController.EnableCinematicMode();
         }
         
         private void button6_Click(object sender, EventArgs e)
         {
-            Recenter();
+            PSVRController.Recenter();
         }
         
         private void button7_Click(object sender, EventArgs e)
         {
-            Shutdown();
+            PSVRController.Shutdown();
 
         }
 
@@ -111,7 +118,71 @@ namespace PSVRToolbox
             set.ScreenSize = (byte)trkSize.Value;
             set.Brightness = (byte)trkBrightness.Value;
             Settings.SaveSettings();
-            ApplyCinematicSettings();
+            PSVRController.ApplyCinematicSettings();
+        }
+
+        private void button17_Click(object sender, EventArgs e)
+        {
+            LedMask mask = LedMask.None;
+
+            switch (cbLeds.SelectedIndex)
+            {
+                case 0:
+                    Settings.Instance.LedAIntensity = (byte)trkLedIntensity.Value;
+                    mask = LedMask.LedA;
+                    break;
+                case 1:
+                    Settings.Instance.LedBIntensity = (byte)trkLedIntensity.Value;
+                    mask = LedMask.LedB;
+                    break;
+                case 2:
+                    Settings.Instance.LedCIntensity = (byte)trkLedIntensity.Value;
+                    mask = LedMask.LedC;
+                    break;
+                case 3:
+                    Settings.Instance.LedDIntensity = (byte)trkLedIntensity.Value;
+                    mask = LedMask.LedD;
+                    break;
+                case 4:
+                    Settings.Instance.LedEIntensity = (byte)trkLedIntensity.Value;
+                    mask = LedMask.LedE;
+                    break;
+                case 5:
+                    Settings.Instance.LedFIntensity = (byte)trkLedIntensity.Value;
+                    mask = LedMask.LedF;
+                    break;
+                case 6:
+                    Settings.Instance.LedGIntensity = (byte)trkLedIntensity.Value;
+                    mask = LedMask.LedG;
+                    break;
+                case 7:
+                    Settings.Instance.LedHIntensity = (byte)trkLedIntensity.Value;
+                    mask = LedMask.LedH;
+                    break;
+                case 8:
+                    Settings.Instance.LedIIntensity = (byte)trkLedIntensity.Value;
+                    mask = LedMask.LedI;
+                    break;
+                case 9:
+                    Settings.Instance.LedAIntensity =
+                    Settings.Instance.LedBIntensity =
+                    Settings.Instance.LedCIntensity =
+                    Settings.Instance.LedDIntensity =
+                    Settings.Instance.LedEIntensity =
+                    Settings.Instance.LedFIntensity =
+                    Settings.Instance.LedGIntensity =
+                    Settings.Instance.LedHIntensity =
+                    Settings.Instance.LedIIntensity = (byte)trkLedIntensity.Value;
+
+                    mask = LedMask.All;
+                    break;
+            }
+
+            if (mask != LedMask.None)
+            {
+                Settings.SaveSettings();
+                PSVRController.ApplyLedSettings();
+            }
         }
 
         #endregion
@@ -147,10 +218,9 @@ namespace PSVRToolbox
                 e.Cancel = true;
                 return;
             }
-            
-            if (vrSet != null)
-                vrSet.Dispose();
-            
+
+            PSVRController.DeviceDisconnected();
+
             try
             {
                 if (hookedEvents != null)
@@ -169,9 +239,6 @@ namespace PSVRToolbox
 
         private void HookedEvents_KeyDown(object sender, KeyEventArgs e)
         {
-            if (vrSet == null)
-                return;
-
             try
             {
                 var settings = Settings.Instance;
@@ -181,37 +248,37 @@ namespace PSVRToolbox
 
                 if (e.KeyCode == settings.HeadSetOn)
                 {
-                    HeadsetOn();
+                    PSVRController.HeadsetOn();
                     e.Handled = true;
                 }
                 else if (e.KeyCode == settings.HeadSetOff)
                 {
-                    HeadsetOff();
+                    PSVRController.HeadsetOff();
                     e.Handled = true;
                 }
                 else if (e.KeyCode == settings.EnableVRAndTracking)
                 {
-                    EnableVRTracking();
+                    PSVRController.EnableVRTracking();
                     e.Handled = true;
                 }
                 else if (e.KeyCode == settings.EnableVR)
                 {
-                    EnableVRMode();
+                    PSVRController.EnableVRMode();
                     e.Handled = true;
                 }
                 else if (e.KeyCode == settings.EnableTheater)
                 {
-                    EnableTheaterMode();
+                    PSVRController.EnableCinematicMode();
                     e.Handled = true;
                 }
                 else if (e.KeyCode == settings.Recenter)
                 {
-                    Recenter();
+                    PSVRController.Recenter();
                     e.Handled = true;
                 }
                 else if (e.KeyCode == settings.Shutdown)
                 {
-                    Shutdown();
+                    PSVRController.Shutdown();
                     e.Handled = true;
                 }
             }
@@ -224,65 +291,44 @@ namespace PSVRToolbox
             this.Show();
             this.BringToFront();
         }
+
+
+        private void cbLeds_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            switch (cbLeds.SelectedIndex)
+            {
+                case 0:
+                    trkLedIntensity.Value = Settings.Instance.LedAIntensity;
+                    break;
+                case 1:
+                    trkLedIntensity.Value = Settings.Instance.LedBIntensity;
+                    break;
+                case 2:
+                    trkLedIntensity.Value = Settings.Instance.LedCIntensity;
+                    break;
+                case 3:
+                    trkLedIntensity.Value = Settings.Instance.LedDIntensity;
+                    break;
+                case 4:
+                    trkLedIntensity.Value = Settings.Instance.LedEIntensity;
+                    break;
+                case 5:
+                    trkLedIntensity.Value = Settings.Instance.LedFIntensity;
+                    break;
+                case 6:
+                    trkLedIntensity.Value = Settings.Instance.LedGIntensity;
+                    break;
+                case 7:
+                    trkLedIntensity.Value = Settings.Instance.LedHIntensity;
+                    break;
+                case 8:
+                    trkLedIntensity.Value = Settings.Instance.LedIIntensity;
+                    break;
+            }
+        }
+
+        #endregion
         
-        #endregion
-
-        #region PS VR functions
-
-        private void HeadsetOn()
-        {
-            vrSet.SendCommand(PSVRCommand.GetHeadsetOn());
-        }
-
-        private void HeadsetOff()
-        {
-            vrSet.SendCommand(PSVRCommand.GetHeadsetOff());
-        }
-
-        private void EnableVRTracking()
-        {
-            vrSet.SendCommand(PSVRCommand.GetEnableVRTracking());
-            vrSet.SendCommand(PSVRCommand.GetEnterVRMode());
-        }
-        private void EnableVRMode()
-        {
-            vrSet.SendCommand(PSVRCommand.GetEnterVRMode());
-        }
-        private void EnableTheaterMode()
-        {
-            vrSet.SendCommand(PSVRCommand.GetExitVRMode());
-        }
-        private void Recenter()
-        {
-
-            byte current = Settings.Instance.ScreenSize;
-
-            byte fake = 0;
-            if (current < 50)
-                fake = (byte)(current + 1);
-            else
-                fake = (byte)(current - 1);
-
-            Settings.Instance.ScreenSize = fake;
-            ApplyCinematicSettings();
-            Settings.Instance.ScreenSize = current;
-            ApplyCinematicSettings();
-        }
-        private void Shutdown()
-        {
-            vrSet.SendCommand(PSVRCommand.GetHeadsetOff());
-            vrSet.SendCommand(PSVRCommand.GetBoxOff());
-        }
-
-        private void ApplyCinematicSettings()
-        {
-            Settings set = Settings.Instance;
-            var cmd = PSVRCommand.GetSetCinematicConfiguration(set.ScreenDistance, set.ScreenSize , set.Brightness , set.MicVol, false);
-            vrSet.SendCommand(cmd);
-        }
-
-        #endregion
-
         #region Device connected detection
 
         private void detectTimer_Tick(object sender, EventArgs e)
@@ -290,23 +336,25 @@ namespace PSVRToolbox
             try
             {
                 detectTimer.Enabled = false;
-                vrSet = new PSVR();
+                var vrSet = new PSVR(Settings.Instance.EnableUDPBroadcast);
+                PSVRController.DeviceConnected(vrSet);
+                vrSet.SensorDataUpdate += VrSet_SensorDataUpdate;
+                vrSet.Removed += VrSet_Removed;
 
                 Task.Run(() =>
                 {
-                    vrSet.SensorDataUpdate += VrSet_SensorDataUpdate;
-                    vrSet.Removed += VrSet_Removed;
-                    vrSet.SendCommand(PSVRCommand.GetHeadsetOn());
-                    vrSet.SendCommand(PSVRCommand.GetEnterVRMode());
+                    PSVRController.HeadsetOn();
+                    PSVRController.EnableVRMode();
                     Thread.Sleep(1500);
-                    vrSet.SendCommand(PSVRCommand.GetExitVRMode());
+                    PSVRController.EnableCinematicMode();
                     Thread.Sleep(1500);
-                    ApplyCinematicSettings();
+                    PSVRController.ApplyCinematicSettings();
                 });
 
                 lblStatus.Text = "VR set found";
                 grpFunctions.Enabled = true;
                 grpCinematic.Enabled = true;
+                grpLeds.Enabled = true;
             }
             catch(Exception ex) { detectTimer.Enabled = true; }
         }
@@ -317,11 +365,23 @@ namespace PSVRToolbox
 
         private void VrSet_Removed(object sender, EventArgs e)
         {
+            var vrSet = (PSVR)sender;
+
             BeginInvoke((Action)(() =>
             {
                 grpFunctions.Enabled = false;
                 grpCinematic.Enabled = false;
-                vrSet = null;
+                grpLeds.Enabled = false;
+                if (vrSet != null)
+                {
+                    try
+                    {
+                        vrSet.Dispose();
+                    }
+                    catch { }
+
+                    vrSet = null;
+                }
                 lblStatus.Text = "Waiting for PS VR...";
                 detectTimer.Enabled = true;
             }));
@@ -339,5 +399,6 @@ namespace PSVRToolbox
 
 
         #endregion
+       
     }
 }

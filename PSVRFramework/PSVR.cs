@@ -61,10 +61,10 @@ namespace PSVRFramework
         public int F;
         public int G;
         public int H;
-
-        //For future use, will hold a Quaternion with the head orientation
-        public float[] Orientation;
+        
     }
+
+    
 
     [Flags]
     public enum HeadsetButtons
@@ -101,10 +101,10 @@ namespace PSVRFramework
 
         public event EventHandler<PSVRSensorEventArgs> SensorDataUpdate;
         public event EventHandler Removed;
-
+        
         Timer aliveTimer;
         
-        public PSVR()
+        public PSVR(bool EnableSensor)
         {
 
             if (CurrentOS.IsWindows)
@@ -124,17 +124,24 @@ namespace PSVRFramework
                     controlDevice.Close();
                     throw new InvalidOperationException("No Sensor device found");
                 }
-                if (!ndev.Open(out sensorDevice))
+
+                if (EnableSensor)
                 {
-                    controlDevice.Close();
-                    throw new InvalidOperationException("Device in use");
+                    if (!ndev.Open(out sensorDevice))
+                    {
+                        controlDevice.Close();
+                        throw new InvalidOperationException("Device in use");
+                    }
                 }
 
                 writer = controlDevice.OpenEndpointWriter(LibUsbDotNet.Main.WriteEndpointID.Ep04);
 
-                reader = sensorDevice.OpenEndpointReader(LibUsbDotNet.Main.ReadEndpointID.Ep03, 64);
-                reader.DataReceived += Reader_DataReceived;
-                reader.DataReceivedEnabled = true;
+                if (EnableSensor)
+                {
+                    reader = sensorDevice.OpenEndpointReader(LibUsbDotNet.Main.ReadEndpointID.Ep03, 64);
+                    reader.DataReceived += Reader_DataReceived;
+                    reader.DataReceivedEnabled = true;
+                }
 
                 aliveTimer = new Timer(is_alive);
                 aliveTimer.Change(2000, 2000);
@@ -150,7 +157,9 @@ namespace PSVRFramework
                 var handle = new MonoUsbDeviceHandle(dev.Profile.ProfileHandle);
 
                 MonoUsbApi.DetachKernelDriver(handle, 5);
-                MonoUsbApi.DetachKernelDriver(handle, 4);
+
+                if(EnableSensor)
+                    MonoUsbApi.DetachKernelDriver(handle, 4);
 
                 if (!dev.ClaimInterface(5))
                 {
@@ -158,18 +167,23 @@ namespace PSVRFramework
                     throw new InvalidOperationException("Device in use");
                 }
 
-                if (!dev.ClaimInterface(4))
+                if (EnableSensor)
                 {
-                    controlDevice.Close();
-                    throw new InvalidOperationException("Device in use");
+                    if (!dev.ClaimInterface(4))
+                    {
+                        controlDevice.Close();
+                        throw new InvalidOperationException("Device in use");
+                    }
                 }
 
                 writer = dev.OpenEndpointWriter(LibUsbDotNet.Main.WriteEndpointID.Ep04);
 
-                reader = dev.OpenEndpointReader(LibUsbDotNet.Main.ReadEndpointID.Ep03, 64);
-                reader.DataReceived += Reader_DataReceived;
-                reader.DataReceivedEnabled = true;
-                                
+                if (EnableSensor)
+                {
+                    reader = dev.OpenEndpointReader(LibUsbDotNet.Main.ReadEndpointID.Ep03, 64);
+                    reader.DataReceived += Reader_DataReceived;
+                    reader.DataReceivedEnabled = true;
+                }              
             }
             
         }
@@ -191,13 +205,17 @@ namespace PSVRFramework
             catch { }
         }
 
+
+        int up = 0;
+
         private void Reader_DataReceived(object sender, LibUsbDotNet.Main.EndpointDataEventArgs e)
         {
+
+            var rep = parse(e.Buffer);
+
             if (SensorDataUpdate == null)
                 return;
             
-            var rep = parse(e.Buffer);
-
             SensorDataUpdate(this, new PSVRSensorEventArgs { SensorData = rep.sensor });
         }
 
@@ -241,9 +259,9 @@ namespace PSVRFramework
             sensor.GyroPitch1 = getIntFromInt16(data, 22);
             sensor.GyroRoll1 = getIntFromInt16(data, 24);
 
-            sensor.MotionX1 = getAccelShort(data, 26) ;
-            sensor.MotionY1 = getAccelShort(data, 28);
-            sensor.MotionZ1 = getAccelShort(data, 30);
+            sensor.MotionX1 = getIntFromInt16(data, 26) ;
+            sensor.MotionY1 = getIntFromInt16(data, 28);
+            sensor.MotionZ1 = getIntFromInt16(data, 30);
             
             sensor.GroupSequence2 = getIntFromInt16(data, 34);
 
@@ -251,9 +269,9 @@ namespace PSVRFramework
             sensor.GyroPitch2 = getIntFromInt16(data, 38);
             sensor.GyroRoll2 = getIntFromInt16(data, 40);
 
-            sensor.MotionX2 = getAccelShort(data, 42);
-            sensor.MotionY2 = getAccelShort(data, 44);
-            sensor.MotionZ2 = getAccelShort(data, 46);
+            sensor.MotionX2 = getIntFromInt16(data, 42);
+            sensor.MotionY2 = getIntFromInt16(data, 44);
+            sensor.MotionZ2 = getIntFromInt16(data, 46);
             
             sensor.CalStatus = data[48];
             sensor.Ready = data[49];
@@ -474,5 +492,45 @@ namespace PSVRFramework
             return cmd;
         }
 
+        public static PSVRCommand GetSetHDMLed(LedMask Mask, byte Value)
+        {
+            ushort mMask = (ushort)Mask;
+            PSVRCommand cmd = new PSVRCommand();
+
+            cmd.r_id = 0x15;
+            cmd.magic = 0xaa;
+            cmd.length = 16;
+            cmd.data = new byte[] { (byte)(mMask & 0xFF), (byte)((mMask >> 8) & 0xFF), Value, Value, Value, Value, Value, Value, Value, Value, Value, 0, 0, 0, 0, 0 };
+            return cmd;
+        }
+
+        public static PSVRCommand GetSetHDMLeds(LedMask Mask, byte ValueA, byte ValueB, byte ValueC, byte ValueD, byte ValueE, byte ValueF, byte ValueG, byte ValueH, byte ValueI)
+        {
+            ushort mMask = (ushort)Mask;
+            PSVRCommand cmd = new PSVRCommand();
+
+            cmd.r_id = 0x15;
+            cmd.magic = 0xaa;
+            cmd.length = 16;
+            cmd.data = new byte[] { (byte)(mMask & 0xFF), (byte)((mMask >> 8) & 0xFF), ValueA, ValueB, ValueC, ValueD, ValueE, ValueF, ValueG, ValueH, ValueI, 0, 0, 0, 0, 0 };
+            return cmd;
+        }
+
     };
+
+    [Flags]
+    public enum LedMask : ushort
+    {
+        None = 0,
+        LedA = (1 << 0),
+        LedB = (1 << 1),
+        LedC = (1 << 2),
+        LedD = (1 << 3),
+        LedE = (1 << 4),
+        LedF = (1 << 5),
+        LedG = (1 << 6),
+        LedH = (1 << 7),
+        LedI = (1 << 8),
+        All = LedA | LedB | LedC | LedD | LedE | LedF | LedG | LedH | LedI
+    }
 }
