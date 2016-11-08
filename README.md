@@ -29,6 +29,12 @@ You need the .net Framework 4.5.2 or newer installed to make it work and also ne
 
 ##UPDATES
 
+###V0.4.0
+
+- Unified driver
+- Driver and app installers
+- Linux support
+
 ###V0.2.0
 
 - Added VR Player
