@@ -10,6 +10,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{F65759D6-C6D1-4370-AABD-DE73A71BA2F3}"
 	ProjectSection(SolutionItems) = preProject
 		HowTo.txt = HowTo.txt
+		LEDIdentification.png = LEDIdentification.png
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PSVRSensorListener", "PSVRSensorListener\PSVRSensorListener.csproj", "{168EDAE3-110E-419E-9013-A26FE4F2B6EB}"
