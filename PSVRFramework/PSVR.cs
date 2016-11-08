@@ -8,6 +8,7 @@ using LibUsbDotNet;
 using LibUsbDotNet.LudnMonoLibUsb;
 using LibUsbDotNet.WinUsb;
 using MonoLibUsb;
+using System.Runtime.InteropServices;
 
 namespace PSVRFramework
 {
@@ -96,12 +97,14 @@ namespace PSVRFramework
 
         UsbEndpointWriter writer;
         UsbEndpointReader reader;
+        UsbEndpointReader cmdReader;
         UsbDevice controlDevice;
         UsbDevice sensorDevice;
 
         public event EventHandler<PSVRSensorEventArgs> SensorDataUpdate;
         public event EventHandler Removed;
-        
+        public event EventHandler<PSVRResponseEventArgs> CommandResponse;
+
         Timer aliveTimer;
         
         public PSVR(bool EnableSensor)
@@ -135,6 +138,9 @@ namespace PSVRFramework
                 }
 
                 writer = controlDevice.OpenEndpointWriter(LibUsbDotNet.Main.WriteEndpointID.Ep04);
+                cmdReader = controlDevice.OpenEndpointReader(LibUsbDotNet.Main.ReadEndpointID.Ep04);
+                cmdReader.DataReceived += CmdReader_DataReceived;
+                cmdReader.DataReceivedEnabled = true;
 
                 if (EnableSensor)
                 {
@@ -187,7 +193,23 @@ namespace PSVRFramework
             }
             
         }
-        
+
+        private void CmdReader_DataReceived(object sender, LibUsbDotNet.Main.EndpointDataEventArgs e)
+        {
+            int pos = 0;
+
+            while (pos < e.Count)
+            {
+                int consumed;
+
+                PSVRMessage msg = PSVRMessage.ParseResponse(e.Buffer, pos, out consumed);
+                if (CommandResponse != null)
+                    CommandResponse(this, new PSVRResponseEventArgs { Response = msg });
+
+                pos += consumed;
+            }
+        }
+
         void is_alive(object state)
         {
             try
@@ -219,7 +241,7 @@ namespace PSVRFramework
             SensorDataUpdate(this, new PSVRSensorEventArgs { SensorData = rep.sensor });
         }
 
-        public bool SendCommand(PSVRCommand Command)
+        public bool SendCommand(PSVRMessage Command)
         {
             var data = Command.Serialize();
             int len;
@@ -351,6 +373,79 @@ namespace PSVRFramework
 
             SensorDataUpdate = null;
             Removed = null;
+            CommandResponse = null;
+        }
+        
+    }
+
+    public class PSVRDeviceInfo
+    {
+        public ushort UnknownA;
+        public byte MinorVersion;
+        public byte MajorVersion;
+        public ushort UnknownB;
+        public uint UnknownC;
+        public ushort UnknownD;
+        public string SerialNumber; //16 bytes
+        public uint UnknownE;
+        public uint UnknownF;
+        public uint UnknownG;
+        public uint UnknownH;
+        public uint UnknownI;
+
+        public static PSVRDeviceInfo ParseInfo(byte[] Data)
+        {
+            PSVRDeviceInfo info = new PSVRDeviceInfo();
+
+            info.UnknownA = (ushort)(Data[0] | ((ushort)(Data[1] << 8)));
+            info.MinorVersion = Data[2];
+            info.MajorVersion = Data[3];
+            info.UnknownB = (ushort)(Data[4] | ((ushort)(Data[5] << 8)));
+            info.UnknownC = (uint)(Data[6] | ((uint)(Data[7] << 8)) | ((uint)(Data[8] << 16)) | ((uint)(Data[9] << 24)));
+            info.UnknownD = (ushort)(Data[10] | ((ushort)(Data[11] << 8)));
+            info.SerialNumber = Encoding.ASCII.GetString(Data, 12, 16);
+            info.UnknownE = (uint)(Data[28] | ((uint)(Data[29] << 8)) | ((uint)(Data[30] << 16)) | ((uint)(Data[31] << 24)));
+            info.UnknownF = (uint)(Data[32] | ((uint)(Data[33] << 8)) | ((uint)(Data[34] << 16)) | ((uint)(Data[35] << 24)));
+            info.UnknownG = (uint)(Data[36] | ((uint)(Data[37] << 8)) | ((uint)(Data[38] << 16)) | ((uint)(Data[39] << 24)));
+            info.UnknownH = (uint)(Data[40] | ((uint)(Data[41] << 8)) | ((uint)(Data[42] << 16)) | ((uint)(Data[43] << 24)));
+            info.UnknownH = (uint)(Data[44] | ((uint)(Data[45] << 8)) | ((uint)(Data[46] << 16)) | ((uint)(Data[47] << 24)));
+            
+            return info;
+        }
+    }
+
+    public class PSVRDeviceStatus
+    {
+        public PSVRStatusMask Status;
+        public uint Volume;
+        public ushort UnknownA;
+        public byte BridgeOutputID;
+        public byte UnknownB;
+
+        public static PSVRDeviceStatus ParseStatus(byte[] Data)
+        {
+            PSVRDeviceStatus info = new PSVRDeviceStatus();
+
+            info.Status = (PSVRStatusMask)Data[0];
+            info.Volume = (uint)(Data[1] | ((uint)(Data[2] << 8)) | ((uint)(Data[3] << 16)) | ((uint)(Data[4] << 24)));
+            info.UnknownA = (ushort)(Data[5] | ((ushort)(Data[6] << 8)));
+            info.BridgeOutputID = Data[7];
+            info.UnknownB = Data[7];
+
+            return info;
+        }
+
+        [Flags]
+        public enum PSVRStatusMask
+        {
+            HeadsetOn =  (1 << 0),
+            Worn =       (1 << 1),
+            Cinematic =  (1 << 2),
+            UnknownA =   (1 << 3),
+            Headphones = (1 << 4),
+            Mute =       (1 << 5),
+            UnknownB =   (1 << 6),
+            UnknownC =   (1 << 7),
         }
     }
 
@@ -359,7 +454,12 @@ namespace PSVRFramework
         public PSVRSensor SensorData { get; set; }
     }
 
-    public struct PSVRCommand
+    public class PSVRResponseEventArgs : EventArgs
+    {
+        public PSVRMessage Response { get; set; }
+    }
+
+    public struct PSVRMessage
     {
         public byte r_id;
         public byte command_status;
@@ -379,9 +479,22 @@ namespace PSVRFramework
             return data;
         }
 
-        public static PSVRCommand GetEnableVRTracking()
+        public static PSVRMessage ParseResponse(byte[] Data, int Offset, out int BytesConsumed)
         {
-            PSVRCommand cmd = new PSVRCommand();
+            PSVRMessage cmd = new PSVRMessage();
+            cmd.r_id = Data[Offset];
+            cmd.command_status = Data[Offset + 1];
+            cmd.magic = Data[Offset + 2];
+            cmd.length = Data[Offset + 3];
+            cmd.data = new byte[cmd.length];
+            Buffer.BlockCopy(Data, Offset + 4, cmd.data, 0, cmd.length);
+            BytesConsumed = cmd.length + 4;
+            return cmd;
+        }
+
+        public static PSVRMessage GetEnableVRTracking()
+        {
+            PSVRMessage cmd = new PSVRMessage();
 
             cmd.r_id = 0x11;
             cmd.magic = 0xaa;
@@ -396,9 +509,9 @@ namespace PSVRFramework
             return cmd;
         }
 
-        public static PSVRCommand GetHeadsetOn()
+        public static PSVRMessage GetHeadsetOn()
         {
-            PSVRCommand cmd = new PSVRCommand();
+            PSVRMessage cmd = new PSVRMessage();
 
             cmd.r_id = 0x17;
             cmd.magic = 0xaa;
@@ -408,9 +521,9 @@ namespace PSVRFramework
             return cmd;
         }
 
-        public static PSVRCommand GetHeadsetOff()
+        public static PSVRMessage GetHeadsetOff()
         {
-            PSVRCommand cmd = new PSVRCommand();
+            PSVRMessage cmd = new PSVRMessage();
 
             cmd.r_id = 0x17;
             cmd.magic = 0xaa;
@@ -420,9 +533,9 @@ namespace PSVRFramework
             return cmd;
         }
 
-        public static PSVRCommand GetEnterVRMode()
+        public static PSVRMessage GetEnterVRMode()
         {
-            PSVRCommand cmd = new PSVRCommand();
+            PSVRMessage cmd = new PSVRMessage();
 
             cmd.r_id = 0x23;
             cmd.magic = 0xaa;
@@ -432,9 +545,9 @@ namespace PSVRFramework
             return cmd;
         }
 
-        public static PSVRCommand GetExitVRMode()
+        public static PSVRMessage GetExitVRMode()
         {
-            PSVRCommand cmd = new PSVRCommand();
+            PSVRMessage cmd = new PSVRMessage();
 
             cmd.r_id = 0x23;
             cmd.magic = 0xaa;
@@ -444,9 +557,9 @@ namespace PSVRFramework
             return cmd;
         }
 
-        public static PSVRCommand GetOff(byte id)
+        public static PSVRMessage GetOff(byte id)
         {
-            PSVRCommand cmd = new PSVRCommand();
+            PSVRMessage cmd = new PSVRMessage();
 
             cmd.r_id = id;
             cmd.magic = 0xaa;
@@ -456,9 +569,9 @@ namespace PSVRFramework
             return cmd;
         }
 
-        public static PSVRCommand GetOn(byte id)
+        public static PSVRMessage GetOn(byte id)
         {
-            PSVRCommand cmd = new PSVRCommand();
+            PSVRMessage cmd = new PSVRMessage();
 
             cmd.r_id = id;
             cmd.magic = 0xaa;
@@ -468,9 +581,9 @@ namespace PSVRFramework
             return cmd;
         }
 
-        public static PSVRCommand GetBoxOff()
+        public static PSVRMessage GetBoxOff()
         {
-            PSVRCommand cmd = new PSVRCommand();
+            PSVRMessage cmd = new PSVRMessage();
 
             cmd.r_id = 0x13;
             cmd.magic = 0xaa;
@@ -480,22 +593,22 @@ namespace PSVRFramework
             return cmd;
         }
         
-        public static PSVRCommand GetSetCinematicConfiguration(byte ScreenDistance, byte ScreenSize, byte Brightness, byte MicVolume, bool UnknownVRSetting)
+        public static PSVRMessage GetSetCinematicConfiguration(byte Mask, byte ScreenDistance, byte ScreenSize, byte IPD, byte Brightness, byte MicVolume, bool UnknownVRSetting)
         {
-            PSVRCommand cmd = new PSVRCommand();
+            PSVRMessage cmd = new PSVRMessage();
 
             cmd.r_id = 0x21;
             cmd.magic = 0xaa;
             cmd.length = 16;
-            cmd.data = new byte[] { 0, ScreenSize, ScreenDistance, 0, 0, 0, 0, 0, 0, 0, Brightness, MicVolume, 0, 0, (byte)(UnknownVRSetting ? 0 : 1), 0 };
+            cmd.data = new byte[] { Mask, ScreenSize, ScreenDistance, IPD, 0, 0, 0, 0, 0, 0, Brightness, MicVolume, 0, 0, (byte)(UnknownVRSetting ? 0 : 1), 0 };
 
             return cmd;
         }
 
-        public static PSVRCommand GetSetHDMLed(LedMask Mask, byte Value)
+        public static PSVRMessage GetSetHDMLed(LedMask Mask, byte Value)
         {
             ushort mMask = (ushort)Mask;
-            PSVRCommand cmd = new PSVRCommand();
+            PSVRMessage cmd = new PSVRMessage();
 
             cmd.r_id = 0x15;
             cmd.magic = 0xaa;
@@ -504,10 +617,10 @@ namespace PSVRFramework
             return cmd;
         }
 
-        public static PSVRCommand GetSetHDMLeds(LedMask Mask, byte ValueA, byte ValueB, byte ValueC, byte ValueD, byte ValueE, byte ValueF, byte ValueG, byte ValueH, byte ValueI)
+        public static PSVRMessage GetSetHDMLeds(LedMask Mask, byte ValueA, byte ValueB, byte ValueC, byte ValueD, byte ValueE, byte ValueF, byte ValueG, byte ValueH, byte ValueI)
         {
             ushort mMask = (ushort)Mask;
-            PSVRCommand cmd = new PSVRCommand();
+            PSVRMessage cmd = new PSVRMessage();
 
             cmd.r_id = 0x15;
             cmd.magic = 0xaa;
@@ -516,6 +629,17 @@ namespace PSVRFramework
             return cmd;
         }
 
+        public static PSVRMessage GetReadDeviceInfo()
+        {
+            PSVRMessage cmd = new PSVRMessage();
+
+            cmd.r_id = 0x81;
+            cmd.magic = 0xaa;
+            cmd.length = 8;
+            cmd.data = new byte[] { 0x80, 0, 0, 0, 0, 0, 0, 0 };
+
+            return cmd;
+        }
     };
 
     [Flags]

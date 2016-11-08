@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Gma.System.MouseKeyHook;
 using PSVRFramework;
+using System.Text.RegularExpressions;
 
 namespace PSVRToolbox
 {
@@ -340,15 +341,16 @@ namespace PSVRToolbox
                 PSVRController.DeviceConnected(vrSet);
                 vrSet.SensorDataUpdate += VrSet_SensorDataUpdate;
                 vrSet.Removed += VrSet_Removed;
-
+                vrSet.CommandResponse += VrSet_CommandResponse;
                 Task.Run(() =>
                 {
+                    PSVRController.RequestDeviceInfo();
                     PSVRController.HeadsetOn();
                     PSVRController.EnableVRMode();
                     Thread.Sleep(1500);
                     PSVRController.EnableCinematicMode();
-                    Thread.Sleep(1500);
-                    PSVRController.ApplyCinematicSettings();
+                    //Thread.Sleep(1500);
+                    //PSVRController.ApplyCinematicSettings();
                 });
 
                 lblStatus.Text = "VR set found";
@@ -359,6 +361,52 @@ namespace PSVRToolbox
             catch(Exception ex) { detectTimer.Enabled = true; }
         }
 
+        private void VrSet_CommandResponse(object sender, PSVRResponseEventArgs e)
+        {
+
+            switch (e.Response.r_id)
+            {
+                case 0x80:
+
+                    PSVRDeviceInfo dev = PSVRDeviceInfo.ParseInfo(e.Response.data);
+                    this.BeginInvoke((Action)(() =>
+                    {
+                        lblSerial.Text = "Device serial: " + dev.SerialNumber;
+                        lblFirmware.Text = "Firmware version: " + dev.MajorVersion + "." + dev.MinorVersion.ToString().PadLeft(2, '0');
+                    }));
+                    break;
+
+                case 0xF0:
+
+                    PSVRDeviceStatus stat = PSVRDeviceStatus.ParseStatus(e.Response.data);
+                    this.BeginInvoke((Action)(() =>
+                    {
+                        chkWorn.Checked = stat.Status.HasFlag(PSVRDeviceStatus.PSVRStatusMask.Worn);
+                        chkCinematic.Checked = stat.Status.HasFlag(PSVRDeviceStatus.PSVRStatusMask.Cinematic);
+                        chkHeadphones.Checked = stat.Status.HasFlag(PSVRDeviceStatus.PSVRStatusMask.Headphones);
+                        chkHMDOn.Checked = stat.Status.HasFlag(PSVRDeviceStatus.PSVRStatusMask.HeadsetOn);
+                        chkMute.Checked = stat.Status.HasFlag(PSVRDeviceStatus.PSVRStatusMask.Mute);
+                        trkVolume.Value = (int)stat.Volume;
+                    }));
+                    break;
+#if DEBUG
+                default:
+
+                    Console.WriteLine("Received response " + e.Response.r_id.ToString("X2"));
+                    Console.WriteLine("Status: " + e.Response.command_status.ToString("X2"));
+                    Console.WriteLine("Binary data: " + BitConverter.ToString(e.Response.data).Replace("-", ""));
+
+                    var str = Encoding.ASCII.GetString(e.Response.data);
+
+                    str = Regex.Replace(str, @"[^a-zA-Z0-9 -+!""·$%&/()=?*\^`\[\]{}#@~€]", string.Empty);
+
+                    Console.WriteLine("ASCII data: " + str);
+                    break;
+#endif
+                
+            }
+        }
+        
         #endregion
 
         #region VR set events
@@ -383,6 +431,8 @@ namespace PSVRToolbox
                     vrSet = null;
                 }
                 lblStatus.Text = "Waiting for PS VR...";
+                lblSerial.Text = "Device serial: unknown";
+                lblFirmware.Text = "Firmware version: unknown";
                 detectTimer.Enabled = true;
             }));
         }
@@ -399,6 +449,6 @@ namespace PSVRToolbox
 
 
         #endregion
-       
+        
     }
 }

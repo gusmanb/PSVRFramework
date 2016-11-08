@@ -47,7 +47,7 @@ namespace PSVRToolbox
                 if (dev == null)
                     return;
 
-                dev.SendCommand(PSVRCommand.GetHeadsetOn());
+                dev.SendCommand(PSVRMessage.GetHeadsetOn());
             }
         }
 
@@ -58,7 +58,7 @@ namespace PSVRToolbox
                 if (dev == null)
                     return;
 
-                dev.SendCommand(PSVRCommand.GetHeadsetOff());
+                dev.SendCommand(PSVRMessage.GetHeadsetOff());
             }
         }
 
@@ -69,8 +69,8 @@ namespace PSVRToolbox
                 if (dev == null)
                     return;
 
-                dev.SendCommand(PSVRCommand.GetEnableVRTracking());
-                dev.SendCommand(PSVRCommand.GetEnterVRMode());
+                dev.SendCommand(PSVRMessage.GetEnableVRTracking());
+                dev.SendCommand(PSVRMessage.GetEnterVRMode());
             }
         }
 
@@ -81,7 +81,7 @@ namespace PSVRToolbox
                 if (dev == null)
                     return;
 
-                dev.SendCommand(PSVRCommand.GetEnterVRMode());
+                dev.SendCommand(PSVRMessage.GetEnterVRMode());
             }
         }
 
@@ -92,7 +92,7 @@ namespace PSVRToolbox
                 if (dev == null)
                     return;
 
-                dev.SendCommand(PSVRCommand.GetExitVRMode());
+                dev.SendCommand(PSVRMessage.GetExitVRMode());
             }
         }
 
@@ -126,8 +126,8 @@ namespace PSVRToolbox
                 if (dev == null)
                     return;
 
-                dev.SendCommand(PSVRCommand.GetHeadsetOff());
-                dev.SendCommand(PSVRCommand.GetBoxOff());
+                dev.SendCommand(PSVRMessage.GetHeadsetOff());
+                dev.SendCommand(PSVRMessage.GetBoxOff());
             }
         }
 
@@ -139,7 +139,8 @@ namespace PSVRToolbox
                     return;
 
                 Settings set = Settings.Instance;
-                var cmd = PSVRCommand.GetSetCinematicConfiguration(set.ScreenDistance, set.ScreenSize, set.Brightness, set.MicVol, false);
+               
+                var cmd = PSVRMessage.GetSetCinematicConfiguration(0xC0, set.ScreenDistance, set.ScreenSize, 0x14, set.Brightness, set.MicVol, false);
                 dev.SendCommand(cmd);
             }
         }
@@ -152,7 +153,19 @@ namespace PSVRToolbox
                     return;
 
                 Settings set = Settings.Instance;
-                var cmd = PSVRCommand.GetSetHDMLeds(LedMask.All, set.LedAIntensity, set.LedBIntensity, set.LedCIntensity, set.LedDIntensity, set.LedEIntensity, set.LedFIntensity, set.LedGIntensity, set.LedHIntensity, set.LedIIntensity);
+                var cmd = PSVRMessage.GetSetHDMLeds(LedMask.All, set.LedAIntensity, set.LedBIntensity, set.LedCIntensity, set.LedDIntensity, set.LedEIntensity, set.LedFIntensity, set.LedGIntensity, set.LedHIntensity, set.LedIIntensity);
+                dev.SendCommand(cmd);
+            }
+        }
+
+        public static void RequestDeviceInfo()
+        {
+            lock (locker)
+            {
+                if (dev == null)
+                    return;
+
+                var cmd = PSVRMessage.GetReadDeviceInfo();
                 dev.SendCommand(cmd);
             }
         }
