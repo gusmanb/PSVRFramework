@@ -16,7 +16,7 @@ using System.Text.RegularExpressions;
 
 namespace PSVRToolbox
 {
-    
+
     public partial class MainForm : Form
     {
 
@@ -65,22 +65,22 @@ namespace PSVRToolbox
                 PSVRController.ApplyLedSettings();
             });
         }
-        
+
         private void button4_Click(object sender, EventArgs e)
         {
             PSVRController.EnableVRMode();
         }
-        
+
         private void button5_Click(object sender, EventArgs e)
         {
             PSVRController.EnableCinematicMode();
         }
-        
+
         private void button6_Click(object sender, EventArgs e)
         {
             PSVRController.Recenter();
         }
-        
+
         private void button7_Click(object sender, EventArgs e)
         {
             PSVRController.Shutdown();
@@ -92,7 +92,7 @@ namespace PSVRToolbox
             exit = true;
             this.Close();
         }
-        
+
         private void btnSettings_Click(object sender, EventArgs e)
         {
             var setFrm = new SettingsForm();
@@ -104,7 +104,7 @@ namespace PSVRToolbox
                 broadcaster = new SensorBroadcaster(set.UDPBroadcastAddress, set.UDPBroadcastPort);
             else if (!set.EnableUDPBroadcast && broadcaster != null)
             {
-                lock(locker)
+                lock (locker)
                 {
                     broadcaster.Dispose();
                     broadcaster = null;
@@ -186,10 +186,46 @@ namespace PSVRToolbox
             }
         }
 
+
+        private void button11_Click(object sender, EventArgs e)
+        {
+            string line = hextReportId.Text.PadLeft(2, '0') + hextStatusCode.Text.PadLeft(2, '0') + "AA" + (hexData.Text.Length / 2).ToString("X2") + hexData.Text;
+            shellControl1.WriteLine(line);
+            shellControl1.FireCommandEntered(line);
+            hextReportId.Text = "";
+            hextStatusCode.Text = "";
+            hexData.Text = "";
+            shellControl1.WritePrompt();
+        }
+
+
+        private void btnDebug_Click(object sender, EventArgs e)
+        {
+            if (btnDebug.Text == "<")
+            {
+                Width = 506;
+                btnDebug.Text = ">";
+                shellControl1.ResetText();
+            }
+            else
+            {
+                Width = 906;
+                btnDebug.Text = "<";
+                shellControl1.ResetText();
+            }
+        }
+
+        private void button10_Click(object sender, EventArgs e)
+        {
+            hextReportId.Text = "";
+            hextStatusCode.Text = "";
+            hexData.Text = "";
+        }
+
         #endregion
 
         #region Misc. event handlers
-
+        
         private void MainForm_Load(object sender, EventArgs e)
         {
             var set = Settings.Instance;
@@ -231,10 +267,10 @@ namespace PSVRToolbox
                 }
             }
             catch { }
-            
+
             trayIcon.Visible = false;
-            
-            if(CurrentOS.IsLinux)
+
+            if (CurrentOS.IsLinux)
                 Environment.Exit(0);
         }
 
@@ -286,7 +322,7 @@ namespace PSVRToolbox
             catch { }
 
         }
-        
+
         private void trayIcon_DoubleClick(object sender, EventArgs e)
         {
             this.Show();
@@ -328,8 +364,44 @@ namespace PSVRToolbox
             }
         }
 
+        private void shellControl1_CommandEntered(object sender, CommandEnteredEventArgs e)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(e.Command))
+                    return;
+
+                if (e.Command.Length % 2 != 0)
+                {
+                    shellControl1.WriteLine("HEX string does not respect byte boundary");
+                    return;
+                }
+
+                byte[] data = StringToByteArray(e.Command);
+                var res = PSVRController.Raw(data);
+
+                if (!res)
+                    shellControl1.WriteLine("Report NOT sent");
+                else
+                    shellControl1.WriteLine("Report sent");
+            }
+            catch { shellControl1.WriteLine("Malformed HEX string"); }
+        }
+
+        public static byte[] StringToByteArray(String hex)
+        {
+            int NumberChars = hex.Length;
+
+            byte[] bytes = new byte[NumberChars / 2];
+
+            for (int i = 0; i < NumberChars; i += 2)
+                bytes[i / 2] = byte.Parse(hex.Substring(i, 2), System.Globalization.NumberStyles.AllowHexSpecifier);
+
+            return bytes;
+        }
+
         #endregion
-        
+
         #region Device connected detection
 
         private void detectTimer_Tick(object sender, EventArgs e)
@@ -341,16 +413,17 @@ namespace PSVRToolbox
                 PSVRController.DeviceConnected(vrSet);
                 vrSet.SensorDataUpdate += VrSet_SensorDataUpdate;
                 vrSet.Removed += VrSet_Removed;
-                vrSet.CommandResponse += VrSet_CommandResponse;
-                Task.Run(() =>
+                vrSet.INReport += VrSet_CommandResponse;
+                ThreadPool.QueueUserWorkItem((a) =>
                 {
                     PSVRController.RequestDeviceInfo();
                     PSVRController.HeadsetOn();
                     PSVRController.EnableVRMode();
                     Thread.Sleep(1500);
                     PSVRController.EnableCinematicMode();
-                    //Thread.Sleep(1500);
-                    //PSVRController.ApplyCinematicSettings();
+                    Thread.Sleep(1500);
+                    PSVRController.ApplyCinematicSettings();
+
                 });
 
                 lblStatus.Text = "VR set found";
@@ -358,55 +431,86 @@ namespace PSVRToolbox
                 grpCinematic.Enabled = true;
                 grpLeds.Enabled = true;
             }
-            catch(Exception ex) { detectTimer.Enabled = true; }
+            catch { detectTimer.Enabled = true; }
         }
 
-        private void VrSet_CommandResponse(object sender, PSVRResponseEventArgs e)
+        private void VrSet_CommandResponse(object sender, PSVRINEventArgs e)
         {
 
-            switch (e.Response.r_id)
+            if (btnDebug.Text == "<")
+            {
+                this.BeginInvoke((Action)(() =>
+                {
+                    shellControl1.WriteLine("");
+                    shellControl1.WriteLine("Received report, ID: " + e.Response.ReportID.ToString("X2") + ", Response code: " + e.Response.CommandStatus.ToString("X2"));
+                    shellControl1.WriteLine("--Raw data--");
+
+                    shellControl1.WriteLine(e.Response.ReportID.ToString("X2") +
+                        e.Response.CommandStatus.ToString("X2") +
+                        e.Response.DataStart.ToString("X2") +
+                        e.Response.DataLength.ToString("X2") +
+                        BitConverter.ToString(e.Response.Data).Replace("-", ""));
+
+                    shellControl1.WritePrompt();
+
+                }));
+            }
+
+            switch (e.Response.ReportID)
             {
                 case 0x80:
 
-                    PSVRDeviceInfo dev = PSVRDeviceInfo.ParseInfo(e.Response.data);
+                    PSVRReport.PSVRDeviceInfoReport dev = PSVRReport.PSVRDeviceInfoReport.ParseInfo(e.Response.Data);
                     this.BeginInvoke((Action)(() =>
                     {
                         lblSerial.Text = "Device serial: " + dev.SerialNumber;
                         lblFirmware.Text = "Firmware version: " + dev.MajorVersion + "." + dev.MinorVersion.ToString().PadLeft(2, '0');
+
                     }));
                     break;
 
                 case 0xF0:
 
-                    PSVRDeviceStatus stat = PSVRDeviceStatus.ParseStatus(e.Response.data);
+                    PSVRReport.PSVRDeviceStatusReport stat = PSVRReport.PSVRDeviceStatusReport.ParseStatus(e.Response.Data);
                     this.BeginInvoke((Action)(() =>
                     {
-                        chkWorn.Checked = stat.Status.HasFlag(PSVRDeviceStatus.PSVRStatusMask.Worn);
-                        chkCinematic.Checked = stat.Status.HasFlag(PSVRDeviceStatus.PSVRStatusMask.Cinematic);
-                        chkHeadphones.Checked = stat.Status.HasFlag(PSVRDeviceStatus.PSVRStatusMask.Headphones);
-                        chkHMDOn.Checked = stat.Status.HasFlag(PSVRDeviceStatus.PSVRStatusMask.HeadsetOn);
-                        chkMute.Checked = stat.Status.HasFlag(PSVRDeviceStatus.PSVRStatusMask.Mute);
+                        chkWorn.Checked = stat.Status.HasFlag(PSVRReport.PSVRDeviceStatusReport.PSVRStatusMask.Worn);
+                        chkCinematic.Checked = stat.Status.HasFlag(PSVRReport.PSVRDeviceStatusReport.PSVRStatusMask.Cinematic);
+                        chkHeadphones.Checked = stat.Status.HasFlag(PSVRReport.PSVRDeviceStatusReport.PSVRStatusMask.Headphones);
+                        chkHMDOn.Checked = stat.Status.HasFlag(PSVRReport.PSVRDeviceStatusReport.PSVRStatusMask.HeadsetOn);
+                        chkMute.Checked = stat.Status.HasFlag(PSVRReport.PSVRDeviceStatusReport.PSVRStatusMask.Mute);
                         trkVolume.Value = (int)stat.Volume;
                     }));
                     break;
 #if DEBUG
+                case 0xA0:
+
+                    PSVRReport.PSVRUnsolicitedReport resp = PSVRReport.PSVRUnsolicitedReport.ParseResponse(e.Response.Data);
+
+                    Console.WriteLine("Received OUT report response");
+                    Console.WriteLine("Report ID: 0x" + resp.ReportID.ToString("X2"));
+                    Console.WriteLine("Result code: " + resp.ResultCode);
+                    Console.WriteLine("Response message: " + resp.Message);
+
+                    break;
+
                 default:
 
-                    Console.WriteLine("Received response " + e.Response.r_id.ToString("X2"));
-                    Console.WriteLine("Status: " + e.Response.command_status.ToString("X2"));
-                    Console.WriteLine("Binary data: " + BitConverter.ToString(e.Response.data).Replace("-", ""));
+                    Console.WriteLine("Received response " + e.Response.ReportID.ToString("X2"));
+                    Console.WriteLine("Status: " + e.Response.CommandStatus.ToString("X2"));
+                    Console.WriteLine("Binary data: " + BitConverter.ToString(e.Response.Data).Replace("-", ""));
 
-                    var str = Encoding.ASCII.GetString(e.Response.data);
+                    var str = Encoding.ASCII.GetString(e.Response.Data);
 
                     str = Regex.Replace(str, @"[^a-zA-Z0-9 -+!""·$%&/()=?*\^`\[\]{}#@~€]", string.Empty);
 
                     Console.WriteLine("ASCII data: " + str);
                     break;
 #endif
-                
+
             }
         }
-        
+
         #endregion
 
         #region VR set events
@@ -436,7 +540,7 @@ namespace PSVRToolbox
                 detectTimer.Enabled = true;
             }));
         }
-        
+
         private void VrSet_SensorDataUpdate(object sender, PSVRSensorEventArgs e)
         {
 
@@ -446,7 +550,6 @@ namespace PSVRToolbox
                     broadcaster.Broadcast(e.SensorData);
             }
         }
-
 
         #endregion
         

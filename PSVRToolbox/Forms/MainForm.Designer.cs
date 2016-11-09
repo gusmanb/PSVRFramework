@@ -51,12 +51,11 @@
             this.trkSize = new XComponent.SliderBar.MACTrackBar();
             this.trkDistance = new XComponent.SliderBar.MACTrackBar();
             this.label1 = new System.Windows.Forms.Label();
-            this.pictureBox4 = new System.Windows.Forms.PictureBox();
-            this.btnSettings = new System.Windows.Forms.Button();
             this.grpLeds = new System.Windows.Forms.GroupBox();
             this.button17 = new System.Windows.Forms.Button();
             this.cbLeds = new System.Windows.Forms.ComboBox();
             this.trkLedIntensity = new XComponent.SliderBar.MACTrackBar();
+            this.pictureBox4 = new System.Windows.Forms.PictureBox();
             this.lblSerial = new System.Windows.Forms.Label();
             this.lblFirmware = new System.Windows.Forms.Label();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
@@ -67,14 +66,27 @@
             this.chkCinematic = new System.Windows.Forms.CheckBox();
             this.chkWorn = new System.Windows.Forms.CheckBox();
             this.chkHMDOn = new System.Windows.Forms.CheckBox();
+            this.btnSettings = new System.Windows.Forms.Button();
+            this.btnDebug = new System.Windows.Forms.Button();
+            this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.button10 = new System.Windows.Forms.Button();
+            this.label5 = new System.Windows.Forms.Label();
+            this.label4 = new System.Windows.Forms.Label();
+            this.label3 = new System.Windows.Forms.Label();
+            this.button11 = new System.Windows.Forms.Button();
+            this.hexData = new PSVRToolbox.Controls.HextTextBox();
+            this.hextStatusCode = new PSVRToolbox.Controls.HextTextBox();
+            this.hextReportId = new PSVRToolbox.Controls.HextTextBox();
+            this.shellControl1 = new PSVRToolbox.ShellControl();
             this.grpFunctions.SuspendLayout();
             this.grpCinematic.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox3)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox4)).BeginInit();
             this.grpLeds.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox4)).BeginInit();
             this.groupBox1.SuspendLayout();
+            this.groupBox2.SuspendLayout();
             this.SuspendLayout();
             // 
             // detectTimer
@@ -341,28 +353,6 @@
             this.label1.Text = "Screen size";
             this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
-            // pictureBox4
-            // 
-            this.pictureBox4.Image = global::PSVRToolbox.Properties.Resources.LEDIdentification;
-            this.pictureBox4.Location = new System.Drawing.Point(6, 19);
-            this.pictureBox4.Name = "pictureBox4";
-            this.pictureBox4.Size = new System.Drawing.Size(245, 127);
-            this.pictureBox4.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
-            this.pictureBox4.TabIndex = 17;
-            this.pictureBox4.TabStop = false;
-            // 
-            // btnSettings
-            // 
-            this.btnSettings.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnSettings.ForeColor = System.Drawing.SystemColors.Control;
-            this.btnSettings.Image = global::PSVRToolbox.Properties.Resources.config;
-            this.btnSettings.Location = new System.Drawing.Point(422, 4);
-            this.btnSettings.Name = "btnSettings";
-            this.btnSettings.Size = new System.Drawing.Size(35, 33);
-            this.btnSettings.TabIndex = 8;
-            this.btnSettings.UseVisualStyleBackColor = true;
-            this.btnSettings.Click += new System.EventHandler(this.btnSettings_Click);
-            // 
             // grpLeds
             // 
             this.grpLeds.Controls.Add(this.button17);
@@ -433,6 +423,16 @@
             this.trkLedIntensity.TrackLineSelectedColor = System.Drawing.Color.FromArgb(((int)(((byte)(90)))), ((int)(((byte)(93)))), ((int)(((byte)(90)))));
             this.trkLedIntensity.Value = 72;
             // 
+            // pictureBox4
+            // 
+            this.pictureBox4.Image = global::PSVRToolbox.Properties.Resources.LEDIdentification;
+            this.pictureBox4.Location = new System.Drawing.Point(6, 19);
+            this.pictureBox4.Name = "pictureBox4";
+            this.pictureBox4.Size = new System.Drawing.Size(245, 127);
+            this.pictureBox4.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.pictureBox4.TabIndex = 17;
+            this.pictureBox4.TabStop = false;
+            // 
             // lblSerial
             // 
             this.lblSerial.AutoSize = true;
@@ -477,7 +477,7 @@
             this.trkVolume.Font = new System.Drawing.Font("Verdana", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.trkVolume.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(123)))), ((int)(((byte)(125)))), ((int)(((byte)(123)))));
             this.trkVolume.IndentHeight = 6;
-            this.trkVolume.Location = new System.Drawing.Point(57, 165);
+            this.trkVolume.Location = new System.Drawing.Point(57, 174);
             this.trkVolume.Maximum = 50;
             this.trkVolume.Minimum = 0;
             this.trkVolume.Name = "trkVolume";
@@ -498,7 +498,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(9, 178);
+            this.label2.Location = new System.Drawing.Point(9, 187);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(42, 13);
             this.label2.TabIndex = 6;
@@ -508,7 +508,7 @@
             // 
             this.chkMute.AutoCheck = false;
             this.chkMute.AutoSize = true;
-            this.chkMute.Location = new System.Drawing.Point(9, 151);
+            this.chkMute.Location = new System.Drawing.Point(9, 160);
             this.chkMute.Name = "chkMute";
             this.chkMute.Size = new System.Drawing.Size(50, 17);
             this.chkMute.TabIndex = 4;
@@ -519,7 +519,7 @@
             // 
             this.chkHeadphones.AutoCheck = false;
             this.chkHeadphones.AutoSize = true;
-            this.chkHeadphones.Location = new System.Drawing.Point(9, 128);
+            this.chkHeadphones.Location = new System.Drawing.Point(9, 137);
             this.chkHeadphones.Name = "chkHeadphones";
             this.chkHeadphones.Size = new System.Drawing.Size(87, 17);
             this.chkHeadphones.TabIndex = 3;
@@ -530,7 +530,7 @@
             // 
             this.chkCinematic.AutoCheck = false;
             this.chkCinematic.AutoSize = true;
-            this.chkCinematic.Location = new System.Drawing.Point(9, 105);
+            this.chkCinematic.Location = new System.Drawing.Point(9, 114);
             this.chkCinematic.Name = "chkCinematic";
             this.chkCinematic.Size = new System.Drawing.Size(72, 17);
             this.chkCinematic.TabIndex = 2;
@@ -541,7 +541,7 @@
             // 
             this.chkWorn.AutoCheck = false;
             this.chkWorn.AutoSize = true;
-            this.chkWorn.Location = new System.Drawing.Point(9, 82);
+            this.chkWorn.Location = new System.Drawing.Point(9, 91);
             this.chkWorn.Name = "chkWorn";
             this.chkWorn.Size = new System.Drawing.Size(52, 17);
             this.chkWorn.TabIndex = 1;
@@ -552,18 +552,148 @@
             // 
             this.chkHMDOn.AutoCheck = false;
             this.chkHMDOn.AutoSize = true;
-            this.chkHMDOn.Location = new System.Drawing.Point(9, 59);
+            this.chkHMDOn.Location = new System.Drawing.Point(9, 68);
             this.chkHMDOn.Name = "chkHMDOn";
             this.chkHMDOn.Size = new System.Drawing.Size(81, 17);
             this.chkHMDOn.TabIndex = 0;
             this.chkHMDOn.Text = "Headset on";
             this.chkHMDOn.UseVisualStyleBackColor = true;
             // 
+            // btnSettings
+            // 
+            this.btnSettings.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnSettings.ForeColor = System.Drawing.SystemColors.Control;
+            this.btnSettings.Image = global::PSVRToolbox.Properties.Resources.config;
+            this.btnSettings.Location = new System.Drawing.Point(422, 4);
+            this.btnSettings.Name = "btnSettings";
+            this.btnSettings.Size = new System.Drawing.Size(35, 33);
+            this.btnSettings.TabIndex = 8;
+            this.btnSettings.UseVisualStyleBackColor = true;
+            this.btnSettings.Click += new System.EventHandler(this.btnSettings_Click);
+            // 
+            // btnDebug
+            // 
+            this.btnDebug.Location = new System.Drawing.Point(463, 10);
+            this.btnDebug.Name = "btnDebug";
+            this.btnDebug.Size = new System.Drawing.Size(21, 514);
+            this.btnDebug.TabIndex = 24;
+            this.btnDebug.Text = ">";
+            this.btnDebug.UseVisualStyleBackColor = true;
+            this.btnDebug.Click += new System.EventHandler(this.btnDebug_Click);
+            // 
+            // groupBox2
+            // 
+            this.groupBox2.Controls.Add(this.button11);
+            this.groupBox2.Controls.Add(this.button10);
+            this.groupBox2.Controls.Add(this.hexData);
+            this.groupBox2.Controls.Add(this.label5);
+            this.groupBox2.Controls.Add(this.hextStatusCode);
+            this.groupBox2.Controls.Add(this.hextReportId);
+            this.groupBox2.Controls.Add(this.label4);
+            this.groupBox2.Controls.Add(this.label3);
+            this.groupBox2.Location = new System.Drawing.Point(490, 384);
+            this.groupBox2.Name = "groupBox2";
+            this.groupBox2.Size = new System.Drawing.Size(391, 140);
+            this.groupBox2.TabIndex = 25;
+            this.groupBox2.TabStop = false;
+            this.groupBox2.Text = "Report forge";
+            // 
+            // button10
+            // 
+            this.button10.Location = new System.Drawing.Point(9, 77);
+            this.button10.Name = "button10";
+            this.button10.Size = new System.Drawing.Size(133, 23);
+            this.button10.TabIndex = 8;
+            this.button10.Text = "Clear";
+            this.button10.UseVisualStyleBackColor = true;
+            this.button10.Click += new System.EventHandler(this.button10_Click);
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(148, 22);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(69, 13);
+            this.label5.TabIndex = 6;
+            this.label5.Text = "Data content";
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(6, 48);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(64, 13);
+            this.label4.TabIndex = 3;
+            this.label4.Text = "Status code";
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(6, 22);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(53, 13);
+            this.label3.TabIndex = 1;
+            this.label3.Text = "Report ID";
+            // 
+            // button11
+            // 
+            this.button11.Location = new System.Drawing.Point(9, 106);
+            this.button11.Name = "button11";
+            this.button11.Size = new System.Drawing.Size(133, 23);
+            this.button11.TabIndex = 9;
+            this.button11.Text = "Send";
+            this.button11.UseVisualStyleBackColor = true;
+            this.button11.Click += new System.EventHandler(this.button11_Click);
+            // 
+            // hexData
+            // 
+            this.hexData.CharacterCasing = System.Windows.Forms.CharacterCasing.Upper;
+            this.hexData.Font = new System.Drawing.Font("Consolas", 10F);
+            this.hexData.Location = new System.Drawing.Point(148, 45);
+            this.hexData.Multiline = true;
+            this.hexData.Name = "hexData";
+            this.hexData.Size = new System.Drawing.Size(237, 84);
+            this.hexData.TabIndex = 7;
+            this.hexData.WordWrap = false;
+            // 
+            // hextStatusCode
+            // 
+            this.hextStatusCode.CharacterCasing = System.Windows.Forms.CharacterCasing.Upper;
+            this.hextStatusCode.Location = new System.Drawing.Point(76, 45);
+            this.hextStatusCode.MaxLength = 2;
+            this.hextStatusCode.Name = "hextStatusCode";
+            this.hextStatusCode.Size = new System.Drawing.Size(66, 20);
+            this.hextStatusCode.TabIndex = 5;
+            // 
+            // hextReportId
+            // 
+            this.hextReportId.CharacterCasing = System.Windows.Forms.CharacterCasing.Upper;
+            this.hextReportId.Location = new System.Drawing.Point(76, 19);
+            this.hextReportId.MaxLength = 2;
+            this.hextReportId.Name = "hextReportId";
+            this.hextReportId.Size = new System.Drawing.Size(66, 20);
+            this.hextReportId.TabIndex = 4;
+            // 
+            // shellControl1
+            // 
+            this.shellControl1.Location = new System.Drawing.Point(490, 12);
+            this.shellControl1.Name = "shellControl1";
+            this.shellControl1.Prompt = "Report>";
+            this.shellControl1.ShellTextBackColor = System.Drawing.Color.Black;
+            this.shellControl1.ShellTextFont = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.shellControl1.ShellTextForeColor = System.Drawing.Color.LawnGreen;
+            this.shellControl1.Size = new System.Drawing.Size(391, 366);
+            this.shellControl1.TabIndex = 23;
+            this.shellControl1.CommandEntered += new PSVRToolbox.EventCommandEntered(this.shellControl1_CommandEntered);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(468, 532);
+            this.ClientSize = new System.Drawing.Size(490, 532);
+            this.Controls.Add(this.groupBox2);
+            this.Controls.Add(this.btnDebug);
+            this.Controls.Add(this.shellControl1);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.grpLeds);
             this.Controls.Add(this.grpCinematic);
@@ -586,10 +716,12 @@
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox3)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox4)).EndInit();
             this.grpLeds.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox4)).EndInit();
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
+            this.groupBox2.ResumeLayout(false);
+            this.groupBox2.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -634,6 +766,17 @@
         private System.Windows.Forms.CheckBox chkCinematic;
         private System.Windows.Forms.CheckBox chkWorn;
         private System.Windows.Forms.CheckBox chkHMDOn;
+        private ShellControl shellControl1;
+        private System.Windows.Forms.Button btnDebug;
+        private System.Windows.Forms.GroupBox groupBox2;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.Label label3;
+        private Controls.HextTextBox hexData;
+        private System.Windows.Forms.Label label5;
+        private Controls.HextTextBox hextStatusCode;
+        private Controls.HextTextBox hextReportId;
+        private System.Windows.Forms.Button button10;
+        private System.Windows.Forms.Button button11;
     }
 }
 

@@ -75,8 +75,6 @@ namespace PSVRToolbox
                 MessageBox.Show("Only broadcast addresses supported");
                 return;
             }
-
-            int portOT;
             
             var set = new Settings();
             

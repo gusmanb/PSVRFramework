@@ -22,7 +22,7 @@ namespace PSVRToolbox
             client.EnableBroadcast = true;
         }
 
-        public void Broadcast(PSVRSensor SensorData)
+        public void Broadcast(PSVRSensorReport SensorData)
         {
             byte[] data = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(SensorData));
             client.Send(data, data.Length, ep);
@@ -46,7 +46,7 @@ namespace PSVRToolbox
             client.EnableBroadcast = true;
         }
 
-        public void Broadcast(PSVRSensor SensorData)
+        public void Broadcast(PSVRSensorReport SensorData)
         {
             byte[] data = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(SensorData));
             client.Send(data, data.Length, ep);

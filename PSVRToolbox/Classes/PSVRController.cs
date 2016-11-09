@@ -40,59 +40,58 @@ namespace PSVRToolbox
             }
         }
 
-        public static void HeadsetOn()
+        public static bool HeadsetOn()
         {
             lock (locker)
             {
                 if (dev == null)
-                    return;
+                    return false;
 
-                dev.SendCommand(PSVRMessage.GetHeadsetOn());
+                return dev.SendReport(PSVRReport.GetHeadsetOn());
             }
         }
 
-        public static void HeadsetOff()
+        public static bool HeadsetOff()
         {
             lock (locker)
             {
                 if (dev == null)
-                    return;
+                    return false;
 
-                dev.SendCommand(PSVRMessage.GetHeadsetOff());
+                return dev.SendReport(PSVRReport.GetHeadsetOff());
             }
         }
 
-        public static void EnableVRTracking()
+        public static bool EnableVRTracking()
         {
             lock (locker)
             {
                 if (dev == null)
-                    return;
+                    return false;
 
-                dev.SendCommand(PSVRMessage.GetEnableVRTracking());
-                dev.SendCommand(PSVRMessage.GetEnterVRMode());
+                return dev.SendReport(PSVRReport.GetEnableVRTracking());
             }
         }
 
-        public static void EnableVRMode()
+        public static bool EnableVRMode()
         {
             lock (locker)
             {
                 if (dev == null)
-                    return;
+                    return false;
 
-                dev.SendCommand(PSVRMessage.GetEnterVRMode());
+                return dev.SendReport(PSVRReport.GetEnterVRMode());
             }
         }
 
-        public static void EnableCinematicMode()
+        public static bool EnableCinematicMode()
         {
             lock (locker)
             {
                 if (dev == null)
-                    return;
+                    return false;
 
-                dev.SendCommand(PSVRMessage.GetExitVRMode());
+                return dev.SendReport(PSVRReport.GetExitVRMode());
             }
         }
 
@@ -119,54 +118,65 @@ namespace PSVRToolbox
             }
         }
 
-        public static void Shutdown()
+        public static bool Shutdown()
         {
             lock (locker)
             {
                 if (dev == null)
-                    return;
+                    return false;
 
-                dev.SendCommand(PSVRMessage.GetHeadsetOff());
-                dev.SendCommand(PSVRMessage.GetBoxOff());
+                dev.SendReport(PSVRReport.GetHeadsetOff());
+                return dev.SendReport(PSVRReport.GetBoxOff());
             }
         }
 
-        public static void ApplyCinematicSettings()
+        public static bool ApplyCinematicSettings()
         {
             lock (locker)
             {
                 if (dev == null)
-                    return;
+                    return false;
 
                 Settings set = Settings.Instance;
                
-                var cmd = PSVRMessage.GetSetCinematicConfiguration(0xC0, set.ScreenDistance, set.ScreenSize, 0x14, set.Brightness, set.MicVol, false);
-                dev.SendCommand(cmd);
+                var cmd = PSVRReport.GetSetCinematicConfiguration(0xC0, set.ScreenDistance, set.ScreenSize, 0x14, set.Brightness, set.MicVol, false);
+                return dev.SendReport(cmd);
             }
         }
 
-        public static void ApplyLedSettings()
+        public static bool ApplyLedSettings()
         {
             lock (locker)
             {
                 if (dev == null)
-                    return;
+                    return false;
 
                 Settings set = Settings.Instance;
-                var cmd = PSVRMessage.GetSetHDMLeds(LedMask.All, set.LedAIntensity, set.LedBIntensity, set.LedCIntensity, set.LedDIntensity, set.LedEIntensity, set.LedFIntensity, set.LedGIntensity, set.LedHIntensity, set.LedIIntensity);
-                dev.SendCommand(cmd);
+                var cmd = PSVRReport.GetSetHDMLeds(LedMask.All, set.LedAIntensity, set.LedBIntensity, set.LedCIntensity, set.LedDIntensity, set.LedEIntensity, set.LedFIntensity, set.LedGIntensity, set.LedHIntensity, set.LedIIntensity);
+                return dev.SendReport(cmd);
             }
         }
 
-        public static void RequestDeviceInfo()
+        public static bool RequestDeviceInfo()
         {
             lock (locker)
             {
                 if (dev == null)
-                    return;
+                    return false;
 
-                var cmd = PSVRMessage.GetReadDeviceInfo();
-                dev.SendCommand(cmd);
+                var cmd = PSVRReport.GetReadDeviceInfo();
+                return dev.SendReport(cmd);
+            }
+        }
+
+        public static bool Raw(byte[] Data)
+        {
+            lock (locker)
+            {
+                if (dev == null)
+                    return false;
+                
+                return dev.SendRaw(Data);
             }
         }
     }
