@@ -4,7 +4,6 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
-using System.Numerics;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
@@ -19,6 +18,7 @@ namespace PSVRToolbox
 
     public partial class MainForm : Form
     {
+        MadgwickAHRS integrator = new MadgwickAHRS(1.0 / 2000.0);
 
         bool exit = false;
         IKeyboardMouseEvents hookedEvents;
@@ -27,9 +27,22 @@ namespace PSVRToolbox
 
         object locker = new object();
 
+        bool mouseEnabled = false;
+        
+        PSVRMouseEmulator emu = new PSVRMouseEmulator();
+        
+        [DllImport("user32.dll")]
+        private static extern void mouse_event(int dwFlags, int dx, int dy, int dwData, int dwExtraInfo);
+
+        public static void moveMouse(int xDelta, int yDelta)
+        {
+            mouse_event(1, xDelta, yDelta, 0, 0);
+        }
+
         public MainForm()
         {
             InitializeComponent();
+            pbStatus.Image = imlMouseStates.Images[0];
 
             try
             {
@@ -48,6 +61,7 @@ namespace PSVRToolbox
 
         private void button1_Click(object sender, EventArgs e)
         {
+            
             PSVRController.HeadsetOn();
         }
 
@@ -409,7 +423,7 @@ namespace PSVRToolbox
             try
             {
                 detectTimer.Enabled = false;
-                var vrSet = new PSVR(Settings.Instance.EnableUDPBroadcast);
+                var vrSet = new PSVR(Settings.Instance.EnableUDPBroadcast, true);
                 PSVRController.DeviceConnected(vrSet);
                 vrSet.SensorDataUpdate += VrSet_SensorDataUpdate;
                 vrSet.Removed += VrSet_Removed;
@@ -479,6 +493,7 @@ namespace PSVRToolbox
                         chkHeadphones.Checked = stat.Status.HasFlag(PSVRReport.PSVRDeviceStatusReport.PSVRStatusMask.Headphones);
                         chkHMDOn.Checked = stat.Status.HasFlag(PSVRReport.PSVRDeviceStatusReport.PSVRStatusMask.HeadsetOn);
                         chkMute.Checked = stat.Status.HasFlag(PSVRReport.PSVRDeviceStatusReport.PSVRStatusMask.Mute);
+                        chkCEC.Checked = stat.Status.HasFlag(PSVRReport.PSVRDeviceStatusReport.PSVRStatusMask.CEC);
                         trkVolume.Value = (int)stat.Volume;
                     }));
                     break;
@@ -541,8 +556,21 @@ namespace PSVRToolbox
             }));
         }
 
+
+        [DllImport("user32.dll")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        static extern bool SetCursorPos(int x, int y);
+
+        double x = 512;
+        double y = 512;
+
+        BMI055SensorData calValues = new BMI055SensorData();
+
+        int left = 1000;
+
         private void VrSet_SensorDataUpdate(object sender, PSVRSensorEventArgs e)
         {
+            emu.Feed(e.SensorData);
 
             lock (locker)
             {
@@ -552,6 +580,12 @@ namespace PSVRToolbox
         }
 
         #endregion
+        
+        private void timer1_Tick(object sender, EventArgs e)
+        {
+            var orientation = emu.Value;
+            Console.WriteLine("X: {0}, Y:{1}, Z:{2}", orientation.X, orientation.Y, orientation.Z);
+        }
         
     }
 }

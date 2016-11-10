@@ -63,7 +63,16 @@ namespace PSVRFramework
         public int G;
         public int H;
 
-        public static PSVRSensorReport parseSensor(byte[] data)
+        //
+        public BMI055SensorData FilteredSensorReading1;
+        public BMI055SensorData FilteredSensorReading2;
+
+        static PSVRSensorReport()
+        {
+            BMI055Parser.Init(BMI055Parser.AScale.AFS_2G, BMI055Parser.Gscale.GFS_2000DPS);
+        }
+
+        public static PSVRSensorReport ParseSensor(byte[] data, bool FilterSensors)
         {
 
             PSVRSensorReport sensor = new PSVRSensorReport();
@@ -121,6 +130,12 @@ namespace PSVRFramework
 
             sensor.PacketSequence = data[63];
 
+            if (FilterSensors)
+            {
+                sensor.FilteredSensorReading1 = BMI055Parser.Parse(data, 26, 20);
+                sensor.FilteredSensorReading2 = BMI055Parser.Parse(data, 42, 36);
+            }
+
             return sensor;
 
         }
@@ -134,12 +149,6 @@ namespace PSVRFramework
         {
 
             return (short)data[offset] | (short)(data[offset + 1] << 8);
-        }
-
-        private static short getAccelShort(byte[] data, byte offset)
-        {
-
-            return (short)(((short)data[offset] | (short)(data[offset + 1] << 8)) >> 4);
         }
 
         private static int getIntFromUInt16(byte[] data, byte offset)
@@ -184,9 +193,12 @@ namespace PSVRFramework
         public event EventHandler<PSVRINEventArgs> INReport;
 
         Timer aliveTimer;
-        
-        public PSVR(bool EnableSensor)
+
+        bool filterSensor;
+
+        public PSVR(bool EnableSensor, bool FilterSensor)
         {
+            filterSensor = FilterSensor;
 
             if (CurrentOS.IsWindows)
             {
@@ -307,7 +319,7 @@ namespace PSVRFramework
         
         private void Reader_DataReceived(object sender, LibUsbDotNet.Main.EndpointDataEventArgs e)
         {
-            var rep = PSVRSensorReport.parseSensor(e.Buffer);
+            var rep = PSVRSensorReport.ParseSensor(e.Buffer, filterSensor);
 
             if (SensorDataUpdate == null)
                 return;

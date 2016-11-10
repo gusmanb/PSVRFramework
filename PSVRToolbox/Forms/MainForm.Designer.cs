@@ -69,11 +69,27 @@
             this.btnSettings = new System.Windows.Forms.Button();
             this.btnDebug = new System.Windows.Forms.Button();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.button11 = new System.Windows.Forms.Button();
             this.button10 = new System.Windows.Forms.Button();
             this.label5 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
-            this.button11 = new System.Windows.Forms.Button();
+            this.timer1 = new System.Windows.Forms.Timer(this.components);
+            this.chkCEC = new System.Windows.Forms.CheckBox();
+            this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.button9 = new System.Windows.Forms.Button();
+            this.button12 = new System.Windows.Forms.Button();
+            this.radioButton1 = new System.Windows.Forms.RadioButton();
+            this.radioButton2 = new System.Windows.Forms.RadioButton();
+            this.chkEnableMouse = new System.Windows.Forms.CheckBox();
+            this.pbStatus = new System.Windows.Forms.PictureBox();
+            this.trkYSensitivity = new XComponent.SliderBar.MACTrackBar();
+            this.trkXSensitivity = new XComponent.SliderBar.MACTrackBar();
+            this.label6 = new System.Windows.Forms.Label();
+            this.label7 = new System.Windows.Forms.Label();
+            this.label8 = new System.Windows.Forms.Label();
+            this.label9 = new System.Windows.Forms.Label();
+            this.imlMouseStates = new System.Windows.Forms.ImageList(this.components);
             this.hexData = new PSVRToolbox.Controls.HextTextBox();
             this.hextStatusCode = new PSVRToolbox.Controls.HextTextBox();
             this.hextReportId = new PSVRToolbox.Controls.HextTextBox();
@@ -87,6 +103,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox4)).BeginInit();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
+            this.groupBox3.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pbStatus)).BeginInit();
             this.SuspendLayout();
             // 
             // detectTimer
@@ -193,7 +211,7 @@
             // 
             // button8
             // 
-            this.button8.Location = new System.Drawing.Point(12, 501);
+            this.button8.Location = new System.Drawing.Point(15, 599);
             this.button8.Name = "button8";
             this.button8.Size = new System.Drawing.Size(445, 23);
             this.button8.TabIndex = 7;
@@ -453,6 +471,7 @@
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.chkCEC);
             this.groupBox1.Controls.Add(this.trkVolume);
             this.groupBox1.Controls.Add(this.lblFirmware);
             this.groupBox1.Controls.Add(this.label2);
@@ -477,17 +496,18 @@
             this.trkVolume.Font = new System.Drawing.Font("Verdana", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.trkVolume.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(123)))), ((int)(((byte)(125)))), ((int)(((byte)(123)))));
             this.trkVolume.IndentHeight = 6;
-            this.trkVolume.Location = new System.Drawing.Point(57, 174);
+            this.trkVolume.Location = new System.Drawing.Point(213, 38);
             this.trkVolume.Maximum = 50;
             this.trkVolume.Minimum = 0;
             this.trkVolume.Name = "trkVolume";
-            this.trkVolume.Size = new System.Drawing.Size(194, 33);
+            this.trkVolume.Orientation = System.Windows.Forms.Orientation.Vertical;
+            this.trkVolume.Size = new System.Drawing.Size(38, 178);
             this.trkVolume.TabIndex = 19;
             this.trkVolume.TextTickStyle = System.Windows.Forms.TickStyle.None;
             this.trkVolume.TickColor = System.Drawing.Color.FromArgb(((int)(((byte)(148)))), ((int)(((byte)(146)))), ((int)(((byte)(148)))));
             this.trkVolume.TickFrequency = 10;
             this.trkVolume.TickHeight = 4;
-            this.trkVolume.TickStyle = System.Windows.Forms.TickStyle.TopLeft;
+            this.trkVolume.TickStyle = System.Windows.Forms.TickStyle.Both;
             this.trkVolume.TrackerColor = System.Drawing.Color.FromArgb(((int)(((byte)(24)))), ((int)(((byte)(130)))), ((int)(((byte)(198)))));
             this.trkVolume.TrackerSize = new System.Drawing.Size(16, 16);
             this.trkVolume.TrackLineColor = System.Drawing.Color.FromArgb(((int)(((byte)(90)))), ((int)(((byte)(93)))), ((int)(((byte)(90)))));
@@ -498,7 +518,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(9, 187);
+            this.label2.Location = new System.Drawing.Point(212, 19);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(42, 13);
             this.label2.TabIndex = 6;
@@ -508,7 +528,7 @@
             // 
             this.chkMute.AutoCheck = false;
             this.chkMute.AutoSize = true;
-            this.chkMute.Location = new System.Drawing.Point(9, 160);
+            this.chkMute.Location = new System.Drawing.Point(12, 162);
             this.chkMute.Name = "chkMute";
             this.chkMute.Size = new System.Drawing.Size(50, 17);
             this.chkMute.TabIndex = 4;
@@ -519,7 +539,7 @@
             // 
             this.chkHeadphones.AutoCheck = false;
             this.chkHeadphones.AutoSize = true;
-            this.chkHeadphones.Location = new System.Drawing.Point(9, 137);
+            this.chkHeadphones.Location = new System.Drawing.Point(12, 91);
             this.chkHeadphones.Name = "chkHeadphones";
             this.chkHeadphones.Size = new System.Drawing.Size(87, 17);
             this.chkHeadphones.TabIndex = 3;
@@ -530,7 +550,7 @@
             // 
             this.chkCinematic.AutoCheck = false;
             this.chkCinematic.AutoSize = true;
-            this.chkCinematic.Location = new System.Drawing.Point(9, 114);
+            this.chkCinematic.Location = new System.Drawing.Point(12, 116);
             this.chkCinematic.Name = "chkCinematic";
             this.chkCinematic.Size = new System.Drawing.Size(72, 17);
             this.chkCinematic.TabIndex = 2;
@@ -541,7 +561,7 @@
             // 
             this.chkWorn.AutoCheck = false;
             this.chkWorn.AutoSize = true;
-            this.chkWorn.Location = new System.Drawing.Point(9, 91);
+            this.chkWorn.Location = new System.Drawing.Point(12, 139);
             this.chkWorn.Name = "chkWorn";
             this.chkWorn.Size = new System.Drawing.Size(52, 17);
             this.chkWorn.TabIndex = 1;
@@ -552,7 +572,7 @@
             // 
             this.chkHMDOn.AutoCheck = false;
             this.chkHMDOn.AutoSize = true;
-            this.chkHMDOn.Location = new System.Drawing.Point(9, 68);
+            this.chkHMDOn.Location = new System.Drawing.Point(12, 68);
             this.chkHMDOn.Name = "chkHMDOn";
             this.chkHMDOn.Size = new System.Drawing.Size(81, 17);
             this.chkHMDOn.TabIndex = 0;
@@ -575,7 +595,7 @@
             // 
             this.btnDebug.Location = new System.Drawing.Point(463, 10);
             this.btnDebug.Name = "btnDebug";
-            this.btnDebug.Size = new System.Drawing.Size(21, 514);
+            this.btnDebug.Size = new System.Drawing.Size(21, 611);
             this.btnDebug.TabIndex = 24;
             this.btnDebug.Text = ">";
             this.btnDebug.UseVisualStyleBackColor = true;
@@ -597,6 +617,16 @@
             this.groupBox2.TabIndex = 25;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Report forge";
+            // 
+            // button11
+            // 
+            this.button11.Location = new System.Drawing.Point(9, 106);
+            this.button11.Name = "button11";
+            this.button11.Size = new System.Drawing.Size(133, 23);
+            this.button11.TabIndex = 9;
+            this.button11.Text = "Send";
+            this.button11.UseVisualStyleBackColor = true;
+            this.button11.Click += new System.EventHandler(this.button11_Click);
             // 
             // button10
             // 
@@ -635,15 +665,196 @@
             this.label3.TabIndex = 1;
             this.label3.Text = "Report ID";
             // 
-            // button11
+            // timer1
             // 
-            this.button11.Location = new System.Drawing.Point(9, 106);
-            this.button11.Name = "button11";
-            this.button11.Size = new System.Drawing.Size(133, 23);
-            this.button11.TabIndex = 9;
-            this.button11.Text = "Send";
-            this.button11.UseVisualStyleBackColor = true;
-            this.button11.Click += new System.EventHandler(this.button11_Click);
+            this.timer1.Enabled = true;
+            this.timer1.Interval = 500;
+            this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
+            // 
+            // chkCEC
+            // 
+            this.chkCEC.AutoCheck = false;
+            this.chkCEC.AutoSize = true;
+            this.chkCEC.Location = new System.Drawing.Point(12, 188);
+            this.chkCEC.Name = "chkCEC";
+            this.chkCEC.Size = new System.Drawing.Size(92, 17);
+            this.chkCEC.TabIndex = 21;
+            this.chkCEC.Text = "CEC available";
+            this.chkCEC.UseVisualStyleBackColor = true;
+            // 
+            // groupBox3
+            // 
+            this.groupBox3.Controls.Add(this.label9);
+            this.groupBox3.Controls.Add(this.label8);
+            this.groupBox3.Controls.Add(this.label7);
+            this.groupBox3.Controls.Add(this.label6);
+            this.groupBox3.Controls.Add(this.trkXSensitivity);
+            this.groupBox3.Controls.Add(this.trkYSensitivity);
+            this.groupBox3.Controls.Add(this.pbStatus);
+            this.groupBox3.Controls.Add(this.chkEnableMouse);
+            this.groupBox3.Controls.Add(this.radioButton2);
+            this.groupBox3.Controls.Add(this.radioButton1);
+            this.groupBox3.Controls.Add(this.button12);
+            this.groupBox3.Controls.Add(this.button9);
+            this.groupBox3.Location = new System.Drawing.Point(12, 501);
+            this.groupBox3.Name = "groupBox3";
+            this.groupBox3.Size = new System.Drawing.Size(445, 92);
+            this.groupBox3.TabIndex = 26;
+            this.groupBox3.TabStop = false;
+            this.groupBox3.Text = "Mouse emulation";
+            // 
+            // button9
+            // 
+            this.button9.Location = new System.Drawing.Point(326, 63);
+            this.button9.Name = "button9";
+            this.button9.Size = new System.Drawing.Size(110, 23);
+            this.button9.TabIndex = 0;
+            this.button9.Text = "Recenter";
+            this.button9.UseVisualStyleBackColor = true;
+            // 
+            // button12
+            // 
+            this.button12.Location = new System.Drawing.Point(326, 35);
+            this.button12.Name = "button12";
+            this.button12.Size = new System.Drawing.Size(110, 23);
+            this.button12.TabIndex = 1;
+            this.button12.Text = "Setup cinematic";
+            this.button12.UseVisualStyleBackColor = true;
+            // 
+            // radioButton1
+            // 
+            this.radioButton1.AutoSize = true;
+            this.radioButton1.Checked = true;
+            this.radioButton1.Location = new System.Drawing.Point(91, 42);
+            this.radioButton1.Name = "radioButton1";
+            this.radioButton1.Size = new System.Drawing.Size(71, 17);
+            this.radioButton1.TabIndex = 2;
+            this.radioButton1.TabStop = true;
+            this.radioButton1.Text = "Cinematic";
+            this.radioButton1.UseVisualStyleBackColor = true;
+            // 
+            // radioButton2
+            // 
+            this.radioButton2.AutoSize = true;
+            this.radioButton2.Location = new System.Drawing.Point(91, 65);
+            this.radioButton2.Name = "radioButton2";
+            this.radioButton2.Size = new System.Drawing.Size(40, 17);
+            this.radioButton2.TabIndex = 3;
+            this.radioButton2.Text = "VR";
+            this.radioButton2.UseVisualStyleBackColor = true;
+            // 
+            // chkEnableMouse
+            // 
+            this.chkEnableMouse.AutoSize = true;
+            this.chkEnableMouse.Location = new System.Drawing.Point(12, 19);
+            this.chkEnableMouse.Name = "chkEnableMouse";
+            this.chkEnableMouse.Size = new System.Drawing.Size(65, 17);
+            this.chkEnableMouse.TabIndex = 4;
+            this.chkEnableMouse.Text = "Enabled";
+            this.chkEnableMouse.UseVisualStyleBackColor = true;
+            // 
+            // pbStatus
+            // 
+            this.pbStatus.Location = new System.Drawing.Point(18, 50);
+            this.pbStatus.Name = "pbStatus";
+            this.pbStatus.Size = new System.Drawing.Size(32, 32);
+            this.pbStatus.TabIndex = 5;
+            this.pbStatus.TabStop = false;
+            // 
+            // trkYSensitivity
+            // 
+            this.trkYSensitivity.BackColor = System.Drawing.Color.Transparent;
+            this.trkYSensitivity.BorderColor = System.Drawing.SystemColors.ActiveBorder;
+            this.trkYSensitivity.Font = new System.Drawing.Font("Verdana", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.trkYSensitivity.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(123)))), ((int)(((byte)(125)))), ((int)(((byte)(123)))));
+            this.trkYSensitivity.IndentHeight = 6;
+            this.trkYSensitivity.Location = new System.Drawing.Point(183, 60);
+            this.trkYSensitivity.Maximum = 100;
+            this.trkYSensitivity.Minimum = 0;
+            this.trkYSensitivity.Name = "trkYSensitivity";
+            this.trkYSensitivity.Size = new System.Drawing.Size(121, 28);
+            this.trkYSensitivity.TabIndex = 20;
+            this.trkYSensitivity.TextTickStyle = System.Windows.Forms.TickStyle.None;
+            this.trkYSensitivity.TickColor = System.Drawing.Color.FromArgb(((int)(((byte)(148)))), ((int)(((byte)(146)))), ((int)(((byte)(148)))));
+            this.trkYSensitivity.TickFrequency = 10;
+            this.trkYSensitivity.TickHeight = 4;
+            this.trkYSensitivity.TickStyle = System.Windows.Forms.TickStyle.None;
+            this.trkYSensitivity.TrackerColor = System.Drawing.Color.FromArgb(((int)(((byte)(24)))), ((int)(((byte)(130)))), ((int)(((byte)(198)))));
+            this.trkYSensitivity.TrackerSize = new System.Drawing.Size(16, 16);
+            this.trkYSensitivity.TrackLineColor = System.Drawing.Color.FromArgb(((int)(((byte)(90)))), ((int)(((byte)(93)))), ((int)(((byte)(90)))));
+            this.trkYSensitivity.TrackLineHeight = 3;
+            this.trkYSensitivity.TrackLineSelectedColor = System.Drawing.Color.FromArgb(((int)(((byte)(90)))), ((int)(((byte)(93)))), ((int)(((byte)(90)))));
+            this.trkYSensitivity.Value = 50;
+            // 
+            // trkXSensitivity
+            // 
+            this.trkXSensitivity.BackColor = System.Drawing.Color.Transparent;
+            this.trkXSensitivity.BorderColor = System.Drawing.SystemColors.ActiveBorder;
+            this.trkXSensitivity.Font = new System.Drawing.Font("Verdana", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.trkXSensitivity.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(123)))), ((int)(((byte)(125)))), ((int)(((byte)(123)))));
+            this.trkXSensitivity.IndentHeight = 6;
+            this.trkXSensitivity.Location = new System.Drawing.Point(183, 36);
+            this.trkXSensitivity.Maximum = 100;
+            this.trkXSensitivity.Minimum = 0;
+            this.trkXSensitivity.Name = "trkXSensitivity";
+            this.trkXSensitivity.Size = new System.Drawing.Size(121, 28);
+            this.trkXSensitivity.TabIndex = 21;
+            this.trkXSensitivity.TextTickStyle = System.Windows.Forms.TickStyle.None;
+            this.trkXSensitivity.TickColor = System.Drawing.Color.FromArgb(((int)(((byte)(148)))), ((int)(((byte)(146)))), ((int)(((byte)(148)))));
+            this.trkXSensitivity.TickFrequency = 10;
+            this.trkXSensitivity.TickHeight = 4;
+            this.trkXSensitivity.TickStyle = System.Windows.Forms.TickStyle.None;
+            this.trkXSensitivity.TrackerColor = System.Drawing.Color.FromArgb(((int)(((byte)(24)))), ((int)(((byte)(130)))), ((int)(((byte)(198)))));
+            this.trkXSensitivity.TrackerSize = new System.Drawing.Size(16, 16);
+            this.trkXSensitivity.TrackLineColor = System.Drawing.Color.FromArgb(((int)(((byte)(90)))), ((int)(((byte)(93)))), ((int)(((byte)(90)))));
+            this.trkXSensitivity.TrackLineHeight = 3;
+            this.trkXSensitivity.TrackLineSelectedColor = System.Drawing.Color.FromArgb(((int)(((byte)(90)))), ((int)(((byte)(93)))), ((int)(((byte)(90)))));
+            this.trkXSensitivity.Value = 50;
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(88, 19);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(34, 13);
+            this.label6.TabIndex = 22;
+            this.label6.Text = "Mode";
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(160, 19);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(69, 13);
+            this.label7.TabIndex = 23;
+            this.label7.Text = "VR sensibility";
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(168, 44);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(14, 13);
+            this.label8.TabIndex = 24;
+            this.label8.Text = "X";
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(168, 67);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(14, 13);
+            this.label9.TabIndex = 25;
+            this.label9.Text = "Y";
+            // 
+            // imlMouseStates
+            // 
+            this.imlMouseStates.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imlMouseStates.ImageStream")));
+            this.imlMouseStates.TransparentColor = System.Drawing.Color.Transparent;
+            this.imlMouseStates.Images.SetKeyName(0, "stable.png");
+            this.imlMouseStates.Images.SetKeyName(1, "drift.png");
+            this.imlMouseStates.Images.SetKeyName(2, "movement.png");
+            this.imlMouseStates.Images.SetKeyName(3, "calibrated.png");
             // 
             // hexData
             // 
@@ -690,7 +901,8 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(490, 532);
+            this.ClientSize = new System.Drawing.Size(490, 633);
+            this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.btnDebug);
             this.Controls.Add(this.shellControl1);
@@ -722,6 +934,9 @@
             this.groupBox1.PerformLayout();
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
+            this.groupBox3.ResumeLayout(false);
+            this.groupBox3.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pbStatus)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -777,6 +992,22 @@
         private Controls.HextTextBox hextReportId;
         private System.Windows.Forms.Button button10;
         private System.Windows.Forms.Button button11;
+        private System.Windows.Forms.Timer timer1;
+        private System.Windows.Forms.CheckBox chkCEC;
+        private System.Windows.Forms.GroupBox groupBox3;
+        private System.Windows.Forms.Label label9;
+        private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.Label label6;
+        private XComponent.SliderBar.MACTrackBar trkXSensitivity;
+        private XComponent.SliderBar.MACTrackBar trkYSensitivity;
+        private System.Windows.Forms.PictureBox pbStatus;
+        private System.Windows.Forms.CheckBox chkEnableMouse;
+        private System.Windows.Forms.RadioButton radioButton2;
+        private System.Windows.Forms.RadioButton radioButton1;
+        private System.Windows.Forms.Button button12;
+        private System.Windows.Forms.Button button9;
+        private System.Windows.Forms.ImageList imlMouseStates;
     }
 }
 
