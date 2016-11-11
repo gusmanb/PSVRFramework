@@ -69,7 +69,7 @@ namespace PSVRFramework
 
         static PSVRSensorReport()
         {
-            BMI055Parser.Init(BMI055Parser.AScale.AFS_2G, BMI055Parser.Gscale.GFS_2000DPS);
+            BMI055Parser.Init(BMI055Parser.AScale.AFS_2G, BMI055Parser.Gscale.GFS_125DPS);
         }
 
         public static PSVRSensorReport ParseSensor(byte[] data, bool FilterSensors)

@@ -18,7 +18,7 @@ namespace PSVRToolbox
 
     public partial class MainForm : Form
     {
-        MadgwickAHRS integrator = new MadgwickAHRS(1.0 / 2000.0);
+        MahonyAHRS integrator = new MahonyAHRS(1.0 / 2000.0);
 
         bool exit = false;
         IKeyboardMouseEvents hookedEvents;
@@ -584,7 +584,7 @@ namespace PSVRToolbox
         private void timer1_Tick(object sender, EventArgs e)
         {
             var orientation = emu.Value;
-            Console.WriteLine("X: {0}, Y:{1}, Z:{2}", orientation.X, orientation.Y, orientation.Z);
+            Console.WriteLine("X: {0}, Y:{1}, Z:{2}", orientation.Yaw, orientation.Pitch, orientation.Roll);
         }
         
     }

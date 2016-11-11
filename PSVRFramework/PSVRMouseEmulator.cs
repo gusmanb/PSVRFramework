@@ -9,14 +9,16 @@ namespace PSVRFramework
 {
     public class PSVRMouseEmulator
     {
-        MadgwickAHRS integrator = new MadgwickAHRS(1.0 / 2000.0);
+        MahonyAHRS integrator = new MahonyAHRS(1.0 / 2000);
         BMI055SensorData calValues = new BMI055SensorData();
 
         int left = 1000;
-        Vector3 currentValue = new Vector3();
+        //Vector3 currentValue = new Vector3();
 
-        public Vector3 Value { get { return currentValue; } }
-        
+        //public Vector3 Value { get { return currentValue; } }
+
+        Quaternion current = new Quaternion();
+        public Quaternion Value { get { return current; } }
         public PSVRMouseEmulator()
         {
 
@@ -80,10 +82,12 @@ namespace PSVRFramework
                     Report.FilteredSensorReading2.AccelY - calValues.AccelY,
                     Report.FilteredSensorReading2.AccelZ - calValues.AccelZ);
 
-                currentValue = Vector3.FromQuaternion(integrator.Quaternion);
-                currentValue.X = currentValue.X * 180 / Math.PI;
-                currentValue.Y = currentValue.Y * 180 / Math.PI;
-                currentValue.Z = currentValue.Z * 180 / Math.PI;
+                current.Update(integrator.Quaternion[0], integrator.Quaternion[1], integrator.Quaternion[2], integrator.Quaternion[3]);
+
+                //currentValue = Vector3.FromQuaternion(integrator.Quaternion);
+                //currentValue.X = currentValue.X * 180 / Math.PI;
+                //currentValue.Y = currentValue.Y * 180 / Math.PI;
+                //currentValue.Z = currentValue.Z * 180 / Math.PI;
             }
             
         }

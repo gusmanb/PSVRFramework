@@ -49,6 +49,7 @@
     <Compile Include="BMI055Parser.cs" />
     <Compile Include="CurrentOS.cs" />
     <Compile Include="Madgwick.cs" />
+    <Compile Include="Mahony.cs" />
     <Compile Include="MathHelpers.cs" />
     <Compile Include="PSVR.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
