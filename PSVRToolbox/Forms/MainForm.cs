@@ -26,6 +26,8 @@ namespace PSVRToolbox
 
         object locker = new object();
 
+        int startupSize = 0;
+
         public MainForm()
         {
             InitializeComponent();
@@ -202,13 +204,13 @@ namespace PSVRToolbox
         {
             if (btnDebug.Text == "<")
             {
-                Width = 506;
+                Width = startupSize;// btnDebug.Left + btnDebug.Width + (CurrentOS.IsLinux ? 14: 22);
                 btnDebug.Text = ">";
                 shellControl1.ResetText();
             }
             else
             {
-                Width = 906;
+                Width = shellControl1.Width + startupSize + 16; //(CurrentOS.IsLinux ? 14 : 22);
                 btnDebug.Text = "<";
                 shellControl1.ResetText();
             }
@@ -229,11 +231,16 @@ namespace PSVRToolbox
         {
             var set = Settings.Instance;
 
+            startupSize = this.Width;
+
             if (set.StartMinimized)
             {
                 BeginInvoke(new MethodInvoker(delegate
                 {
-                    Hide();
+                    if (CurrentOS.IsLinux)
+                        this.WindowState = FormWindowState.Minimized;
+                    else
+                        Hide();
                 }));
             }
 
@@ -250,7 +257,11 @@ namespace PSVRToolbox
 
             if (!exit)
             {
-                this.Hide();
+                if (CurrentOS.IsLinux)
+                    this.WindowState = FormWindowState.Minimized;
+                else
+                    this.Hide();
+
                 e.Cancel = true;
                 return;
             }

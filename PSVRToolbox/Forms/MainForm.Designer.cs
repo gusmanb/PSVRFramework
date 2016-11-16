@@ -69,14 +69,14 @@
             this.btnSettings = new System.Windows.Forms.Button();
             this.btnDebug = new System.Windows.Forms.Button();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.button10 = new System.Windows.Forms.Button();
-            this.label5 = new System.Windows.Forms.Label();
-            this.label4 = new System.Windows.Forms.Label();
-            this.label3 = new System.Windows.Forms.Label();
             this.button11 = new System.Windows.Forms.Button();
+            this.button10 = new System.Windows.Forms.Button();
             this.hexData = new PSVRToolbox.Controls.HextTextBox();
+            this.label5 = new System.Windows.Forms.Label();
             this.hextStatusCode = new PSVRToolbox.Controls.HextTextBox();
             this.hextReportId = new PSVRToolbox.Controls.HextTextBox();
+            this.label4 = new System.Windows.Forms.Label();
+            this.label3 = new System.Windows.Forms.Label();
             this.shellControl1 = new PSVRToolbox.ShellControl();
             this.grpFunctions.SuspendLayout();
             this.grpCinematic.SuspendLayout();
@@ -561,6 +561,8 @@
             // 
             // btnSettings
             // 
+            this.btnSettings.FlatAppearance.BorderColor = System.Drawing.SystemColors.Control;
+            this.btnSettings.FlatAppearance.BorderSize = 0;
             this.btnSettings.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnSettings.ForeColor = System.Drawing.SystemColors.Control;
             this.btnSettings.Image = global::PSVRToolbox.Properties.Resources.config;
@@ -598,43 +600,6 @@
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Report forge";
             // 
-            // button10
-            // 
-            this.button10.Location = new System.Drawing.Point(9, 77);
-            this.button10.Name = "button10";
-            this.button10.Size = new System.Drawing.Size(133, 23);
-            this.button10.TabIndex = 8;
-            this.button10.Text = "Clear";
-            this.button10.UseVisualStyleBackColor = true;
-            this.button10.Click += new System.EventHandler(this.button10_Click);
-            // 
-            // label5
-            // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(148, 22);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(69, 13);
-            this.label5.TabIndex = 6;
-            this.label5.Text = "Data content";
-            // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(6, 48);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(64, 13);
-            this.label4.TabIndex = 3;
-            this.label4.Text = "Status code";
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(6, 22);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(53, 13);
-            this.label3.TabIndex = 1;
-            this.label3.Text = "Report ID";
-            // 
             // button11
             // 
             this.button11.Location = new System.Drawing.Point(9, 106);
@@ -644,6 +609,16 @@
             this.button11.Text = "Send";
             this.button11.UseVisualStyleBackColor = true;
             this.button11.Click += new System.EventHandler(this.button11_Click);
+            // 
+            // button10
+            // 
+            this.button10.Location = new System.Drawing.Point(9, 77);
+            this.button10.Name = "button10";
+            this.button10.Size = new System.Drawing.Size(133, 23);
+            this.button10.TabIndex = 8;
+            this.button10.Text = "Clear";
+            this.button10.UseVisualStyleBackColor = true;
+            this.button10.Click += new System.EventHandler(this.button10_Click);
             // 
             // hexData
             // 
@@ -655,6 +630,15 @@
             this.hexData.Size = new System.Drawing.Size(237, 84);
             this.hexData.TabIndex = 7;
             this.hexData.WordWrap = false;
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(148, 22);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(69, 13);
+            this.label5.TabIndex = 6;
+            this.label5.Text = "Data content";
             // 
             // hextStatusCode
             // 
@@ -673,6 +657,24 @@
             this.hextReportId.Name = "hextReportId";
             this.hextReportId.Size = new System.Drawing.Size(66, 20);
             this.hextReportId.TabIndex = 4;
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(6, 48);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(64, 13);
+            this.label4.TabIndex = 3;
+            this.label4.Text = "Status code";
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(6, 22);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(53, 13);
+            this.label3.TabIndex = 1;
+            this.label3.Text = "Report ID";
             // 
             // shellControl1
             // 
@@ -704,7 +706,6 @@
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
-            this.MinimizeBox = false;
             this.Name = "MainForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "PSVRToolbox";
