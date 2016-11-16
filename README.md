@@ -29,6 +29,14 @@ You need the .net Framework 4.5.2 or newer installed to make it work and also ne
 
 ##UPDATES
 
+###V0.4.5
+
+- LED control interface
+- Device information pane
+- UDP remote control interface
+- Command line interface
+- Debug tools
+
 ###V0.4.0
 
 - Unified driver
