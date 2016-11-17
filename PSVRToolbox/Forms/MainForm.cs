@@ -584,7 +584,7 @@ namespace PSVRToolbox
         private void timer1_Tick(object sender, EventArgs e)
         {
             var orientation = emu.Value;
-            Console.WriteLine("X: {0}, Y:{1}, Z:{2}", orientation.Yaw, orientation.Pitch, orientation.Roll);
+            Console.WriteLine("X: {0}, Y:{1}, Z:{2}", orientation.X, orientation.Y, orientation.Z);
         }
         
     }

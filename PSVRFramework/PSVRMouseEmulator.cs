@@ -17,12 +17,20 @@ namespace PSVRFramework
 
         //public Vector3 Value { get { return currentValue; } }
 
-        Quaternion current = new Quaternion();
-        public Quaternion Value { get { return current; } }
+        //Quaternion current = new Quaternion();
+        //public Quaternion Value { get { return current; } }
+
+        public Vector3 Value { get { return new Vector3(kalmanRoll.Angle, kalmanPitch.Angle, 0); } }
+
         public PSVRMouseEmulator()
         {
 
         }
+
+        SimpleKalman kalmanRoll = new SimpleKalman(1 / 2000.0);
+        SimpleKalman kalmanPitch = new SimpleKalman(1 / 2000.0);
+
+        const double fRad2Deg = 57.295779513;
 
         public void Feed(PSVRSensorReport Report)
         {
@@ -68,21 +76,54 @@ namespace PSVRFramework
             }
             else
             {
-                integrator.Update(Report.FilteredSensorReading1.GyroX - calValues.GyroX,
-                    Report.FilteredSensorReading1.GyroY - calValues.GyroY,
-                    -(Report.FilteredSensorReading1.GyroZ - calValues.GyroZ),
-                    Report.FilteredSensorReading1.AccelX - calValues.AccelX,
-                    Report.FilteredSensorReading1.AccelY - calValues.AccelY,
-                    Report.FilteredSensorReading1.AccelZ - calValues.AccelZ);
 
-                integrator.Update(Report.FilteredSensorReading2.GyroX - calValues.GyroX,
-                    Report.FilteredSensorReading2.GyroY - calValues.GyroY,
-                    -(Report.FilteredSensorReading1.GyroZ - calValues.GyroZ),
-                    Report.FilteredSensorReading2.AccelX - calValues.AccelX,
-                    Report.FilteredSensorReading2.AccelY - calValues.AccelY,
-                    Report.FilteredSensorReading2.AccelZ - calValues.AccelZ);
+                double GyroX = Report.FilteredSensorReading1.GyroX - calValues.GyroX;
+                double GyroY = Report.FilteredSensorReading1.GyroY - calValues.GyroY;
+                double GyroZ = Report.FilteredSensorReading1.GyroZ - calValues.GyroZ;
 
-                current.Update(integrator.Quaternion[0], integrator.Quaternion[1], integrator.Quaternion[2], integrator.Quaternion[3]);
+                double AccelX = Report.FilteredSensorReading1.AccelX - calValues.AccelX;
+                double AccelY = Report.FilteredSensorReading1.AccelY - calValues.AccelY;
+                double AccelZ = Report.FilteredSensorReading1.AccelZ - calValues.AccelZ;
+
+                //double fNorm = Math.Sqrt(GyroX * GyroX + GyroY * GyroY + GyroZ * GyroZ);
+                //double fRoll = GetRoll(GyroX, GyroZ, fNorm);
+                //double fPitch = GetPitch(GyroY, GyroZ, fNorm);
+
+
+                kalmanRoll.Update(GyroX, AccelX);
+                kalmanPitch.Update(GyroY, AccelY);
+
+                GyroX = Report.FilteredSensorReading2.GyroX - calValues.GyroX;
+                GyroY = Report.FilteredSensorReading2.GyroY - calValues.GyroY;
+                GyroZ = Report.FilteredSensorReading2.GyroZ - calValues.GyroZ;
+
+                AccelX = Report.FilteredSensorReading2.AccelX - calValues.AccelX;
+                AccelY = Report.FilteredSensorReading2.AccelY - calValues.AccelY;
+                AccelZ = Report.FilteredSensorReading2.AccelZ - calValues.AccelZ;
+
+                //fNorm = Math.Sqrt(GyroX * GyroX + GyroY * GyroY + GyroZ * GyroZ);
+                //fRoll = GetRoll(GyroX, GyroZ, fNorm);
+                //fPitch = GetPitch(GyroY, GyroZ, fNorm);
+
+
+                kalmanRoll.Update(GyroX, AccelX);
+                kalmanPitch.Update(GyroY, AccelY);
+
+                //integrator.Update(Report.FilteredSensorReading1.GyroX - calValues.GyroX,
+                //    Report.FilteredSensorReading1.GyroY - calValues.GyroY,
+                //    -(Report.FilteredSensorReading1.GyroZ - calValues.GyroZ),
+                //    Report.FilteredSensorReading1.AccelX - calValues.AccelX,
+                //    Report.FilteredSensorReading1.AccelY - calValues.AccelY,
+                //    Report.FilteredSensorReading1.AccelZ - calValues.AccelZ);
+
+                //integrator.Update(Report.FilteredSensorReading2.GyroX - calValues.GyroX,
+                //    Report.FilteredSensorReading2.GyroY - calValues.GyroY,
+                //    -(Report.FilteredSensorReading1.GyroZ - calValues.GyroZ),
+                //    Report.FilteredSensorReading2.AccelX - calValues.AccelX,
+                //    Report.FilteredSensorReading2.AccelY - calValues.AccelY,
+                //    Report.FilteredSensorReading2.AccelZ - calValues.AccelZ);
+
+                //current.Update(integrator.Quaternion[0], integrator.Quaternion[1], integrator.Quaternion[2], integrator.Quaternion[3]);
 
                 //currentValue = Vector3.FromQuaternion(integrator.Quaternion);
                 //currentValue.X = currentValue.X * 180 / Math.PI;
@@ -91,6 +132,20 @@ namespace PSVRFramework
             }
             
         }
-        
+
+
+        double GetRoll(double GyroX, double GyroZ, double fNorm)
+        {
+            double fNormXZ = Math.Sqrt(GyroX * GyroX + GyroZ * GyroZ);
+            double fCos = fNormXZ / fNorm;
+            return Math.Acos(fCos) * fRad2Deg;
+        }
+
+        double GetPitch(double GyroY, double GyroZ, double fNorm)
+        {
+            double fNormYZ = Math.Sqrt(GyroY * GyroY + GyroZ * GyroZ);
+            double fCos = fNormYZ / fNorm;
+            return Math.Acos(fCos) * fRad2Deg;
+        }
     }
 }

@@ -54,6 +54,7 @@
     <Compile Include="PSVR.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PSVRMouseEmulator.cs" />
+    <Compile Include="SimpleKalman.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
