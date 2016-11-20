@@ -22,11 +22,29 @@ namespace VRVideoPlayerGUI
         public mainPlayer()
         {
             InitializeComponent();
+            var mons = VRPlayer.GetMonitors();
+            cbMonitor.DisplayMember = "Name";
+            cbMonitor.ValueMember = "Index";
+            cbMonitor.DataSource = mons;
 
+            player = new VRPlayer();
+            player.PlayFinished += Player_PlayFinished;
         }
-        
+
+        private void Player_PlayFinished(object sender, EventArgs e)
+        {
+            RemoteVRControl.SwitchToCinematic();
+        }
+
         private void button1_Click(object sender, EventArgs e)
         {
+            if (cbMonitor.SelectedItem == null)
+            {
+                MessageBox.Show("Select which monitor to use");
+                return;
+            }
+
+            var monIn = (int)cbMonitor.SelectedValue;
 
             if (player != null)
                 player.Dispose();
@@ -39,9 +57,112 @@ namespace VRVideoPlayerGUI
 
             Uri uri = new Uri(dlg.FileName, UriKind.Absolute);
 
-            player = new VRPlayer();
+            string videoMode = cbVideoMode.SelectedItem?.ToString();
+            string frameMode = cbFrameMode.SelectedItem?.ToString();
+
+            VideoSettings settings = new VideoSettings();
+
+            Vector2 offsetLeft = null;
+            Vector2 offsetRight = null;
+            Vector2 scaleLeft = null;
+            Vector2 scaleRight = null;
+            Vector3 initialRotation = null;
+            float hfov = 0;
+            switch (videoMode)
+            {
+
+
+                case "180 Mono":
+
+                    hfov = 180;
+                    scaleLeft = scaleRight = new Vector2 { X = 2, Y = 1 };
+                    offsetLeft = offsetRight = new Vector2 { X = 0, Y = 0 };
+                    initialRotation = new Vector3();
+                    break;
+
+                case "180 Stereo":
+
+                    hfov = 180;
+
+                    if (frameMode == "Side by side")
+                    {
+                        scaleLeft = scaleRight = new Vector2 { X = 1f, Y = 1 };
+                        offsetLeft = new Vector2 { X = 0.5f, Y = 0 }; 
+                        offsetRight = new Vector2();
+                        initialRotation = new Vector3 { Y = (float)(Math.PI / 2) };
+                        
+                    }
+                    else
+                    {
+                        scaleLeft = scaleRight = new Vector2 { X = 2, Y = 0.5f };
+                        offsetLeft = new Vector2 { Y = 0.5f, X = 0 }; 
+                        offsetRight = new Vector2();
+                        initialRotation = new Vector3 { Y = (float)(Math.PI / 2) };
+                    }
+
+                    break;
+
+                case "360 Mono":
+
+                    hfov = 460;
+
+                    scaleLeft = scaleRight = new Vector2 { X = 1, Y = 1 };
+                    offsetLeft = offsetRight = new Vector2();
+                    initialRotation = new Vector3 { Y = (float)(Math.PI / 4) };
+                    break;
+
+                case "360 Stereo":
+
+                    hfov = 460;
+
+                    if (frameMode == "Side by side")
+                    {
+                        scaleLeft = scaleRight = new Vector2 { X = 0.5f, Y = 1 };
+                        offsetLeft = new Vector2();
+                        offsetRight = new Vector2 { X = 0.5f, Y = 0 };
+                        initialRotation = new Vector3 { Y = (float)(Math.PI / 4) };
+                    }
+                    else
+                    {
+                        scaleLeft = scaleRight = new Vector2 { X = 1, Y = 0.5f };
+                        offsetLeft = new Vector2();
+                        offsetRight = new Vector2 { X = 0, Y = 0.5f };
+                        initialRotation = new Vector3 ();
+                    }
+
+                    break;
+
+            }
+
+            float yScale = 1 / float.Parse(cbYScale.Text, System.Globalization.CultureInfo.InvariantCulture);
+            float yOffset = (yScale - 1) / 2f;
+            scaleLeft.Y = scaleRight.Y = yScale;
+            offsetLeft.Y = offsetRight.Y = yOffset;
+
+            if (chkSwap.Checked)
+            {
+                var tmp = offsetLeft;
+                offsetLeft = offsetRight;
+                offsetRight = tmp;
+            }
+
+            VideoSettings vs = new VideoSettings();
+            vs.LeftEye.Offset = offsetLeft;
+            vs.LeftEye.Scale = scaleLeft;
+            vs.RightEye.Offset = offsetRight;
+            vs.RightEye.Scale = scaleRight;
+            vs.InitialRotation = initialRotation;
+            vs.MonitorIndex = monIn;
+            vs.HFOV = hfov;
+            vs.VFOV = float.Parse(cbVFOV.SelectedItem.ToString());
+            vs.Equilateral = cbProjection.SelectedIndex == 0;
+
+            RemoteVRControl.PowerOnHeadset();
+            RemoteVRControl.SwitchToVR();
+            
             player.FileName = uri.ToString();
-            player.LaunchPlayer();
+            player.LaunchPlayer(vs);
         }
+        
     }
 }

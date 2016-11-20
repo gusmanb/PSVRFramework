@@ -36,9 +36,6 @@
     <ClInclude Include="camera.h">
       <Filter>Archivos de código fuente\ogl</Filter>
     </ClInclude>
-    <ClInclude Include="mainFunctions.h">
-      <Filter>Archivos de código fuente\ogl</Filter>
-    </ClInclude>
     <ClInclude Include="mesh.h">
       <Filter>Archivos de código fuente\ogl</Filter>
     </ClInclude>
@@ -51,11 +48,20 @@
     <ClInclude Include="video.h">
       <Filter>Archivos de código fuente\vlc</Filter>
     </ClInclude>
+    <ClInclude Include="keybmanager.h">
+      <Filter>Archivos de código fuente\ogl</Filter>
+    </ClInclude>
+    <ClInclude Include="engine.h">
+      <Filter>Archivos de código fuente\ogl</Filter>
+    </ClInclude>
+    <ClInclude Include="rendertarget.h">
+      <Filter>Archivos de código fuente\ogl</Filter>
+    </ClInclude>
+    <ClInclude Include="vrdevice.h">
+      <Filter>Archivos de código fuente\ogl</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="VRVideoPlayer.cpp">
-      <Filter>Archivos de código fuente</Filter>
-    </ClCompile>
     <ClCompile Include="VRPlayer.cpp">
       <Filter>Archivos de código fuente</Filter>
     </ClCompile>
@@ -63,9 +69,6 @@
       <Filter>Archivos de código fuente\ogl</Filter>
     </ClCompile>
     <ClCompile Include="dllmain.cpp">
-      <Filter>Archivos de código fuente\ogl</Filter>
-    </ClCompile>
-    <ClCompile Include="mainFunctions.cpp">
       <Filter>Archivos de código fuente\ogl</Filter>
     </ClCompile>
     <ClCompile Include="mesh.cpp">
@@ -82,6 +85,18 @@
     </ClCompile>
     <ClCompile Include="video.cpp">
       <Filter>Archivos de código fuente\vlc</Filter>
+    </ClCompile>
+    <ClCompile Include="keybmanager.cpp">
+      <Filter>Archivos de código fuente\ogl</Filter>
+    </ClCompile>
+    <ClCompile Include="engine.cpp">
+      <Filter>Archivos de código fuente\ogl</Filter>
+    </ClCompile>
+    <ClCompile Include="rendertarget.cpp">
+      <Filter>Archivos de código fuente\ogl</Filter>
+    </ClCompile>
+    <ClCompile Include="vrdevice.cpp">
+      <Filter>Archivos de código fuente\ogl</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

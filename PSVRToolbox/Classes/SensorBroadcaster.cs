@@ -24,8 +24,12 @@ namespace PSVRToolbox
 
         public void Broadcast(PSVRSensorReport SensorData)
         {
-            byte[] data = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(SensorData));
-            client.Send(data, data.Length, ep);
+            try
+            {
+                byte[] data = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(SensorData));
+                client.Send(data, data.Length, ep);
+            }
+            catch { }
         }
 
         public void Dispose()

@@ -8,28 +8,32 @@
 
 using namespace glm;
 
-void setup(camera* camera)
+namespace Camera
 {
-	auto view = glm::lookAt(camera->position, camera->target, glm::vec3(0, 1, 0));
-	auto projection = glm::perspective(glm::radians(camera->FOV), (camera->viewWidth / camera->viewHeight), camera->farDistance, camera->nearDistance);
-	camera->viewProjection = projection * view;
-}
 
-void setupCamera(float FOV, float vpWidth, float vpHeight, float nearDistance, float farDistance, glm::vec3 position, glm::vec3 target, camera* camera)
-{
-	
-	camera->FOV = FOV;
-	camera->viewWidth = vpWidth;
-	camera->viewHeight = vpHeight;
-	camera->farDistance = farDistance;
-	camera->nearDistance = nearDistance;
-	camera->position = position;
-	camera->target = target;
-	setup(camera);
-}
+	void setup(cameraData* cameraData)
+	{
+		auto view = glm::lookAt(cameraData->position, cameraData->target, glm::vec3(0, 1, 0));
+		auto projection = glm::perspective(glm::radians(cameraData->FOV), (cameraData->viewWidth / cameraData->viewHeight), cameraData->farDistance, cameraData->nearDistance);
+		cameraData->viewProjection = projection * view;
+	}
 
-void changeFOV(camera* camera, float FOV)
-{
-	camera->FOV = FOV;
-	setup(camera);
+	void setupCamera(float FOV, float vpWidth, float vpHeight, float nearDistance, float farDistance, glm::vec3 position, glm::vec3 target, cameraData* cameraData)
+	{
+
+		cameraData->FOV = FOV;
+		cameraData->viewWidth = vpWidth;
+		cameraData->viewHeight = vpHeight;
+		cameraData->farDistance = farDistance;
+		cameraData->nearDistance = nearDistance;
+		cameraData->position = position;
+		cameraData->target = target;
+		setup(cameraData);
+	}
+
+	void changeFOV(cameraData* cameraData, float FOV)
+	{
+		cameraData->FOV = FOV;
+		setup(cameraData);
+	}
 }
