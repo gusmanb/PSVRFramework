@@ -134,18 +134,9 @@ namespace VRVideoPlayerGUI
 
             }
 
-            float yScale = 1 / float.Parse(cbYScale.Text, System.Globalization.CultureInfo.InvariantCulture);
-            float yOffset = (yScale - 1) / 2f;
-            scaleLeft.Y = scaleRight.Y = yScale;
-            offsetLeft.Y = offsetRight.Y = yOffset;
-
-            if (chkSwap.Checked)
-            {
-                var tmp = offsetLeft;
-                offsetLeft = offsetRight;
-                offsetRight = tmp;
-            }
-
+            scaleLeft.Y = scaleRight.Y = 1;
+            offsetLeft.Y = offsetRight.Y = 0;
+            
             VideoSettings vs = new VideoSettings();
             vs.LeftEye.Offset = offsetLeft;
             vs.LeftEye.Scale = scaleLeft;
@@ -155,7 +146,7 @@ namespace VRVideoPlayerGUI
             vs.MonitorIndex = monIn;
             vs.HFOV = hfov;
             vs.VFOV = float.Parse(cbVFOV.SelectedItem.ToString());
-            vs.Equilateral = cbProjection.SelectedIndex == 0;
+            vs.Equilateral = true; 
 
             RemoteVRControl.PowerOnHeadset();
             RemoteVRControl.SwitchToVR();

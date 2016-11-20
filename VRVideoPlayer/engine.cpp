@@ -135,7 +135,7 @@ namespace Engine
 	}
 
 	bool dump;
-
+	bool showCenter = false;
 	void keybHandler(int Key, bool Control, bool Alt, bool Shift)
 	{
 		switch (Key)
@@ -199,13 +199,6 @@ namespace Engine
 
 			break;
 
-		case GLFW_KEY_SPACE:
-
-			Video::playPause(vctx);
-			dump = true;
-
-			break;
-
 		case GLFW_KEY_Q:
 
 			lensProps.interLensDistance += 0.001;
@@ -248,6 +241,25 @@ namespace Engine
 
 			break;
 
+		case GLFW_KEY_E:
+
+			lensProps.interLensDistance += 0.0005;
+			VRDevice::initializeDevice(&psvrDevice, &VRDevice::PSVRScreenProps, &lensProps);
+
+			break;
+
+		case GLFW_KEY_R:
+
+			lensProps.interLensDistance -= 0.0005;
+			VRDevice::initializeDevice(&psvrDevice, &VRDevice::PSVRScreenProps, &lensProps);
+
+			break;
+
+		case GLFW_KEY_1:
+
+			showCenter = !showCenter;
+			break;
+
 		}
 	}
 
@@ -261,8 +273,7 @@ namespace Engine
 
 		auto vbId = createVBA();
 
-		//VFOV 68º -> HFOV 100º
-		setupCamera(90, 960, 1080, 0.0001f, 100, vec3(0, 0, 0), vec3(0, 0, 10), &mainCamera);
+		setupCamera(107, 960, 1080, 0.0001f, 100, vec3(0, 0, 0), vec3(0, 0, 10), &mainCamera);
 
 		Mesh::createSphere(&eyeMesh, sets.equilateral);
 		Mesh::createPlaneBuffer(&effectMesh, 2, 2, 1, 1);
@@ -275,9 +286,9 @@ namespace Engine
 
 		Texture::createTexture(&videoTexture);
 
-		Texture::textureData grid;
+		//Texture::textureData grid;
 
-		Texture::loadBmpTexture(&grid, "grid.bmp");
+		//Texture::loadBmpTexture(&grid, "grid.bmp");
 
 		vctx = Video::initVideo(videoFile);
 		rot = sets.initialRotation;
@@ -309,6 +320,9 @@ namespace Engine
 		KeybManager::registerKey(GLFW_KEY_S, false, false, false, &keybHandler);
 		KeybManager::registerKey(GLFW_KEY_Z, false, false, false, &keybHandler);
 		KeybManager::registerKey(GLFW_KEY_X, false, false, false, &keybHandler);
+		KeybManager::registerKey(GLFW_KEY_E, false, false, false, &keybHandler);
+		KeybManager::registerKey(GLFW_KEY_R, false, false, false, &keybHandler);
+		KeybManager::registerKey(GLFW_KEY_1, false, false, false, &keybHandler);
 
 		unsigned char currentFrame = 0;
 
@@ -374,7 +388,7 @@ namespace Engine
 			if (dump)
 			{
 				dump = false;
-				Texture::saveBmpTexture(&renderTarget.renderTexture, "c:\\temp\\dump.bmp");
+				Texture::saveBmpTexture(&renderTarget.renderTexture, "dump.bmp");
 			}
 	
 			glViewport(0, 0, 1920, 1080);
@@ -388,7 +402,7 @@ namespace Engine
 			Shader::setUniformVec4(effectId, "backgroundColor", glm::vec4(1,0.5f,0.1f,1));
 			Shader::setUniformVec4(effectId, "projectionLeft", psvrDevice.projectionLeft);
 			Shader::setUniformVec4(effectId, "unprojectionLeft", psvrDevice.unprojectionLeft);
-			Shader::setUniformInt(effectId, "showCenter", 0);
+			Shader::setUniformInt(effectId, "showCenter", showCenter);
 
 			Mesh::renderMesh(&effectMesh, effectId);
 
