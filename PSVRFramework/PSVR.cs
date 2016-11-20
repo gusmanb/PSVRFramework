@@ -14,6 +14,12 @@ namespace PSVRFramework
 {
     public class PSVRSensorReport
     {
+
+        static PSVRSensorReport()
+        {
+            BMI055Parser.Init(BMI055Parser.AScale.AFS_2G, BMI055Parser.Gscale.GFS_125DPS);
+        }
+
         //To be analyzed...
         public HeadsetButtons Buttons;
         public int Volume;
@@ -52,6 +58,9 @@ namespace PSVRFramework
 
         public int VoltageReference; //Not sure at all, starts in 0 and suddenly jumps to 3
         public int VoltageValue; //Not sure at all, starts on 0, ranges very fast to 255, when switched from VR to Cinematic and back varies between 255 and 254
+
+        public BMI055SensorData SensorRead1;
+        public BMI055SensorData SensorRead2;
 
         //DEBUG
         public int A;
@@ -120,6 +129,9 @@ namespace PSVRFramework
             sensor.H = data[62];
 
             sensor.PacketSequence = data[63];
+
+            sensor.SensorRead1 = BMI055Parser.Parse(data, 26, 20);
+            sensor.SensorRead2 = BMI055Parser.Parse(data, 36, 42);
 
             return sensor;
 

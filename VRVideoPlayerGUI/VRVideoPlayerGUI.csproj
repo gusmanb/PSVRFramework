@@ -132,10 +132,6 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\PSVRFramework\PSVRFramework.csproj">
-      <Project>{2fe9f4c1-268e-4126-a2b5-56d54882933b}</Project>
-      <Name>PSVRFramework</Name>
-    </ProjectReference>
     <ProjectReference Include="..\VRVideoPlayer\VRVideoPlayer.vcxproj">
       <Project>{16fcbda3-0c18-4f11-af62-510b051fdbfb}</Project>
       <Name>VRVideoPlayer</Name>

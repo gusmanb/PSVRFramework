@@ -28,9 +28,14 @@ namespace PSVRToolbox
 
         int startupSize = 0;
 
+        TapDetector tapper;
+
         public MainForm()
         {
             InitializeComponent();
+
+            tapper = new TapDetector(0.05f);
+            tapper.Tapped += Tapper_Tapped;
 
             try
             {
@@ -43,6 +48,11 @@ namespace PSVRToolbox
             catch { }
 
             cmdListen = new RemoteCommandListener(14598);
+        }
+        
+        private void Tapper_Tapped(object sender, EventArgs e)
+        {
+            PSVRController.Recenter();
         }
 
         #region Button handlers
@@ -204,13 +214,13 @@ namespace PSVRToolbox
         {
             if (btnDebug.Text == "<")
             {
-                Width = startupSize;// btnDebug.Left + btnDebug.Width + (CurrentOS.IsLinux ? 14: 22);
+                Width = startupSize;
                 btnDebug.Text = ">";
                 shellControl1.ResetText();
             }
             else
             {
-                Width = shellControl1.Width + startupSize + 16; //(CurrentOS.IsLinux ? 14 : 22);
+                Width = shellControl1.Width + startupSize + 16;
                 btnDebug.Text = "<";
                 shellControl1.ResetText();
             }
@@ -550,9 +560,10 @@ namespace PSVRToolbox
                 detectTimer.Enabled = true;
             }));
         }
-
+        
         private void VrSet_SensorDataUpdate(object sender, PSVRSensorEventArgs e)
         {
+            tapper.Feed(e.SensorData.SensorRead1);
 
             lock (locker)
             {

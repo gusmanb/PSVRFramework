@@ -10,8 +10,6 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using Newtonsoft.Json;
-using PSVRFramework;
 using VRVideoPlayer;
 
 namespace VRVideoPlayerGUI

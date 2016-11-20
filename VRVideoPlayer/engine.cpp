@@ -243,14 +243,14 @@ namespace Engine
 
 		case GLFW_KEY_E:
 
-			lensProps.interLensDistance += 0.0005;
+			lensProps.screenLensDistance += 0.0005;
 			VRDevice::initializeDevice(&psvrDevice, &VRDevice::PSVRScreenProps, &lensProps);
 
 			break;
 
 		case GLFW_KEY_R:
 
-			lensProps.interLensDistance -= 0.0005;
+			lensProps.screenLensDistance -= 0.0005;
 			VRDevice::initializeDevice(&psvrDevice, &VRDevice::PSVRScreenProps, &lensProps);
 
 			break;
