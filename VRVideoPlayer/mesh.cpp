@@ -165,8 +165,6 @@ namespace Mesh
 			glm::vec3 vertex = vertices[index];
 			glm::vec2 uv = uvs[index];
 
-
-
 			// Put the attributes in buffers
 			final_vertices.push_back(vertex);
 			final_uvs.push_back(uv);

@@ -11,7 +11,6 @@
 #include <glm\glm.hpp>
 #include <GL\GL.h>
 #include <glm/gtc/type_ptr.hpp>
-
 namespace Shader
 {
 
@@ -121,5 +120,11 @@ namespace Shader
 	{
 		GLint uniformId = glGetUniformLocation(programId, uniformName);
 		glUniform1i(uniformId, value);
+	}
+
+	void setUniformFloat(GLuint programId, const char* uniformName, float value)
+	{
+		GLint uniformId = glGetUniformLocation(programId, uniformName);
+		glUniform1f(uniformId, value);
 	}
 }

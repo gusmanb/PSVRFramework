@@ -53,6 +53,17 @@ namespace VRDevice
 
 	} vrviewport;
 
+	typedef struct _vrparams
+	{
+		float outerDist;
+		float innerDist;
+		float topDist;
+		float bottomDist;
+		float eyePosX;
+		float eyePosY;
+
+	} vrparams;
+
 	typedef struct _vrdevice
 	{
 		//Needed data
@@ -80,17 +91,18 @@ namespace VRDevice
 		386.47f //y DPI, computed from res/screen diagonal size, may not be accurated
 
 	};
-	
+
 	const vrlensprops PSVRLensProps = {
 
 		//Info used for this: https://support.google.com/cardboard/manufacturers/answer/6324808?hl=en&ref_topic=6322188 and https://github.com/borismus/webvr-boilerplate/blob/d91cc2866bd54e65d59022800f62c7e160dc9fee/src/device-info.js
 		//ILD, BD and DC can be found experimentally, in the previous link are some tests describing how to check
 
-		53.5f, //FOV
-		0.064f, //Distance between the lens centers, the hdm by default is configured for an IPD of 64mm, I assume this is the inter-lens distance
-		0.0565f, // Distance between viewer baseline and lens center in meters.
-		0.037f, //Distance between the lenses and the screen.
-		{ 0.22f, 0.12f } //Distortion coefficients, K1 and K2, must be tweaked
+		68.0f, //FOV
+		0.0630999878f, //Distance between the lens centers, the hdm by default is configured for an IPD of 64mm, I assume this is the inter-lens distance
+		0.0394899882f, // Distance between viewer baseline and lens center in meters.
+		0.0354f, //Distance between the lenses and the screen.
+		{ 0.22f, 0.24f } //Distortion coefficients, K1 and K2, must be tweaked
+
 
 	};
 

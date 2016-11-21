@@ -3,7 +3,7 @@
 #include <vlc\libvlc.h>
 #include <vlc\libvlc_media.h>
 #include <vlc\libvlc_media_player.h>
-#include <mutex>
+#include <atomic>
 
 namespace Video
 {
@@ -21,6 +21,8 @@ namespace Video
 		int time;
 		int volume;
 		bool finished;
+		std::atomic<bool> lock;
+
 	}videoContext;
 
 	void destroyVideo(videoContext* context);

@@ -17,4 +17,5 @@ namespace Shader
 	void setUniformVec3(GLuint programId, const char* uniformName, glm::vec3 vector);
 	void setUniformVec4(GLuint programId, const char* uniformName, glm::vec4 vector);
 	void setUniformInt(GLuint programId, const char* uniformName, int value);
+	void setUniformFloat(GLuint programId, const char* uniformName, float value);
 }

@@ -20,6 +20,7 @@
 #include <stdbool.h>
 #include <string>
 #include<math.h>
+#include <Windows.h>
 
 using namespace std;
 
@@ -97,9 +98,9 @@ namespace Engine
 
 		auto mon = mons[settings.monitorIndex];
 
-		window = glfwCreateWindow(1920, 1080, "", mon, NULL);
+		window = glfwCreateWindow(1920, 1080, "", NULL, NULL);
 
-		glfwSwapInterval(1);
+		glfwSwapInterval(0);
 
 		if (window == NULL)
 		{
@@ -136,6 +137,9 @@ namespace Engine
 
 	bool dump;
 	bool showCenter = false;
+	float vRelief = 0.06;
+	float hRelief = 0.07;
+
 	void keybHandler(int Key, bool Control, bool Alt, bool Shift)
 	{
 		switch (Key)
@@ -199,30 +203,36 @@ namespace Engine
 
 			break;
 
+		case GLFW_KEY_SPACE:
+
+			Video::playPause(vctx);
+			dump = true;
+			break;
+
 		case GLFW_KEY_Q:
 
-			lensProps.interLensDistance += 0.001;
+			lensProps.interLensDistance += 0.000005;
 			VRDevice::initializeDevice(&psvrDevice, &VRDevice::PSVRScreenProps, &lensProps);
 
 			break;
 
 		case GLFW_KEY_W:
 
-			lensProps.interLensDistance -= 0.001;
+			lensProps.interLensDistance -= 0.000005;
 			VRDevice::initializeDevice(&psvrDevice, &VRDevice::PSVRScreenProps, &lensProps);
 
 			break;
 
 		case GLFW_KEY_A:
 
-			lensProps.baselineDistance += 0.001;
+			lensProps.baselineDistance += 0.000005;
 			VRDevice::initializeDevice(&psvrDevice, &VRDevice::PSVRScreenProps, &lensProps);
 
 			break;
 
 		case GLFW_KEY_S:
 
-			lensProps.baselineDistance -= 0.001;
+			lensProps.baselineDistance -= 0.000005;
 			VRDevice::initializeDevice(&psvrDevice, &VRDevice::PSVRScreenProps, &lensProps);
 
 			break;
@@ -243,16 +253,36 @@ namespace Engine
 
 		case GLFW_KEY_E:
 
-			lensProps.screenLensDistance += 0.0005;
+			lensProps.screenLensDistance += 0.0001;
 			VRDevice::initializeDevice(&psvrDevice, &VRDevice::PSVRScreenProps, &lensProps);
 
 			break;
 
 		case GLFW_KEY_R:
 
-			lensProps.screenLensDistance -= 0.0005;
+			lensProps.screenLensDistance -= 0.0001;
 			VRDevice::initializeDevice(&psvrDevice, &VRDevice::PSVRScreenProps, &lensProps);
 
+			break;
+
+		case GLFW_KEY_D:
+
+			hRelief -= 0.01;
+			break;
+
+		case GLFW_KEY_F:
+
+			hRelief += 0.01;
+			break;
+
+		case GLFW_KEY_C:
+
+			vRelief -= 0.01;
+			break;
+
+		case GLFW_KEY_V:
+
+			vRelief += 0.01;
 			break;
 
 		case GLFW_KEY_1:
@@ -263,6 +293,7 @@ namespace Engine
 		}
 	}
 
+	
 	void run(const char* videoFile)
 	{
 		endLoop = false;
@@ -279,16 +310,16 @@ namespace Engine
 		Mesh::createPlaneBuffer(&effectMesh, 2, 2, 1, 1);
 
 		auto shaderId = Shader::createShader(vertexRenderShader, fragmentRenderShader);
-		auto effectId = Shader::createShader(vertexBarrelShader, fragmentBarrelShader);
+		auto effectId = Shader::createShader(vertexBarrelShader, fragmentBarrelChromaticShader);//Shader::createShader(vertexBarrelShader, fragmentBarrelShader);
 
 		RenderTarget::renderTargetData renderTarget;
 		RenderTarget::createTarget(1920, 1080, &renderTarget);
 
 		Texture::createTexture(&videoTexture);
 
-		//Texture::textureData grid;
+		Texture::textureData grid;
 
-		//Texture::loadBmpTexture(&grid, "grid.bmp");
+		Texture::loadBmpTexture(&grid, "grid.bmp");
 
 		vctx = Video::initVideo(videoFile);
 		rot = sets.initialRotation;
@@ -322,6 +353,10 @@ namespace Engine
 		KeybManager::registerKey(GLFW_KEY_X, false, false, false, &keybHandler);
 		KeybManager::registerKey(GLFW_KEY_E, false, false, false, &keybHandler);
 		KeybManager::registerKey(GLFW_KEY_R, false, false, false, &keybHandler);
+		KeybManager::registerKey(GLFW_KEY_D, false, false, false, &keybHandler);
+		KeybManager::registerKey(GLFW_KEY_F, false, false, false, &keybHandler);
+		KeybManager::registerKey(GLFW_KEY_C, false, false, false, &keybHandler);
+		KeybManager::registerKey(GLFW_KEY_V, false, false, false, &keybHandler);
 		KeybManager::registerKey(GLFW_KEY_1, false, false, false, &keybHandler);
 
 		unsigned char currentFrame = 0;
@@ -331,6 +366,8 @@ namespace Engine
 		double delta;
 
 		glfwGetCursorPos(window, &xpos, &ypos);
+
+		bool exchangeExpected = false;
 
 		do {
 
@@ -356,8 +393,12 @@ namespace Engine
 
 			if (vctx->currentFrame != currentFrame)
 			{
+				while (!vctx->lock.compare_exchange_strong(exchangeExpected, true))
+					Sleep(0);
+
 				currentFrame = vctx->currentFrame;
 				Texture::setData(&videoTexture, vctx->pixeldata, vctx->width, vctx->height);
+				vctx->lock.store(false);
 			}
 
 			glClearColor(0, 0, 0, 1);
@@ -395,14 +436,18 @@ namespace Engine
 			
 			glUseProgram(effectId);
 
-			Texture::enableTexture(&renderTarget.renderTexture, 0);
-			//Texture::enableTexture(&grid, 0);
+			if(showCenter)
+				Texture::enableTexture(&grid, 0);
+			else
+				Texture::enableTexture(&renderTarget.renderTexture, 0);
 
 			Shader::setUniformVec2(effectId, "distortion", psvrDevice.lensProperties.distortionCoeffs);
-			Shader::setUniformVec4(effectId, "backgroundColor", glm::vec4(1,0.5f,0.1f,1));
+			Shader::setUniformVec4(effectId, "backgroundColor", glm::vec4(0,0,0,1));
 			Shader::setUniformVec4(effectId, "projectionLeft", psvrDevice.projectionLeft);
 			Shader::setUniformVec4(effectId, "unprojectionLeft", psvrDevice.unprojectionLeft);
 			Shader::setUniformInt(effectId, "showCenter", showCenter);
+			Shader::setUniformFloat(effectId, "vEyeRelief", vRelief);
+			Shader::setUniformFloat(effectId, "hEyeRelief", hRelief);
 
 			Mesh::renderMesh(&effectMesh, effectId);
 

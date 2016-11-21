@@ -5,24 +5,36 @@
 #include <vlc\libvlc_media_player.h>
 #include <vlc\libvlc_events.h>
 #include "texture.h"
+#include <windows.h>
 
 namespace Video
 {
 
 	static void *lock(void *data, void **p_pixels)
 	{
-
 		videoContext* context = (videoContext*)data;
-		p_pixels[0] = context->pixeldata;
+
+		bool expected = false;
+
+		if (!context->lock.compare_exchange_strong(expected, true))
+			p_pixels[0] = NULL;
+		else
+			p_pixels[0] = context->pixeldata;
 
 		return NULL;
 	}
 
 	static void unlock(void *data, void *id, void *const *p_pixels)
 	{
+
+		if (p_pixels == NULL)
+			return;
+
 		videoContext* context = (videoContext*)data;
 		context->time = libvlc_media_player_get_time(context->player);
+		context->lock.store(false);
 		context->currentFrame++;
+
 	}
 
 	static void display(void *data, void *id)
