@@ -16,10 +16,10 @@ namespace Video
 
 		bool expected = false;
 
-		if (!context->lock.compare_exchange_strong(expected, true))
-			p_pixels[0] = NULL;
-		else
-			p_pixels[0] = context->pixeldata;
+		//if (!context->lock.compare_exchange_strong(expected, true))
+		//	p_pixels[0] = NULL;
+		//else
+		p_pixels[0] = context->pixeldata;
 
 		return NULL;
 	}

@@ -115,6 +115,8 @@ namespace PSVRToolbox
                 ApplyCinematicSettings();
                 Settings.Instance.ScreenSize = current;
                 ApplyCinematicSettings();
+
+                BMI055Integrator.Recenter();
             }
         }
 
@@ -153,6 +155,45 @@ namespace PSVRToolbox
 
                 Settings set = Settings.Instance;
                 var cmd = PSVRReport.GetSetHDMLeds(LedMask.All, set.LedAIntensity, set.LedBIntensity, set.LedCIntensity, set.LedDIntensity, set.LedEIntensity, set.LedFIntensity, set.LedGIntensity, set.LedHIntensity, set.LedIIntensity);
+                return dev.SendReport(cmd);
+            }
+        }
+
+        public static bool LedsOn()
+        {
+            lock (locker)
+            {
+                if (dev == null)
+                    return false;
+
+                Settings set = Settings.Instance;
+                var cmd = PSVRReport.GetSetHDMLeds(LedMask.All, 0x46, 0x46, 0x46, 0x46, 0x46, 0x46, 0x46, 0x46, 0x46);
+                return dev.SendReport(cmd);
+            }
+        }
+
+        public static bool LedsOff()
+        {
+            lock (locker)
+            {
+                if (dev == null)
+                    return false;
+
+                Settings set = Settings.Instance;
+                var cmd = PSVRReport.GetSetHDMLeds(LedMask.All, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+                return dev.SendReport(cmd);
+            }
+        }
+
+        public static bool LedsDefault()
+        {
+            lock (locker)
+            {
+                if (dev == null)
+                    return false;
+
+                Settings set = Settings.Instance;
+                var cmd = PSVRReport.GetSetHDMLeds(LedMask.All, 0, 0, 0, 0, 0, 0, 0, 0x46, 0x46);
                 return dev.SendReport(cmd);
             }
         }

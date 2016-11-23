@@ -68,13 +68,23 @@ namespace VRVideoPlayer {
 		event EventHandler^ PlayFinished;
 		VRPlayer()
 		{
-			
+
 		}
 
 		~VRPlayer()
 		{
 			StopPlayer();
 		}
+
+		void UpdateRotation(float x, float y, float z, float w)
+		{
+			Engine::updateRotation(x, y, z, w);
+		}
+
+		/*void UpdateRotation(float x, float y, float z)
+		{
+			Engine::updateRotation(x, y, z);
+		}*/
 
 		static array<Monitor^>^ GetMonitors()
 		{

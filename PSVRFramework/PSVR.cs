@@ -9,6 +9,8 @@ using LibUsbDotNet.LudnMonoLibUsb;
 using LibUsbDotNet.WinUsb;
 using MonoLibUsb;
 using System.Runtime.InteropServices;
+using System.Diagnostics;
+using System.Numerics;
 
 namespace PSVRFramework
 {
@@ -17,7 +19,7 @@ namespace PSVRFramework
 
         static PSVRSensorReport()
         {
-            BMI055Parser.Init(BMI055Parser.AScale.AFS_2G, BMI055Parser.Gscale.GFS_125DPS);
+            BMI055Integrator.Init(BMI055Integrator.AScale.AFS_2G, BMI055Integrator.Gscale.GFS_2000DPS);
         }
 
         //To be analyzed...
@@ -28,25 +30,25 @@ namespace PSVRFramework
         public bool Muted;
         public bool EarphonesConnected;
 
-        public int GroupSequence1;
+        public uint Timestamp1;
 
-        public int GyroYaw1;
-        public int GyroPitch1;
-        public int GyroRoll1;
+        public int RawGyroYaw1;
+        public int RawGyroPitch1;
+        public int RawGyroRoll1;
 
-        public int MotionX1;
-        public int MotionY1;
-        public int MotionZ1;
+        public int RawMotionX1;
+        public int RawMotionY1;
+        public int RawMotionZ1;
 
-        public int GroupSequence2;
+        public uint Timestamp2;
 
-        public int GyroYaw2;
-        public int GyroPitch2;
-        public int GyroRoll2;
+        public int RawGyroYaw2;
+        public int RawGyroPitch2;
+        public int RawGyroRoll2;
 
-        public int MotionX2;
-        public int MotionY2;
-        public int MotionZ2;
+        public int RawMotionX2;
+        public int RawMotionY2;
+        public int RawMotionZ2;
 
 
         public int IRSensor; //1023 = near, 0 = far
@@ -59,8 +61,15 @@ namespace PSVRFramework
         public int VoltageReference; //Not sure at all, starts in 0 and suddenly jumps to 3
         public int VoltageValue; //Not sure at all, starts on 0, ranges very fast to 255, when switched from VR to Cinematic and back varies between 255 and 254
 
-        public BMI055SensorData SensorRead1;
-        public BMI055SensorData SensorRead2;
+
+        public Vector3 LinearAcceleration1;
+        public Vector3 AngularAcceleration1;
+
+        public Vector3 LinearAcceleration2;
+        public Vector3 AngularAcceleration2;
+
+        public Quaternion Pose;
+        public Vector3 Orientation;
 
         //DEBUG
         public int A;
@@ -71,7 +80,7 @@ namespace PSVRFramework
         public int F;
         public int G;
         public int H;
-
+        
         public static PSVRSensorReport parseSensor(byte[] data)
         {
 
@@ -91,25 +100,25 @@ namespace PSVRFramework
 
             sensor.EarphonesConnected = (data[8] & 0x10) == 0x10 ? true : false;//confirmed
 
-            sensor.GroupSequence1 = getIntFromInt16(data, 18);
+            sensor.Timestamp1 = getUIntFromUInt32(data, 16);
 
-            sensor.GyroYaw1 = getIntFromInt16(data, 20);
-            sensor.GyroPitch1 = getIntFromInt16(data, 22);
-            sensor.GyroRoll1 = getIntFromInt16(data, 24);
+            sensor.RawGyroYaw1 = getIntFromInt16(data, 20);
+            sensor.RawGyroPitch1 = getIntFromInt16(data, 22);
+            sensor.RawGyroRoll1 = getIntFromInt16(data, 24);
 
-            sensor.MotionX1 = getIntFromInt16(data, 26);
-            sensor.MotionY1 = getIntFromInt16(data, 28);
-            sensor.MotionZ1 = getIntFromInt16(data, 30);
+            sensor.RawMotionX1 = getAccelShort(data, 26);
+            sensor.RawMotionY1 = getAccelShort(data, 28);
+            sensor.RawMotionZ1 = getAccelShort(data, 30);
 
-            sensor.GroupSequence2 = getIntFromInt16(data, 34);
+            sensor.Timestamp2 = getUIntFromUInt32(data, 32);
 
-            sensor.GyroYaw2 = getIntFromInt16(data, 36);
-            sensor.GyroPitch2 = getIntFromInt16(data, 38);
-            sensor.GyroRoll2 = getIntFromInt16(data, 40);
+            sensor.RawGyroYaw2 = getIntFromInt16(data, 36);
+            sensor.RawGyroPitch2 = getIntFromInt16(data, 38);
+            sensor.RawGyroRoll2 = getIntFromInt16(data, 40);
 
-            sensor.MotionX2 = getIntFromInt16(data, 42);
-            sensor.MotionY2 = getIntFromInt16(data, 44);
-            sensor.MotionZ2 = getIntFromInt16(data, 46);
+            sensor.RawMotionX2 = getAccelShort(data, 42);
+            sensor.RawMotionY2 = getAccelShort(data, 44);
+            sensor.RawMotionZ2 = getAccelShort(data, 46);
 
             sensor.CalStatus = data[48];
             sensor.Ready = data[49];
@@ -130,8 +139,10 @@ namespace PSVRFramework
 
             sensor.PacketSequence = data[63];
 
-            sensor.SensorRead1 = BMI055Parser.Parse(data, 26, 20);
-            sensor.SensorRead2 = BMI055Parser.Parse(data, 36, 42);
+            //BMI055Integrator.Parse(data, 26, 20, sensor.Timestamp1);
+            //sensor.Pose = BMI055Integrator.Parse(data, 42, 36, sensor.Timestamp2);
+
+            BMI055Integrator.Parse(sensor);
 
             return sensor;
 
@@ -146,6 +157,12 @@ namespace PSVRFramework
         {
 
             return (short)data[offset] | (short)(data[offset + 1] << 8);
+        }
+
+        private static uint getUIntFromUInt32(byte[] data, byte offset)
+        {
+
+            return (uint)data[offset] | (uint)(data[offset + 1] << 8) | (uint)(data[offset + 2] << 16) | (uint)(data[offset + 3] << 24);
         }
 
         private static short getAccelShort(byte[] data, byte offset)
@@ -297,6 +314,7 @@ namespace PSVRFramework
                     INReport(this, new PSVRINEventArgs { Response = msg });
 
                 pos += consumed;
+
             }
         }
 

@@ -182,5 +182,7 @@ namespace Engine
 	bool init(videoSettings settings);
 	void run(const char* videoFile);
 	void stop();
+	void updateRotation(float x, float y, float z, float w);
+	//void updateRotation(float x, float y, float z);
 
 }

@@ -9,6 +9,8 @@
 #include <stdio.h>
 #include <vector>
 #include <math.h>
+#include <glm/gtc/quaternion.hpp>
+#include <glm/gtx/quaternion.hpp>
 
 #define PI 3.14159265358979323846
 #define _CRT_SECURE_NO_DEPRECATE
@@ -17,6 +19,12 @@
 
 namespace Mesh
 {
+	glm::vec3 baseRotation;
+
+	void setBaseRotation(glm::vec3 rotation)
+	{
+		baseRotation = rotation;
+	}
 
 	//Creates the mesh buffers
 	void createMesh(const GLfloat* positions, const GLfloat* uvs, int vertexCount, meshData* outMesh)
@@ -347,13 +355,25 @@ namespace Mesh
 		Mesh::createMesh(&final_vertices[0][0], &final_uvs[0][0], vertexIndices.size(), meshData);
 	}
 
-	void rotateMesh(meshData* meshData, glm::vec3 rotation)
+	//void rotateMesh(meshData* meshData, glm::vec3 rotation)
+	//{
+	//	meshData->rotation += rotation;
+	//	meshData->needsUpdate = true;
+	//}
+
+	//void orientateMesh(meshData* meshData, glm::vec3 rotation)
+	//{
+	//	meshData->rotation = rotation;
+	//	meshData->needsUpdate = true;
+	//}
+
+	void rotateMesh(meshData* meshData, glm::quat rotation)
 	{
-		meshData->rotation += rotation;
+		meshData->rotation *= rotation;
 		meshData->needsUpdate = true;
 	}
 
-	void orientateMesh(meshData* meshData, glm::vec3 rotation)
+	void orientateMesh(meshData* meshData, glm::quat rotation)
 	{
 		meshData->rotation = rotation;
 		meshData->needsUpdate = true;
@@ -371,7 +391,7 @@ namespace Mesh
 		meshData->needsUpdate = true;
 	}
 
-	void renderMesh(meshData* meshData, Camera::cameraData* cameraData, GLuint programId)
+	void renderMesh(meshData* meshData, Camera::cameraData* cameraData, GLuint programId, bool leftEye, float ffactorx, float ffactory)
 	{
 		glUseProgram(programId);
 
@@ -405,9 +425,38 @@ namespace Mesh
 		{
 			meshData->needsUpdate = false;
 
-			auto tmp = glm::eulerAngleX(meshData->rotation.x) * glm::eulerAngleY(meshData->rotation.y) * glm::eulerAngleZ(meshData->rotation.z);
+			auto tmp = glm::eulerAngles(meshData->rotation);
+			//auto tmp2 = glm::eulerAngleZ(tmp.z) * glm::eulerAngleX(-tmp.y) * glm::eulerAngleY(tmp.x);// */  glm::orientate4(glm::vec3(, tmp.z, tmp.x));
+			// */  glm::orientate4(glm::vec3(, tmp.z, tmp.x));
 
-			meshData->world = glm::translate(tmp, meshData->translation);
+		
+			//float factorx = 0;
+			//float factory = 0;
+			//if (leftEye)
+			//{
+			//	factorx = (1 - ((cos(tmp.z / PI) + 1) / 2)) * PI * ffactorx;
+			//	factory = (1 - ((cos(tmp.z / PI) + 1) / 2)) * PI * ffactory;
+			//}
+			//else
+			//{
+			//	factorx = -(1 - ((cos(tmp.z / PI) + 1) / 2)) * PI * ffactorx;
+			//	factory = -(1 - ((cos(tmp.z / PI) + 1) / 2)) * PI * ffactory;
+			//}
+			//auto tmp2 = /*glm::eulerAngleZ(tmp.z) */ glm::eulerAngleX(-tmp.y) * glm::eulerAngleY(tmp.x);
+			//auto tmp2 = glm::toMat4(meshData->rotation);
+			//auto tmp3 = glm::quat() * glm::inverse(glm::toQuat(glm::eulerAngleZ(tmp.z)));
+			//tmp2 = glm::toMat4(meshData->rotation * tmp3);
+
+			//auto tmp2 = glm::eulerAngleX(tmp.x) * glm::eulerAngleY(tmp.y);
+			auto tmp2 = glm::eulerAngleX(-tmp.y  + baseRotation. x) * glm::eulerAngleY(tmp.x + baseRotation.y);
+
+			meshData->world = glm::translate(tmp2, meshData->translation);
+
+			//auto tmp2 = glm::eulerAngleZ(meshData->rotation.z) * glm::eulerAngleX(-meshData->rotation.y) * glm::eulerAngleY(meshData->rotation.x);// */  glm::orientate4(glm::vec3(, tmp.z, tmp.x));
+
+			//meshData->world = glm::translate(tmp2, meshData->translation);
+
+
 		}
 
 		auto wvp = cameraData->viewProjection * meshData->world;

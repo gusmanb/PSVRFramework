@@ -17,6 +17,7 @@ namespace VRVideoPlayerGUI
     public partial class mainPlayer : Form
     {
         VRPlayer player;
+        SensorListener listener;
         public mainPlayer()
         {
             InitializeComponent();
@@ -27,6 +28,15 @@ namespace VRVideoPlayerGUI
 
             player = new VRPlayer();
             player.PlayFinished += Player_PlayFinished;
+            listener = new SensorListener();
+            listener.DataReceived += Listener_DataReceived;
+        }
+
+        private void Listener_DataReceived(object sender, SensorEventArgs e)
+        {
+            if (player != null)
+                //player.UpdateRotation(e.SensorReport.Orientation.X, e.SensorReport.Orientation.Y, 0);// e.SensorReport.Orientation.Z);
+            player.UpdateRotation(e.SensorReport.Pose.X, e.SensorReport.Pose.Y, e.SensorReport.Pose.Z, e.SensorReport.Pose.W);
         }
 
         private void Player_PlayFinished(object sender, EventArgs e)

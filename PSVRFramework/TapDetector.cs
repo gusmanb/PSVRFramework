@@ -18,7 +18,7 @@ namespace PSVRFramework
         int intervalLapse = 5;
         int debounceLapse = 200;
         int maxTapTime = 500;
-        int minSpikes = 5;
+        int minSpikes = 4;
         int maxSpikes = 7;
 
         bool onTap = false;
@@ -44,14 +44,14 @@ namespace PSVRFramework
             intervalMeasure.Start();
         }
         
-        public void Feed(BMI055SensorData SensorReadings)
+        public void Feed(PSVRSensorReport Report)
         {
             if (intervalMeasure.ElapsedMilliseconds < intervalLapse)
                 return;
 
             intervalMeasure.Restart();
 
-            Vector3 forceVector = new Vector3((float)SensorReadings.AccelX, (float)SensorReadings.AccelY, (float)SensorReadings.AccelZ);
+            Vector3 forceVector = new Vector3((float)Report.LinearAcceleration1.X, (float)Report.LinearAcceleration1.Y, (float)Report.LinearAcceleration1.Z);
 
             float magnitude = forceVector.Length();
 
@@ -103,7 +103,7 @@ namespace PSVRFramework
             onTap = false;
             onSpike = false;
             spikeCount = 0;
-
+            Debug.WriteLine("Spikes: {0}, Time: {1}", spikes, time);
             if (spikes >= minSpikes && spikes <= maxSpikes && time <= maxTapTime && Tapped != null)
                 Tapped(this, EventArgs.Empty);
         }

@@ -30,11 +30,15 @@ namespace PSVRToolbox
 
         TapDetector tapper;
 
+        bool ledsOn = false;
+
+        System.Threading.Timer blinkTimer = null;
+
         public MainForm()
         {
             InitializeComponent();
 
-            tapper = new TapDetector(0.05f);
+            tapper = new TapDetector(0.07f);
             tapper.Tapped += Tapper_Tapped;
 
             try
@@ -48,8 +52,19 @@ namespace PSVRToolbox
             catch { }
 
             cmdListen = new RemoteCommandListener(14598);
+            
         }
         
+        void blink(object state)
+        {
+            ledsOn = !ledsOn;
+
+            if (ledsOn)
+                PSVRController.LedsOn();
+            else
+                PSVRController.LedsOff();
+        }
+
         private void Tapper_Tapped(object sender, EventArgs e)
         {
             PSVRController.Recenter();
@@ -560,10 +575,27 @@ namespace PSVRToolbox
                 detectTimer.Enabled = true;
             }));
         }
-        
+
+        int cnt = 0;
+
         private void VrSet_SensorDataUpdate(object sender, PSVRSensorEventArgs e)
         {
-            tapper.Feed(e.SensorData.SensorRead1);
+
+            if (BMI055Integrator.calibrating && blinkTimer == null)
+                blinkTimer = new System.Threading.Timer(blink, null, 150, 150);
+            else if(!BMI055Integrator.calibrating && blinkTimer != null)
+            {
+                blinkTimer.Change(Timeout.Infinite, Timeout.Infinite);
+                blinkTimer = null;
+                PSVRController.LedsDefault();
+            }
+
+            if (cnt++ > 10)
+            {
+                cnt = 0;
+                tapper.Feed(e.SensorData);
+            }
+            
 
             lock (locker)
             {

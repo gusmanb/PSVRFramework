@@ -17,11 +17,14 @@
 #include <GL\glew.h>
 #include <GLFW\glfw3.h>
 #include <glm\glm.hpp>
+#include <glm/gtc/quaternion.hpp>
+#include <glm/gtx/quaternion.hpp>
+#include <glm/gtx/euler_angles.hpp>
 #include <stdbool.h>
 #include <string>
 #include<math.h>
 #include <Windows.h>
-
+#define PI 3.14159265358979323846
 using namespace std;
 
 namespace Engine
@@ -39,7 +42,8 @@ namespace Engine
 	Mesh::meshData effectMesh;
 	Texture::textureData videoTexture;
 	Video::videoContext* vctx;
-	glm::vec3 rot;
+	//glm::vec3 rot;
+	glm::quat rot;
 	glm::vec3 ipdLeftControl;
 	glm::vec3 ipdRightControl;
 	float maxXRot = 0;
@@ -85,7 +89,7 @@ namespace Engine
 
 		sets = settings;
 
-		glfwWindowHint(GLFW_SAMPLES, 0); // 4x antialiasing
+		glfwWindowHint(GLFW_SAMPLES, 0); // no antialiasing
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3); // We want OpenGL 3.3
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE); //We don't want the old OpenGL 
@@ -98,7 +102,7 @@ namespace Engine
 
 		auto mon = mons[settings.monitorIndex];
 
-		window = glfwCreateWindow(1920, 1080, "", NULL, NULL);
+		window = glfwCreateWindow(1920, 1080, "", mon, NULL);
 
 		glfwSwapInterval(0);
 
@@ -120,7 +124,7 @@ namespace Engine
 		float angle = glm::radians((settings.hfov - 100) / 2);
 		maxXRot = settings.initialRotation.y + angle;
 		minXRot = settings.initialRotation.y - angle;
-		angle = glm::radians(settings.vfov - 107) / 2;
+		angle = glm::radians(settings.vfov - 68) / 2;
 		maxYRot = settings.initialRotation.x + angle;
 		minYRot = settings.initialRotation.x - angle;
 		return true;
@@ -137,9 +141,10 @@ namespace Engine
 
 	bool dump;
 	bool showCenter = false;
-	float vRelief = 0.06;
-	float hRelief = 0.07;
-
+	float vRelief = 0.06f;
+	float hRelief = 0.07f;
+	float ffactorx = 0;
+	float ffactory = 0;
 	void keybHandler(int Key, bool Control, bool Alt, bool Shift)
 	{
 		switch (Key)
@@ -239,16 +244,16 @@ namespace Engine
 
 		case GLFW_KEY_Z:
 
-			lensProps.fov += 1;
-			VRDevice::initializeDevice(&psvrDevice, &VRDevice::PSVRScreenProps, &lensProps);
-
+			//lensProps.fov += 1;
+			//VRDevice::initializeDevice(&psvrDevice, &VRDevice::PSVRScreenProps, &lensProps);
+			ffactorx -= 0.05f;
 			break;
 
 		case GLFW_KEY_X:
 
-			lensProps.fov -= 1;
-			VRDevice::initializeDevice(&psvrDevice, &VRDevice::PSVRScreenProps, &lensProps);
-
+			//lensProps.fov -= 1;
+			//VRDevice::initializeDevice(&psvrDevice, &VRDevice::PSVRScreenProps, &lensProps);
+			ffactorx += 0.05f;
 			break;
 
 		case GLFW_KEY_E:
@@ -277,12 +282,14 @@ namespace Engine
 
 		case GLFW_KEY_C:
 
-			vRelief -= 0.01;
+			//vRelief -= 0.01;
+			ffactory -= 0.05;
 			break;
 
 		case GLFW_KEY_V:
 
-			vRelief += 0.01;
+			//vRelief += 0.01;
+			ffactory += 0.05;
 			break;
 
 		case GLFW_KEY_1:
@@ -293,7 +300,24 @@ namespace Engine
 		}
 	}
 
+	glm::vec3 baseRot;
+	glm::quat deviceRot = toQuat(orientate3(glm::vec3(0, PI / 2.0f, 0)));
+	void updateRotation(float x, float y, float z, float w)
+	{
+		glm::quat q = glm::quat();
+		q.x = x;
+		q.y = y;
+		q.z = z;
+		q.w = w;
+		rot = q;// *deviceRot;
+	}
+
 	
+	/*void updateRotation(float x, float y, float z)
+	{
+		rot = glm::vec3(x, y, z);
+	}*/
+
 	void run(const char* videoFile)
 	{
 		endLoop = false;
@@ -304,13 +328,15 @@ namespace Engine
 
 		auto vbId = createVBA();
 
-		setupCamera(107, 960, 1080, 0.0001f, 100, vec3(0, 0, 0), vec3(0, 0, 10), &mainCamera);
+		setupCamera(90, 960, 1080, 0.0001f, 100, vec3(0, 0, 0), vec3(0, 0, 10), &mainCamera);
+
+		Mesh::setBaseRotation(baseRot);
 
 		Mesh::createSphere(&eyeMesh, sets.equilateral);
 		Mesh::createPlaneBuffer(&effectMesh, 2, 2, 1, 1);
 
 		auto shaderId = Shader::createShader(vertexRenderShader, fragmentRenderShader);
-		auto effectId = Shader::createShader(vertexBarrelShader, fragmentBarrelChromaticShader);//Shader::createShader(vertexBarrelShader, fragmentBarrelShader);
+		auto effectId = Shader::createShader(vertexBarrelShader, fragmentBarrelChromaticShader);
 
 		RenderTarget::renderTargetData renderTarget;
 		RenderTarget::createTarget(1920, 1080, &renderTarget);
@@ -322,7 +348,7 @@ namespace Engine
 		Texture::loadBmpTexture(&grid, "grid.bmp");
 
 		vctx = Video::initVideo(videoFile);
-		rot = sets.initialRotation;
+		baseRot = sets.initialRotation;
 		ipdLeftControl = glm::vec3(0, 0, 0);
 		ipdRightControl = glm::vec3(0, 0, 0);
 
@@ -371,34 +397,16 @@ namespace Engine
 
 		do {
 
-			glfwGetCursorPos(window, &nxpos, &nypos);
-
-			if (nxpos != xpos)
-			{
-				delta = (nxpos - xpos) / 1000;
-				xpos = nxpos;
-				rot.y += delta;
-				rot.y = min(max(rot.y, minXRot), maxXRot);
-			}
-
-			if (nypos != ypos)
-			{
-				delta = (nypos - ypos) / 1000;
-				ypos = nypos;
-				rot.x += delta;
-				rot.x = min(max(rot.x, minYRot), maxYRot);
-			}
-
 			KeybManager::updateKeyboard(window);
 
 			if (vctx->currentFrame != currentFrame)
 			{
-				while (!vctx->lock.compare_exchange_strong(exchangeExpected, true))
-					Sleep(0);
+				//while (!vctx->lock.compare_exchange_strong(exchangeExpected, true))
+				//	Sleep(0);
 
 				currentFrame = vctx->currentFrame;
 				Texture::setData(&videoTexture, vctx->pixeldata, vctx->width, vctx->height);
-				vctx->lock.store(false);
+				//vctx->lock.store(false);
 			}
 
 			glClearColor(0, 0, 0, 1);
@@ -407,6 +415,8 @@ namespace Engine
 			glUseProgram(shaderId);
 
 			Texture::enableTexture(&videoTexture, 0);
+			//Texture::enableTexture(&grid, 0);
+
 
 			RenderTarget::enableTarget(&renderTarget, true);
 
@@ -415,14 +425,14 @@ namespace Engine
 			Mesh::placeMesh(&eyeMesh, ipdLeftControl);
 			Shader::setUniformVec2(shaderId, "uvScale", sets.leftEye.scale);
 			Shader::setUniformVec2(shaderId, "uvOffset", sets.leftEye.offset);
-			Mesh::renderMesh(&eyeMesh, &mainCamera, shaderId);
+			Mesh::renderMesh(&eyeMesh, &mainCamera, shaderId, true, ffactorx, ffactory);
 
 			glViewport(960, 0, 960, 1080);
 			Mesh::orientateMesh(&eyeMesh, rot);
 			Mesh::placeMesh(&eyeMesh, ipdRightControl);
 			Shader::setUniformVec2(shaderId, "uvScale", sets.rightEye.scale);
 			Shader::setUniformVec2(shaderId, "uvOffset", sets.rightEye.offset);
-			Mesh::renderMesh(&eyeMesh, &mainCamera, shaderId);
+			Mesh::renderMesh(&eyeMesh, &mainCamera, shaderId, false, ffactorx, ffactory);
 			
 			RenderTarget::disableTarget();
 
