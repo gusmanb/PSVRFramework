@@ -6,40 +6,45 @@ using System.Threading.Tasks;
 
 namespace PSVRFramework
 {
-    public static class PSVRController
+    public class PSVRController
     {
-        static object locker = new object();
-        static PSVR dev;
+        object locker = new object();
+        PSVRDevice dev;
 
-        public static PSVR Device { get { return dev; } }
-
-        public static void DeviceConnected(PSVR Device)
+        internal PSVRController(PSVRDevice Device)
         {
-            lock (locker)
-            {
-                if (dev != null)
-                {
-                    dev.Dispose();
-                    dev = null;
-                }
-
-                dev = Device;
-            }
+            dev = Device;
         }
 
-        public static void DeviceDisconnected()
-        {
-            lock (locker)
-            {
-                if (dev != null)
-                {
-                    dev.Dispose();
-                    dev = null;
-                }
-            }
-        }
+        //internal static PSVRDevice Device { get { return dev; } }
 
-        public static bool HeadsetOn()
+        //internal static void DeviceConnected(PSVRDevice Device)
+        //{
+        //    lock (locker)
+        //    {
+        //        if (dev != null)
+        //        {
+        //            dev.Dispose();
+        //            dev = null;
+        //        }
+
+        //        dev = Device;
+        //    }
+        //}
+
+        //internal static void DeviceDisconnected()
+        //{
+        //    lock (locker)
+        //    {
+        //        if (dev != null)
+        //        {
+        //            dev.Dispose();
+        //            dev = null;
+        //        }
+        //    }
+        //}
+
+        public bool HeadsetOn()
         {
             lock (locker)
             {
@@ -50,7 +55,7 @@ namespace PSVRFramework
             }
         }
 
-        public static bool HeadsetOff()
+        public bool HeadsetOff()
         {
             lock (locker)
             {
@@ -61,7 +66,7 @@ namespace PSVRFramework
             }
         }
 
-        public static bool EnableVRTracking()
+        public bool EnableVRTracking()
         {
             lock (locker)
             {
@@ -72,7 +77,7 @@ namespace PSVRFramework
             }
         }
 
-        public static bool EnableVRMode()
+        public bool EnableVRMode()
         {
             lock (locker)
             {
@@ -83,7 +88,7 @@ namespace PSVRFramework
             }
         }
 
-        public static bool EnableCinematicMode()
+        public bool EnableCinematicMode()
         {
             lock (locker)
             {
@@ -93,33 +98,8 @@ namespace PSVRFramework
                 return dev.SendReport(PSVRReport.GetExitVRMode());
             }
         }
-
-        public static void Recenter()
-        {
-
-            byte current = Settings.Instance.ScreenSize;
-
-            byte fake = 0;
-            if (current < 50)
-                fake = (byte)(current + 1);
-            else
-                fake = (byte)(current - 1);
-
-            lock (locker)
-            {
-                if (dev == null)
-                    return;
-
-                Settings.Instance.ScreenSize = fake;
-                ApplyCinematicSettings();
-                Settings.Instance.ScreenSize = current;
-                ApplyCinematicSettings();
-
-                BMI055Integrator.Recenter();
-            }
-        }
-
-        public static bool Shutdown()
+        
+        public bool Shutdown()
         {
             lock (locker)
             {
@@ -131,73 +111,71 @@ namespace PSVRFramework
             }
         }
 
-        public static bool ApplyCinematicSettings()
+        public bool ApplyCinematicSettings(byte ScreenDistance, byte ScreenSize, byte Brightness, byte MicFeedback)
         {
             lock (locker)
             {
                 if (dev == null)
                     return false;
-
-                Settings set = Settings.Instance;
-               
-                var cmd = PSVRReport.GetSetCinematicConfiguration(0xC0, set.ScreenDistance, set.ScreenSize, 0x14, set.Brightness, set.MicVol, false);
+                
+                var cmd = PSVRReport.GetSetCinematicConfiguration(0xC0, ScreenDistance, ScreenSize, 0x14, Brightness, MicFeedback, false);
                 return dev.SendReport(cmd);
             }
         }
 
-        public static bool ApplyLedSettings()
+        public bool ApplyLedSettings(byte[] Values, int Offset)
         {
             lock (locker)
             {
-                if (dev == null)
+
+                if (Values == null || Values.Length != 9)
                     return false;
 
-                Settings set = Settings.Instance;
-                var cmd = PSVRReport.GetSetHDMLeds(LedMask.All, set.LedAIntensity, set.LedBIntensity, set.LedCIntensity, set.LedDIntensity, set.LedEIntensity, set.LedFIntensity, set.LedGIntensity, set.LedHIntensity, set.LedIIntensity);
+                if (dev == null)
+                    return false;
+                
+                var cmd = PSVRReport.GetSetHDMLeds(LedMask.All, Values[Offset], Values[1 + Offset], Values[2 + Offset], Values[3 + Offset], Values[4 + Offset], Values[5 + Offset], Values[6 + Offset], Values[7 + Offset], Values[8 + Offset]);
                 return dev.SendReport(cmd);
             }
         }
 
-        public static bool LedsOn()
+        public bool LedsOn()
         {
             lock (locker)
             {
                 if (dev == null)
                     return false;
-
-                Settings set = Settings.Instance;
+                
                 var cmd = PSVRReport.GetSetHDMLeds(LedMask.All, 0x46, 0x46, 0x46, 0x46, 0x46, 0x46, 0x46, 0x46, 0x46);
                 return dev.SendReport(cmd);
             }
         }
 
-        public static bool LedsOff()
+        public bool LedsOff()
         {
             lock (locker)
             {
                 if (dev == null)
                     return false;
-
-                Settings set = Settings.Instance;
+                
                 var cmd = PSVRReport.GetSetHDMLeds(LedMask.All, 0, 0, 0, 0, 0, 0, 0, 0, 0);
                 return dev.SendReport(cmd);
             }
         }
 
-        public static bool LedsDefault()
+        public bool LedsDefault()
         {
             lock (locker)
             {
                 if (dev == null)
                     return false;
-
-                Settings set = Settings.Instance;
+                
                 var cmd = PSVRReport.GetSetHDMLeds(LedMask.All, 0, 0, 0, 0, 0, 0, 0, 0x46, 0x46);
                 return dev.SendReport(cmd);
             }
         }
 
-        public static bool RequestDeviceInfo()
+        public bool RequestDeviceInfo()
         {
             lock (locker)
             {
@@ -209,7 +187,31 @@ namespace PSVRFramework
             }
         }
 
-        public static bool Raw(byte[] Data)
+        public bool ResetPose()
+        {
+            lock (locker)
+            {
+                if (dev == null)
+                    return false;
+
+                BMI055Integrator.Recenter();
+                return true;
+            }
+        }
+
+        public bool Recalibrate()
+        {
+            lock (locker)
+            {
+                if (dev == null)
+                    return false;
+
+                BMI055Integrator.Recalibrate();
+                return true;
+            }
+        }
+
+        public bool Raw(byte[] Data)
         {
             lock (locker)
             {

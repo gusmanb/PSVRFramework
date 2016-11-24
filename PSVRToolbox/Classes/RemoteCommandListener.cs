@@ -7,6 +7,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace PSVRToolbox
@@ -73,7 +74,18 @@ namespace PSVRToolbox
                     PSVRController.EnableCinematicMode();
                     break;
                 case "Recenter":
-                    PSVRController.Recenter();
+
+                    byte current = Settings.Instance.ScreenSize;
+
+                    byte fake = 0;
+                    if (current < 50)
+                        fake = (byte)(current + 1);
+                    else
+                        fake = (byte)(current - 1);
+
+                    PSVRController.ApplyCinematicSettings(Settings.Instance.ScreenDistance, fake, Settings.Instance.Brightness, Settings.Instance.MicVol);
+                    Thread.Sleep(100);
+                    PSVRController.ApplyCinematicSettings(Settings.Instance.ScreenDistance, current, Settings.Instance.Brightness, Settings.Instance.MicVol);
                     break;
                 case "Shutdown":
                     PSVRController.Shutdown();
@@ -126,7 +138,7 @@ namespace PSVRToolbox
                         }
 
                         if (apply)
-                            PSVRController.ApplyCinematicSettings();
+                            PSVRController.ApplyCinematicSettings(Settings.Instance.ScreenDistance, Settings.Instance.ScreenSize, Settings.Instance.Brightness, Settings.Instance.MicVol);
                     }
 
                     break;

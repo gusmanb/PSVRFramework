@@ -14,14 +14,244 @@ using System.Numerics;
 
 namespace PSVRFramework
 {
-    public class PSVRSensorReport
+    public class PSVRDevice : IDisposable
     {
 
-        static PSVRSensorReport()
+        UsbEndpointWriter writer;
+        UsbEndpointReader reader;
+        UsbEndpointReader cmdReader;
+        UsbDevice controlDevice;
+        UsbDevice sensorDevice;
+        PSVRSensorReport currentState;
+        
+        public event EventHandler Removed;
+        public event EventHandler<PSVRINEventArgs> INReport;
+
+        Timer aliveTimer;
+        Timer blinkTimer = null;
+        bool ledsOn = false;
+
+        PSVRController controller;
+        public PSVRController Controller { get { return controller; } }
+
+        public static PSVRDevice GetDevice()
         {
-            BMI055Integrator.Init(BMI055Integrator.AScale.AFS_2G, BMI055Integrator.Gscale.GFS_2000DPS);
+            try
+            {
+                PSVRDevice device = new PSVRFramework.PSVRDevice();
+                return device;
+            }
+            catch { return null; }
         }
 
+        private PSVRDevice()
+        {
+            BMI055Integrator.Init(BMI055Integrator.AScale.AFS_2G, BMI055Integrator.Gscale.GFS_2000DPS);
+
+            if (CurrentOS.IsWindows)
+            {
+                var ndev = UsbDevice.AllDevices.Where(d => d.Vid == 0x54C && d.Pid == 0x09AF && d.SymbolicName.ToLower().Contains("mi_05")).FirstOrDefault();
+
+                if (ndev == null)
+                    throw new InvalidOperationException("No Control device found");
+
+                if (!ndev.Open(out controlDevice))
+                    throw new InvalidOperationException("Device in use");
+
+                ndev = UsbDevice.AllDevices.Where(d => d.Vid == 0x54C && d.Pid == 0x09AF && d.SymbolicName.ToLower().Contains("mi_04")).FirstOrDefault();
+
+                if (ndev == null)
+                {
+                    controlDevice.Close();
+                    throw new InvalidOperationException("No Sensor device found");
+                }
+
+                if (!ndev.Open(out sensorDevice))
+                {
+                    controlDevice.Close();
+                    throw new InvalidOperationException("Device in use");
+                }
+                
+                writer = controlDevice.OpenEndpointWriter(LibUsbDotNet.Main.WriteEndpointID.Ep04);
+                cmdReader = controlDevice.OpenEndpointReader(LibUsbDotNet.Main.ReadEndpointID.Ep04);
+                cmdReader.DataReceived += CmdReader_DataReceived;
+                cmdReader.DataReceivedEnabled = true;
+
+                reader = sensorDevice.OpenEndpointReader(LibUsbDotNet.Main.ReadEndpointID.Ep03, 64);
+                reader.DataReceived += Reader_DataReceived;
+                reader.DataReceivedEnabled = true;
+                
+                aliveTimer = new Timer(is_alive);
+                aliveTimer.Change(2000, 2000);
+                
+            }
+            else
+            {
+                var found = UsbDevice.AllDevices.Where(d => d.Vid == 0x54C && d.Pid == 0x09AF).FirstOrDefault();
+
+                controlDevice = found.Device;
+                
+                var dev = (MonoUsbDevice)controlDevice;
+
+                var handle = new MonoUsbDeviceHandle(dev.Profile.ProfileHandle);
+
+                MonoUsbApi.DetachKernelDriver(handle, 5);
+
+                MonoUsbApi.DetachKernelDriver(handle, 4);
+
+                if (!dev.ClaimInterface(5))
+                {
+                    controlDevice.Close();
+                    throw new InvalidOperationException("Device in use");
+                }
+                
+                if (!dev.ClaimInterface(4))
+                {
+                    controlDevice.Close();
+                    throw new InvalidOperationException("Device in use");
+                }
+                
+                writer = dev.OpenEndpointWriter(LibUsbDotNet.Main.WriteEndpointID.Ep04);
+
+                reader = dev.OpenEndpointReader(LibUsbDotNet.Main.ReadEndpointID.Ep03, 64);
+                reader.DataReceived += Reader_DataReceived;
+                reader.DataReceivedEnabled = true;
+                       
+            }
+
+            controller = new PSVRController(this);
+        }
+
+        private void CmdReader_DataReceived(object sender, LibUsbDotNet.Main.EndpointDataEventArgs e)
+        {
+            int pos = 0;
+
+            while (pos < e.Count)
+            {
+                int consumed;
+
+                PSVRReport msg = PSVRReport.ParseResponse(e.Buffer, pos, out consumed);
+
+                if (INReport != null)
+                    INReport(this, new PSVRINEventArgs { Response = msg });
+
+                pos += consumed;
+
+            }
+        }
+
+        void is_alive(object state)
+        {
+            try
+            {
+                if (!controlDevice.UsbRegistryInfo.IsAlive)
+                {
+                    aliveTimer.Change(Timeout.Infinite, Timeout.Infinite);
+
+                    if (Removed != null)
+                        Removed(this, EventArgs.Empty);
+
+                    Dispose();
+                }
+            }
+            catch { }
+        }
+
+        void Blink(object state)
+        {
+            ledsOn = !ledsOn;
+
+            if (ledsOn)
+                controller.LedsOn();
+            else
+                controller.LedsOff();
+        }
+
+        private void Reader_DataReceived(object sender, LibUsbDotNet.Main.EndpointDataEventArgs e)
+        {
+            currentState = PSVRSensorReport.parseSensor(e.Buffer);
+
+            if (BMI055Integrator.calibrating && blinkTimer == null)
+                blinkTimer = new System.Threading.Timer(Blink, null, 150, 150);
+            else if (!BMI055Integrator.calibrating && blinkTimer != null)
+            {
+                blinkTimer.Change(Timeout.Infinite, Timeout.Infinite);
+                blinkTimer = null;
+                controller.LedsDefault();
+            }
+            
+        }
+
+        public bool SendReport(PSVRReport Report)
+        {
+            try
+            {
+                var data = Report.Serialize();
+                int len;
+
+                return writer.Write(data, 1000, out len) == LibUsbDotNet.Main.ErrorCode.None;
+            }
+            catch { return false; }
+        }
+
+        public bool SendRaw(byte[] Data)
+        {
+            try
+            {
+                int len;
+                return writer.Write(Data, 1000, out len) == LibUsbDotNet.Main.ErrorCode.None;
+            }
+            catch { return false; }
+        }
+
+        public void Dispose()
+        {
+            try
+            {
+                if(aliveTimer != null)
+                    aliveTimer.Change(Timeout.Infinite, Timeout.Infinite);
+            }
+            catch { }
+
+            try
+            {
+                reader.Dispose();
+                writer.Dispose();
+            }
+            catch { }
+
+            try
+            {
+                controlDevice.Close();
+            }
+            catch { }
+
+            try
+            {
+                sensorDevice.Close();
+            }
+            catch { }
+
+            try
+            {
+                blinkTimer.Change(Timeout.Infinite, Timeout.Infinite);
+            }
+            catch { }
+
+            blinkTimer = null;
+            controlDevice = null;
+            sensorDevice = null;
+            Removed = null;
+            INReport = null;
+            writer = null;
+            reader = null;
+            aliveTimer = null;
+        }
+        
+    }
+
+    public class PSVRSensorReport
+    {
         //To be analyzed...
         public HeadsetButtons Buttons;
         public int Volume;
@@ -69,18 +299,7 @@ namespace PSVRFramework
         public Vector3 AngularAcceleration2;
 
         public Quaternion Pose;
-        public Vector3 Orientation;
 
-        //DEBUG
-        public int A;
-        public int B;
-        public int C;
-        public int D;
-        public int E;
-        public int F;
-        public int G;
-        public int H;
-        
         public static PSVRSensorReport parseSensor(byte[] data)
         {
 
@@ -123,24 +342,11 @@ namespace PSVRFramework
             sensor.CalStatus = data[48];
             sensor.Ready = data[49];
 
-            sensor.A = data[50];
-            sensor.B = data[51];
-            sensor.C = data[52];
-
             sensor.VoltageValue = data[53];
             sensor.VoltageReference = data[54];
             sensor.IRSensor = getIntFromInt16(data, 55);
 
-            sensor.D = data[58];
-            sensor.E = data[59];
-            sensor.F = data[60];
-            sensor.G = data[61];
-            sensor.H = data[62];
-
             sensor.PacketSequence = data[63];
-
-            //BMI055Integrator.Parse(data, 26, 20, sensor.Timestamp1);
-            //sensor.Pose = BMI055Integrator.Parse(data, 42, 36, sensor.Timestamp2);
 
             BMI055Integrator.Parse(sensor);
 
@@ -186,217 +392,7 @@ namespace PSVRFramework
         }
 
     }
-    
-    public class PSVR : IDisposable
-    {
 
-#if DEBUG
-        static PSVR()
-        {
-            UsbDevice.UsbErrorEvent += UsbDevice_UsbErrorEvent;
-        }
-
-        private static void UsbDevice_UsbErrorEvent(object sender, UsbError e)
-        {
-            Console.WriteLine("Error USB: " + e.Win32ErrorNumber + " - " + e.Description);
-        }
-#endif
-
-        UsbEndpointWriter writer;
-        UsbEndpointReader reader;
-        UsbEndpointReader cmdReader;
-        UsbDevice controlDevice;
-        UsbDevice sensorDevice;
-
-        public event EventHandler<PSVRSensorEventArgs> SensorDataUpdate;
-        public event EventHandler Removed;
-        public event EventHandler<PSVRINEventArgs> INReport;
-
-        Timer aliveTimer;
-        
-        public PSVR(bool EnableSensor)
-        {
-
-            if (CurrentOS.IsWindows)
-            {
-                var ndev = UsbDevice.AllDevices.Where(d => d.Vid == 0x54C && d.Pid == 0x09AF && d.SymbolicName.ToLower().Contains("mi_05")).FirstOrDefault();
-
-                if (ndev == null)
-                    throw new InvalidOperationException("No Control device found");
-
-                if (!ndev.Open(out controlDevice))
-                    throw new InvalidOperationException("Device in use");
-
-                ndev = UsbDevice.AllDevices.Where(d => d.Vid == 0x54C && d.Pid == 0x09AF && d.SymbolicName.ToLower().Contains("mi_04")).FirstOrDefault();
-
-                if (ndev == null)
-                {
-                    controlDevice.Close();
-                    throw new InvalidOperationException("No Sensor device found");
-                }
-
-                if (EnableSensor)
-                {
-                    if (!ndev.Open(out sensorDevice))
-                    {
-                        controlDevice.Close();
-                        throw new InvalidOperationException("Device in use");
-                    }
-                }
-
-                writer = controlDevice.OpenEndpointWriter(LibUsbDotNet.Main.WriteEndpointID.Ep04);
-                cmdReader = controlDevice.OpenEndpointReader(LibUsbDotNet.Main.ReadEndpointID.Ep04);
-                cmdReader.DataReceived += CmdReader_DataReceived;
-                cmdReader.DataReceivedEnabled = true;
-
-                if (EnableSensor)
-                {
-                    reader = sensorDevice.OpenEndpointReader(LibUsbDotNet.Main.ReadEndpointID.Ep03, 64);
-                    reader.DataReceived += Reader_DataReceived;
-                    reader.DataReceivedEnabled = true;
-                }
-
-                aliveTimer = new Timer(is_alive);
-                aliveTimer.Change(2000, 2000);
-            }
-            else
-            {
-                var found = UsbDevice.AllDevices.Where(d => d.Vid == 0x54C && d.Pid == 0x09AF).FirstOrDefault();
-
-                controlDevice = found.Device;
-                
-                var dev = (MonoUsbDevice)controlDevice;
-
-                var handle = new MonoUsbDeviceHandle(dev.Profile.ProfileHandle);
-
-                MonoUsbApi.DetachKernelDriver(handle, 5);
-
-                if(EnableSensor)
-                    MonoUsbApi.DetachKernelDriver(handle, 4);
-
-                if (!dev.ClaimInterface(5))
-                {
-                    controlDevice.Close();
-                    throw new InvalidOperationException("Device in use");
-                }
-
-                if (EnableSensor)
-                {
-                    if (!dev.ClaimInterface(4))
-                    {
-                        controlDevice.Close();
-                        throw new InvalidOperationException("Device in use");
-                    }
-                }
-
-                writer = dev.OpenEndpointWriter(LibUsbDotNet.Main.WriteEndpointID.Ep04);
-
-                if (EnableSensor)
-                {
-                    reader = dev.OpenEndpointReader(LibUsbDotNet.Main.ReadEndpointID.Ep03, 64);
-                    reader.DataReceived += Reader_DataReceived;
-                    reader.DataReceivedEnabled = true;
-                }              
-            }
-            
-        }
-
-        private void CmdReader_DataReceived(object sender, LibUsbDotNet.Main.EndpointDataEventArgs e)
-        {
-            int pos = 0;
-
-            while (pos < e.Count)
-            {
-                int consumed;
-
-                PSVRReport msg = PSVRReport.ParseResponse(e.Buffer, pos, out consumed);
-                if (INReport != null)
-                    INReport(this, new PSVRINEventArgs { Response = msg });
-
-                pos += consumed;
-
-            }
-        }
-
-        void is_alive(object state)
-        {
-            try
-            {
-                if (!controlDevice.UsbRegistryInfo.IsAlive)
-                {
-                    aliveTimer.Change(Timeout.Infinite, Timeout.Infinite);
-
-                    if (Removed != null)
-                        Removed(this, EventArgs.Empty);
-
-                    Dispose();
-                }
-            }
-            catch { }
-        }
-        
-        private void Reader_DataReceived(object sender, LibUsbDotNet.Main.EndpointDataEventArgs e)
-        {
-            var rep = PSVRSensorReport.parseSensor(e.Buffer);
-
-            if (SensorDataUpdate == null)
-                return;
-            
-            SensorDataUpdate(this, new PSVRSensorEventArgs { SensorData = rep });
-        }
-
-        public bool SendReport(PSVRReport Report)
-        {
-            var data = Report.Serialize();
-            int len;
-
-            return writer.Write(data, 1000, out len) == LibUsbDotNet.Main.ErrorCode.None;
-            
-        }
-
-        public bool SendRaw(byte[] Data)
-        {
-            int len;
-            return writer.Write(Data, 1000, out len) == LibUsbDotNet.Main.ErrorCode.None;
-        }
-
-        public void Dispose()
-        {
-            try
-            {
-                if(aliveTimer != null)
-                    aliveTimer.Change(Timeout.Infinite, Timeout.Infinite);
-            }
-            catch { }
-
-            try
-            {
-                reader.Dispose();
-                writer.Dispose();
-            }
-            catch { }
-
-            try
-            {
-                controlDevice.Close();
-            }
-            catch { }
-
-            try
-            {
-                sensorDevice.Close();
-            }
-            catch { }
-            
-            controlDevice = null;
-
-            SensorDataUpdate = null;
-            Removed = null;
-            INReport = null;
-        }
-        
-    }
-    
     public struct PSVRReport
     {
         public byte ReportID;

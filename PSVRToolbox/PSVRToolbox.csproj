@@ -68,8 +68,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Classes\RemoteCommandListener.cs" />
-    <Compile Include="Classes\SensorBroadcaster.cs" />
-    <Compile Include="Classes\PSVRController.cs" />
     <Compile Include="Controls\CommandHistory.cs" />
     <Compile Include="Controls\HextTextBox.cs">
       <SubType>Component</SubType>

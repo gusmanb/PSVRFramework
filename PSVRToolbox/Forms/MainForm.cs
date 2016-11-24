@@ -28,17 +28,14 @@ namespace PSVRToolbox
 
         int startupSize = 0;
 
-        TapDetector tapper;
+        //TapDetector tapper;
 
-        bool ledsOn = false;
-
-        System.Threading.Timer blinkTimer = null;
-
+        
         public MainForm()
         {
             InitializeComponent();
 
-            tapper = new TapDetector(0.07f);
+            //tapper = new TapDetector(0.07f);
             tapper.Tapped += Tapper_Tapped;
 
             try
@@ -55,15 +52,7 @@ namespace PSVRToolbox
             
         }
         
-        void blink(object state)
-        {
-            ledsOn = !ledsOn;
-
-            if (ledsOn)
-                PSVRController.LedsOn();
-            else
-                PSVRController.LedsOff();
-        }
+        
 
         private void Tapper_Tapped(object sender, EventArgs e)
         {
@@ -444,7 +433,7 @@ namespace PSVRToolbox
             try
             {
                 detectTimer.Enabled = false;
-                var vrSet = new PSVR(Settings.Instance.EnableUDPBroadcast);
+                var vrSet = new PSVRDevice(Settings.Instance.EnableUDPBroadcast);
                 PSVRController.DeviceConnected(vrSet);
                 vrSet.SensorDataUpdate += VrSet_SensorDataUpdate;
                 vrSet.Removed += VrSet_Removed;
@@ -552,7 +541,7 @@ namespace PSVRToolbox
 
         private void VrSet_Removed(object sender, EventArgs e)
         {
-            var vrSet = (PSVR)sender;
+            var vrSet = (PSVRDevice)sender;
 
             BeginInvoke((Action)(() =>
             {

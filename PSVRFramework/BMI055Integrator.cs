@@ -34,6 +34,7 @@ namespace PSVRFramework
         {
             aRes = GetAres(AccelerometerScale);
             gRes = GetGres(GyroscopeScale);
+            recalibrate = true;
             
         }
 
@@ -59,27 +60,29 @@ namespace PSVRFramework
                 recalibrate = false;
             }
 
-            Report.LinearAcceleration1 = new Vector3(Report.RawMotionX1 * aRes, Report.RawMotionY1 * aRes, Report.RawMotionZ1 * aRes);
-            Report.AngularAcceleration1 = new Vector3(Report.RawGyroYaw1 * gRes, Report.RawGyroPitch1 * gRes, Report.RawGyroRoll1 * gRes);
-
-            Integrate(Report.LinearAcceleration1, Report.AngularAcceleration1, Report.Timestamp1);
-
-            Report.LinearAcceleration2 = new Vector3(Report.RawMotionX2 * aRes, Report.RawMotionY2 * aRes, Report.RawMotionZ2 * aRes);
-            Report.AngularAcceleration2 = new Vector3(Report.RawGyroYaw2 * gRes, Report.RawGyroPitch2 * gRes, Report.RawGyroRoll2 * gRes);
-
-            Report.Pose = Integrate(Report.LinearAcceleration2, Report.AngularAcceleration2, Report.Timestamp2);
-
-            //Report.LinearAcceleration1 = new Vector3(-Report.RawMotionY1 * aRes, Report.RawMotionX1 * aRes, Report.RawMotionZ1 * aRes);
-            //Report.AngularAcceleration1 = new Vector3(-Report.RawGyroPitch1 * gRes, Report.RawGyroYaw1 * gRes, Report.RawGyroRoll1 * gRes);
+            //Ok para euler??
+            //Report.LinearAcceleration1 = new Vector3(Report.RawMotionX1 * aRes, Report.RawMotionY1 * aRes, Report.RawMotionZ1 * aRes);
+            //Report.AngularAcceleration1 = new Vector3(Report.RawGyroYaw1 * gRes, Report.RawGyroPitch1 * gRes, Report.RawGyroRoll1 * gRes);
 
             //Integrate(Report.LinearAcceleration1, Report.AngularAcceleration1, Report.Timestamp1);
 
-            //Report.LinearAcceleration2 = new Vector3(-Report.RawMotionY2 * aRes, Report.RawMotionX2 * aRes, Report.RawMotionZ2 * aRes);
-            //Report.AngularAcceleration2 = new Vector3(-Report.RawGyroPitch2 * gRes, Report.RawGyroYaw2 * gRes, Report.RawGyroRoll2 * gRes);
+            //Report.LinearAcceleration2 = new Vector3(Report.RawMotionX2 * aRes, Report.RawMotionY2 * aRes, Report.RawMotionZ2 * aRes);
+            //Report.AngularAcceleration2 = new Vector3(Report.RawGyroYaw2 * gRes, Report.RawGyroPitch2 * gRes, Report.RawGyroRoll2 * gRes);
 
             //Report.Pose = Integrate(Report.LinearAcceleration2, Report.AngularAcceleration2, Report.Timestamp2);
+            //Report.Orientation = ToEuler(ref Report.Pose);
 
-            Report.Orientation = ToEuler(ref Report.Pose);
+
+            //Ok para quaternion??
+            Report.LinearAcceleration1 = new Vector3(-Report.RawMotionY1 * aRes, Report.RawMotionX1 * aRes, Report.RawMotionZ1 * aRes);
+            Report.AngularAcceleration1 = new Vector3(-Report.RawGyroPitch1 * gRes, Report.RawGyroYaw1 * gRes, Report.RawGyroRoll1 * gRes);
+            Integrate(Report.LinearAcceleration1, Report.AngularAcceleration1, Report.Timestamp1);
+
+            Report.LinearAcceleration2 = new Vector3(-Report.RawMotionY2 * aRes, Report.RawMotionX2 * aRes, Report.RawMotionZ2 * aRes);
+            Report.AngularAcceleration2 = new Vector3(-Report.RawGyroPitch2 * gRes, Report.RawGyroYaw2 * gRes, Report.RawGyroRoll2 * gRes);
+            Report.Pose = Integrate(Report.LinearAcceleration2, Report.AngularAcceleration2, Report.Timestamp2);
+
+            
 
         }
 
