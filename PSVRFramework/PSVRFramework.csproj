@@ -36,6 +36,10 @@
       <HintPath>..\packages\LibUsbDotNet.2.2.8\lib\LibUsbDotNet.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Numerics.Vectors, Version=4.1.2.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
@@ -55,6 +59,9 @@
     <Compile Include="Madgwick.cs" />
     <Compile Include="PSVR.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="PSVRController.cs" />
+    <Compile Include="PSVRServer.cs" />
+    <Compile Include="SensorBroadcaster.cs" />
     <Compile Include="TapDetector.cs" />
   </ItemGroup>
   <ItemGroup>
