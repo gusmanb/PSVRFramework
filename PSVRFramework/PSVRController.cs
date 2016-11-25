@@ -15,35 +15,7 @@ namespace PSVRFramework
         {
             dev = Device;
         }
-
-        //internal static PSVRDevice Device { get { return dev; } }
-
-        //internal static void DeviceConnected(PSVRDevice Device)
-        //{
-        //    lock (locker)
-        //    {
-        //        if (dev != null)
-        //        {
-        //            dev.Dispose();
-        //            dev = null;
-        //        }
-
-        //        dev = Device;
-        //    }
-        //}
-
-        //internal static void DeviceDisconnected()
-        //{
-        //    lock (locker)
-        //    {
-        //        if (dev != null)
-        //        {
-        //            dev.Dispose();
-        //            dev = null;
-        //        }
-        //    }
-        //}
-
+        
         public bool HeadsetOn()
         {
             lock (locker)
@@ -110,35 +82,7 @@ namespace PSVRFramework
                 return dev.SendReport(PSVRReport.GetBoxOff());
             }
         }
-
-        public bool ApplyCinematicSettings(byte ScreenDistance, byte ScreenSize, byte Brightness, byte MicFeedback)
-        {
-            lock (locker)
-            {
-                if (dev == null)
-                    return false;
-                
-                var cmd = PSVRReport.GetSetCinematicConfiguration(0xC0, ScreenDistance, ScreenSize, 0x14, Brightness, MicFeedback, false);
-                return dev.SendReport(cmd);
-            }
-        }
-
-        public bool ApplyLedSettings(byte[] Values, int Offset)
-        {
-            lock (locker)
-            {
-
-                if (Values == null || Values.Length != 9)
-                    return false;
-
-                if (dev == null)
-                    return false;
-                
-                var cmd = PSVRReport.GetSetHDMLeds(LedMask.All, Values[Offset], Values[1 + Offset], Values[2 + Offset], Values[3 + Offset], Values[4 + Offset], Values[5 + Offset], Values[6 + Offset], Values[7 + Offset], Values[8 + Offset]);
-                return dev.SendReport(cmd);
-            }
-        }
-
+        
         public bool LedsOn()
         {
             lock (locker)
@@ -199,7 +143,18 @@ namespace PSVRFramework
             }
         }
 
-        public bool Recalibrate()
+        public bool Recenter(int CurrentDistance)
+        {
+            lock (locker)
+            {
+                if (dev == null)
+                    return false;
+                
+                return true;
+            }
+        }
+
+        public bool RecalibrateDevice()
         {
             lock (locker)
             {
@@ -208,6 +163,34 @@ namespace PSVRFramework
 
                 BMI055Integrator.Recalibrate();
                 return true;
+            }
+        }
+
+        public bool ApplyCinematicSettings(byte ScreenDistance, byte ScreenSize, byte Brightness, byte MicFeedback)
+        {
+            lock (locker)
+            {
+                if (dev == null)
+                    return false;
+
+                var cmd = PSVRReport.GetSetCinematicConfiguration(0xC0, ScreenDistance, ScreenSize, 0x14, Brightness, MicFeedback, false);
+                return dev.SendReport(cmd);
+            }
+        }
+
+        public bool ApplyLedSettings(byte[] Values, int Offset)
+        {
+            lock (locker)
+            {
+
+                if (Values == null || Values.Length != 9)
+                    return false;
+
+                if (dev == null)
+                    return false;
+
+                var cmd = PSVRReport.GetSetHDMLeds(LedMask.All, Values[Offset], Values[1 + Offset], Values[2 + Offset], Values[3 + Offset], Values[4 + Offset], Values[5 + Offset], Values[6 + Offset], Values[7 + Offset], Values[8 + Offset]);
+                return dev.SendReport(cmd);
             }
         }
 

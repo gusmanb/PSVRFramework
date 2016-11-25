@@ -57,6 +57,7 @@
     <Compile Include="BMI055Integrator.cs" />
     <Compile Include="CurrentOS.cs" />
     <Compile Include="Madgwick.cs" />
+    <Compile Include="PSVRClient.cs" />
     <Compile Include="PSVRDevice.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PSVRController.cs" />

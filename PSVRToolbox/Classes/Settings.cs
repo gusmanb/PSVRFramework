@@ -55,7 +55,7 @@ namespace PSVRToolbox
         public bool AltModifier { get; set; }
         public Keys HeadSetOn { get; set; } = Keys.None;
         public Keys HeadSetOff { get; set; } = Keys.None;
-        public Keys EnableVRAndTracking { get; set; } = Keys.None;
+        public Keys Recalibrate { get; set; } = Keys.None;
         public Keys EnableVR { get; set; } = Keys.None;
         public Keys EnableTheater { get; set; } = Keys.None;
         public Keys Recenter { get; set; } = Keys.None;

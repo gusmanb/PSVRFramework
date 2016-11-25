@@ -33,14 +33,12 @@
             this.cbShutdown = new System.Windows.Forms.ComboBox();
             this.cbRecenter = new System.Windows.Forms.ComboBox();
             this.cbTheater = new System.Windows.Forms.ComboBox();
-            this.cbVR = new System.Windows.Forms.ComboBox();
-            this.cbTracking = new System.Windows.Forms.ComboBox();
+            this.cbRecal = new System.Windows.Forms.ComboBox();
             this.cbHeadsetOff = new System.Windows.Forms.ComboBox();
             this.label8 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
-            this.label4 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.chkAlt = new System.Windows.Forms.CheckBox();
             this.chkShift = new System.Windows.Forms.CheckBox();
@@ -48,19 +46,12 @@
             this.label1 = new System.Windows.Forms.Label();
             this.cbHeadsetOn = new System.Windows.Forms.ComboBox();
             this.chkControl = new System.Windows.Forms.CheckBox();
-            this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.txtBroadcastPort = new System.Windows.Forms.TextBox();
-            this.label10 = new System.Windows.Forms.Label();
-            this.txtBroadcastAddress = new System.Windows.Forms.TextBox();
-            this.label9 = new System.Windows.Forms.Label();
-            this.chkBroadcast = new System.Windows.Forms.CheckBox();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.chkMinimized = new System.Windows.Forms.CheckBox();
             this.chkStartup = new System.Windows.Forms.CheckBox();
             this.button1 = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
-            this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -69,14 +60,12 @@
             this.groupBox1.Controls.Add(this.cbShutdown);
             this.groupBox1.Controls.Add(this.cbRecenter);
             this.groupBox1.Controls.Add(this.cbTheater);
-            this.groupBox1.Controls.Add(this.cbVR);
-            this.groupBox1.Controls.Add(this.cbTracking);
+            this.groupBox1.Controls.Add(this.cbRecal);
             this.groupBox1.Controls.Add(this.cbHeadsetOff);
+            this.groupBox1.Controls.Add(this.label5);
             this.groupBox1.Controls.Add(this.label8);
             this.groupBox1.Controls.Add(this.label7);
             this.groupBox1.Controls.Add(this.label6);
-            this.groupBox1.Controls.Add(this.label5);
-            this.groupBox1.Controls.Add(this.label4);
             this.groupBox1.Controls.Add(this.label3);
             this.groupBox1.Controls.Add(this.chkAlt);
             this.groupBox1.Controls.Add(this.chkShift);
@@ -86,7 +75,7 @@
             this.groupBox1.Controls.Add(this.chkControl);
             this.groupBox1.Location = new System.Drawing.Point(12, 12);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(236, 241);
+            this.groupBox1.Size = new System.Drawing.Size(236, 215);
             this.groupBox1.TabIndex = 0;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Keyboard shortcuts";
@@ -95,7 +84,7 @@
             // 
             this.cbShutdown.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cbShutdown.FormattingEnabled = true;
-            this.cbShutdown.Location = new System.Drawing.Point(129, 210);
+            this.cbShutdown.Location = new System.Drawing.Point(129, 183);
             this.cbShutdown.Name = "cbShutdown";
             this.cbShutdown.Size = new System.Drawing.Size(91, 21);
             this.cbShutdown.TabIndex = 23;
@@ -104,7 +93,7 @@
             // 
             this.cbRecenter.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cbRecenter.FormattingEnabled = true;
-            this.cbRecenter.Location = new System.Drawing.Point(129, 183);
+            this.cbRecenter.Location = new System.Drawing.Point(129, 129);
             this.cbRecenter.Name = "cbRecenter";
             this.cbRecenter.Size = new System.Drawing.Size(91, 21);
             this.cbRecenter.TabIndex = 22;
@@ -113,28 +102,19 @@
             // 
             this.cbTheater.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cbTheater.FormattingEnabled = true;
-            this.cbTheater.Location = new System.Drawing.Point(129, 156);
+            this.cbTheater.Location = new System.Drawing.Point(129, 102);
             this.cbTheater.Name = "cbTheater";
             this.cbTheater.Size = new System.Drawing.Size(91, 21);
             this.cbTheater.TabIndex = 21;
             // 
-            // cbVR
+            // cbRecal
             // 
-            this.cbVR.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cbVR.FormattingEnabled = true;
-            this.cbVR.Location = new System.Drawing.Point(129, 129);
-            this.cbVR.Name = "cbVR";
-            this.cbVR.Size = new System.Drawing.Size(91, 21);
-            this.cbVR.TabIndex = 20;
-            // 
-            // cbTracking
-            // 
-            this.cbTracking.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cbTracking.FormattingEnabled = true;
-            this.cbTracking.Location = new System.Drawing.Point(129, 102);
-            this.cbTracking.Name = "cbTracking";
-            this.cbTracking.Size = new System.Drawing.Size(91, 21);
-            this.cbTracking.TabIndex = 19;
+            this.cbRecal.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cbRecal.FormattingEnabled = true;
+            this.cbRecal.Location = new System.Drawing.Point(129, 156);
+            this.cbRecal.Name = "cbRecal";
+            this.cbRecal.Size = new System.Drawing.Size(91, 21);
+            this.cbRecal.TabIndex = 20;
             // 
             // cbHeadsetOff
             // 
@@ -148,7 +128,7 @@
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(7, 213);
+            this.label8.Location = new System.Drawing.Point(7, 186);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(55, 13);
             this.label8.TabIndex = 17;
@@ -157,7 +137,7 @@
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(6, 186);
+            this.label7.Location = new System.Drawing.Point(6, 132);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(51, 13);
             this.label7.TabIndex = 16;
@@ -166,7 +146,7 @@
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(6, 159);
+            this.label6.Location = new System.Drawing.Point(6, 105);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(105, 13);
             this.label6.TabIndex = 15;
@@ -175,20 +155,11 @@
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(6, 132);
+            this.label5.Location = new System.Drawing.Point(6, 159);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(87, 13);
+            this.label5.Size = new System.Drawing.Size(61, 13);
             this.label5.TabIndex = 14;
-            this.label5.Text = "Enable VR mode";
-            // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(6, 105);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(120, 13);
-            this.label4.TabIndex = 13;
-            this.label4.Text = "Enable VR and tracking";
+            this.label5.Text = "Recalibrate";
             // 
             // label3
             // 
@@ -256,71 +227,13 @@
             this.chkControl.Text = "Control";
             this.chkControl.UseVisualStyleBackColor = true;
             // 
-            // groupBox2
-            // 
-            this.groupBox2.Controls.Add(this.txtBroadcastPort);
-            this.groupBox2.Controls.Add(this.label10);
-            this.groupBox2.Controls.Add(this.txtBroadcastAddress);
-            this.groupBox2.Controls.Add(this.label9);
-            this.groupBox2.Controls.Add(this.chkBroadcast);
-            this.groupBox2.Location = new System.Drawing.Point(254, 12);
-            this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(216, 106);
-            this.groupBox2.TabIndex = 2;
-            this.groupBox2.TabStop = false;
-            this.groupBox2.Text = "Sensor broadcast";
-            // 
-            // txtBroadcastPort
-            // 
-            this.txtBroadcastPort.Location = new System.Drawing.Point(111, 75);
-            this.txtBroadcastPort.Name = "txtBroadcastPort";
-            this.txtBroadcastPort.Size = new System.Drawing.Size(96, 20);
-            this.txtBroadcastPort.TabIndex = 6;
-            this.txtBroadcastPort.Text = "9090";
-            // 
-            // label10
-            // 
-            this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(6, 78);
-            this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(76, 13);
-            this.label10.TabIndex = 5;
-            this.label10.Text = "Broadcast port";
-            // 
-            // txtBroadcastAddress
-            // 
-            this.txtBroadcastAddress.Location = new System.Drawing.Point(111, 49);
-            this.txtBroadcastAddress.Name = "txtBroadcastAddress";
-            this.txtBroadcastAddress.Size = new System.Drawing.Size(96, 20);
-            this.txtBroadcastAddress.TabIndex = 4;
-            this.txtBroadcastAddress.Text = "255.255.255.255";
-            // 
-            // label9
-            // 
-            this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(6, 52);
-            this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(95, 13);
-            this.label9.TabIndex = 3;
-            this.label9.Text = "Broadcast address";
-            // 
-            // chkBroadcast
-            // 
-            this.chkBroadcast.AutoSize = true;
-            this.chkBroadcast.Location = new System.Drawing.Point(6, 18);
-            this.chkBroadcast.Name = "chkBroadcast";
-            this.chkBroadcast.Size = new System.Drawing.Size(201, 17);
-            this.chkBroadcast.TabIndex = 1;
-            this.chkBroadcast.Text = "Enable UDP sensor broadcast server";
-            this.chkBroadcast.UseVisualStyleBackColor = true;
-            // 
             // groupBox3
             // 
             this.groupBox3.Controls.Add(this.chkMinimized);
             this.groupBox3.Controls.Add(this.chkStartup);
-            this.groupBox3.Location = new System.Drawing.Point(254, 124);
+            this.groupBox3.Location = new System.Drawing.Point(12, 233);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(216, 38);
+            this.groupBox3.Size = new System.Drawing.Size(236, 38);
             this.groupBox3.TabIndex = 3;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Miscellaneous settings";
@@ -347,7 +260,7 @@
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(254, 230);
+            this.button1.Location = new System.Drawing.Point(12, 277);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(75, 23);
             this.button1.TabIndex = 4;
@@ -357,7 +270,7 @@
             // 
             // button2
             // 
-            this.button2.Location = new System.Drawing.Point(395, 230);
+            this.button2.Location = new System.Drawing.Point(173, 277);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(75, 23);
             this.button2.TabIndex = 5;
@@ -369,11 +282,10 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(485, 263);
+            this.ClientSize = new System.Drawing.Size(255, 309);
             this.Controls.Add(this.button2);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.groupBox3);
-            this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
@@ -385,8 +297,6 @@
             this.Load += new System.EventHandler(this.SettingsForm_Load);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
-            this.groupBox2.ResumeLayout(false);
-            this.groupBox2.PerformLayout();
             this.groupBox3.ResumeLayout(false);
             this.groupBox3.PerformLayout();
             this.ResumeLayout(false);
@@ -400,7 +310,6 @@
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.CheckBox chkAlt;
         private System.Windows.Forms.CheckBox chkShift;
@@ -408,10 +317,6 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.ComboBox cbHeadsetOn;
         private System.Windows.Forms.CheckBox chkControl;
-        private System.Windows.Forms.GroupBox groupBox2;
-        private System.Windows.Forms.TextBox txtBroadcastAddress;
-        private System.Windows.Forms.Label label9;
-        private System.Windows.Forms.CheckBox chkBroadcast;
         private System.Windows.Forms.GroupBox groupBox3;
         private System.Windows.Forms.CheckBox chkMinimized;
         private System.Windows.Forms.CheckBox chkStartup;
@@ -420,10 +325,7 @@
         private System.Windows.Forms.ComboBox cbShutdown;
         private System.Windows.Forms.ComboBox cbRecenter;
         private System.Windows.Forms.ComboBox cbTheater;
-        private System.Windows.Forms.ComboBox cbVR;
-        private System.Windows.Forms.ComboBox cbTracking;
+        private System.Windows.Forms.ComboBox cbRecal;
         private System.Windows.Forms.ComboBox cbHeadsetOff;
-        private System.Windows.Forms.TextBox txtBroadcastPort;
-        private System.Windows.Forms.Label label10;
     }
 }

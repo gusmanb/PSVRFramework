@@ -13,7 +13,7 @@ namespace PSVRFramework
 {
 
     /*
-     * Server Frame format:
+     * Frame format:
      * 
      * 0x00 = size of packet
      * 0x01 = packet type
@@ -35,7 +35,7 @@ namespace PSVRFramework
      * 
      * Input update format:
      * 
-     * 0x00 = Status byte- > b0 = present, b1= plus button, b2 = less button, b3 = mute button, b4 = worn, b5 = display active, b6 = muted, b7 = earphones
+     * 0x00 = Status byte- > b0= plus button, b1 = less button, b2 = mute button, b3 = worn, b4 = display active, b5 = muted, b6 = earphones
      * 0x01 - 0x04 = Pose W component
      * 0x05 - 0x08 = Pose X component
      * 0x09 - 0x0C = Pose Y component
@@ -153,7 +153,6 @@ namespace PSVRFramework
 
         private void Cclient_Received(object sender, ReceivedEventArgs e)
         {
-
             var client = sender as PSVRServerClient;
 
             byte[] data = e.Data;
@@ -224,7 +223,7 @@ namespace PSVRFramework
                             if (data.Length != 2)
                                 client.Dispose();
                             else
-                                response = device?.Controller.Recalibrate() ?? false;
+                                response = device?.Controller.RecalibrateDevice() ?? false;
                             break;
                         case 10:
                             if (data.Length != 2)
@@ -465,7 +464,7 @@ namespace PSVRFramework
         private async void StartListen(CancellationToken CancelToken)
         {
             int pos = 0;
-            byte[] buffer = new byte[1024];
+            byte[] buffer = new byte[4096];
 
             try
             {
@@ -552,17 +551,4 @@ namespace PSVRFramework
         public byte[] Data { get; set; }
     }
 
-
-    //public struct PSVRStatus
-    //{
-    //    public volatile bool Present;
-    //    public volatile bool PlusButton;
-    //    public volatile bool Lessbutton;
-    //    public volatile bool MuteButton;
-    //    public volatile bool Worn;
-    //    public volatile bool DisplayActive;
-    //    public volatile bool Muted;
-    //    public volatile bool Earphones;
-    //    public Quaternion Pose;
-    //}
 }
