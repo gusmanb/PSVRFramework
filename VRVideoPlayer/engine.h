@@ -19,7 +19,6 @@ namespace Engine
 #define M_SQRT2 1.41421356237309504880
 #define M_SQRT_2 0.707106781186547524401
 
-
 #pragma region Shaders
 
 	static char const * vertexRenderShader = "\n"
