@@ -97,32 +97,25 @@ namespace PSVRFramework
     public class PSVRClient
     {
         TcpClient client;
-        Guid id;
         NetworkStream stream;
         CancellationTokenSource source;
-        internal CancellationTokenSource cancelUpdateSource;
 
         public event EventHandler Closed;
         public event EventHandler<ExecutionEventArgs> ExecutionResult;
         public event EventHandler<StatusEventArgs> StatusUpdate;
         public event EventHandler<InputEventArgs> InputUpdate;
-
-        public Guid Id { get { return id; } }
-
-        bool disposed = true;
-
-        int pingCount = 0;
-
+        
+        bool disposed = false;
+        
         public bool Disposed { get { return disposed; } }
 
         public PSVRClient(IPAddress Address, int Port)
         {
-            id = Id;
             client = new TcpClient();
             client.Connect(new System.Net.IPEndPoint(Address, Port));
             stream = client.GetStream();
             source = new CancellationTokenSource();
-            StartListen(source.Token);
+            Task.Run(() => StartListen(source.Token));
         }
 
         private async void StartListen(CancellationToken CancelToken)
@@ -140,19 +133,21 @@ namespace PSVRFramework
                     if (read == 0)
                         throw new InvalidOperationException();
 
-                    while (buffer[0] <= pos)
+                    pos += read;
+
+                    while (pos != 0 && buffer[0] <= pos)
                     {
                         int packetSize = buffer[0];
                         byte[] data = new byte[packetSize - 1];
                         Buffer.BlockCopy(buffer, 1, data, 0, data.Length);
                         pos = pos - packetSize;
-                        Buffer.BlockCopy(buffer, packetSize, buffer, 0, pos);
+                        Buffer.BlockCopy(buffer, packetSize - 1, buffer, 0, pos);
 
-                        if (data[0] == 2 && data[1] == 0)
+                        if (packetSize == 2 && data[0] == 0)
                             SendPong();
                         else
                             ProcessPacket(data);
-
+                        
                     }
                 }
             }
@@ -220,7 +215,7 @@ namespace PSVRFramework
                     string serial = "";
 
                     if (data.Length > 2)
-                        Encoding.ASCII.GetString(data, 2, data.Length - 2);
+                        serial = Encoding.ASCII.GetString(data, 2, data.Length - 2);
 
                     if (StatusUpdate != null)
                         StatusUpdate(this, new StatusEventArgs { Connected = on, SerialNumber = serial });
@@ -498,25 +493,7 @@ namespace PSVRFramework
             ExecutionResult = null;
             InputUpdate = null;
         }
-
-        enum PSVRCommandId : byte
-        {
-            HeadsetOn,
-            HeadsetOff,
-            EnableVRTracking,
-            EnableVRMode,
-            EnableCinematicMode,
-            LedsOn,
-            LedsOff,
-            LedsDefault,
-            ResetPose,
-            RecalibrateDevice,
-            Shutdown,
-            ApplyCinematicSettings,
-            ApplyLedSettings,
-            RequestDeviceState
-        }
-        
+                
     }
 
     public class StatusEventArgs : EventArgs

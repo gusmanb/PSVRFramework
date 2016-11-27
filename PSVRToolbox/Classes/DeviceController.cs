@@ -27,6 +27,8 @@ namespace PSVRToolbox.Classes
         public DeviceController(IPAddress ServerAddress, int Port = 0)
         {
             cancel = new CancellationTokenSource();
+            address = ServerAddress;
+            port = Port;
 
             if (ServerAddress == null)
             {
@@ -91,6 +93,10 @@ namespace PSVRToolbox.Classes
         private void Client_Closed(object sender, EventArgs e)
         {
             client = null;
+
+            if (DeviceStatusChanged != null)
+                DeviceStatusChanged(this, new StatusEventArgs { Connected = false, SerialNumber = serial ?? "" });
+
         }
 
         private async void StartDeviceDetect(CancellationToken Cancel)

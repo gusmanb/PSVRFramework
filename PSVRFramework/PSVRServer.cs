@@ -104,6 +104,7 @@ namespace PSVRFramework
         PSVRSensorReport lastReport;
 
         string serial = "";
+        bool connected = false;
         CancellationTokenSource cancel;
 
         bool broadcasted = false;
@@ -113,7 +114,7 @@ namespace PSVRFramework
         public PSVRServer(IPAddress Address, int Port)
         {
             cancel = new CancellationTokenSource();
-            DeviceDetect(cancel.Token);
+            Task.Run(() => DeviceDetect(cancel.Token));
             Listen(Address, Port, cancel.Token);
         }
 
@@ -163,90 +164,90 @@ namespace PSVRFramework
 
                     bool response = false;
 
-                    switch (data[1])
+                    switch ((PSVRCommandId)data[1])
                     {
-                        case 0:
+                        case PSVRCommandId.HeadsetOn:
                             if (data.Length != 2)
                                 client.Dispose();
                             else
                                 response = device?.Controller.HeadsetOn() ?? false;
                             break;
-                        case 1:
+                        case PSVRCommandId.HeadsetOff:
                             if (data.Length != 2)
                                 client.Dispose();
                             else
                                 response = device?.Controller.HeadsetOff() ?? false;
                             break;
-                        case 2:
+                        case PSVRCommandId.EnableVRTracking:
                             if (data.Length != 2)
                                 client.Dispose();
                             else
                                 response = device?.Controller.EnableVRTracking() ?? false;
                             break;
-                        case 3:
+                        case PSVRCommandId.EnableVRMode:
                             if (data.Length != 2)
                                 client.Dispose();
                             else
                                 response = device?.Controller.EnableVRMode() ?? false;
                             break;
-                        case 4:
+                        case PSVRCommandId.EnableCinematicMode:
                             if (data.Length != 2)
                                 client.Dispose();
                             else
                                 response = device?.Controller.EnableCinematicMode() ?? false;
                             break;
-                        case 5:
+                        case PSVRCommandId.LedsOn:
                             if (data.Length != 2)
                                 client.Dispose();
                             else
                                 response = device?.Controller.LedsOn() ?? false;
                             break;
-                        case 6:
+                        case PSVRCommandId.LedsOff:
                             if (data.Length != 2)
                                 client.Dispose();
                             else
                                 response = device?.Controller.LedsOff() ?? false;
                             break;
-                        case 7:
+                        case PSVRCommandId.LedsDefault:
                             if (data.Length != 2)
                                 client.Dispose();
                             else
                                 response = device?.Controller.LedsDefault() ?? false;
                             break;
-                        case 8:
+                        case PSVRCommandId.ResetPose:
                             if (data.Length != 2)
                                 client.Dispose();
                             else
                                 response = device?.Controller.ResetPose() ?? false;
                             break;
-                        case 9:
+                        case PSVRCommandId.RecalibrateDevice:
                             if (data.Length != 2)
                                 client.Dispose();
                             else
                                 response = device?.Controller.RecalibrateDevice() ?? false;
                             break;
-                        case 10:
+                        case PSVRCommandId.Shutdown:
                             if (data.Length != 2)
                                 client.Dispose();
                             else
                                 response = device?.Controller.Shutdown() ?? false;
                             break;
-                        case 11:
+                        case PSVRCommandId.RequestDeviceState:
                             if (data.Length != 2)
                                 client.Dispose();
                             else
                             {
                                 response = true;
-                                client.Send(PacketForger.ForgeDeviceStatus(device == null, device == null ? "" : serial));
+                                client.Send(PacketForger.ForgeDeviceStatus(connected, serial));
                             }
                             break;
-                        case 12:
-                            if (data.Length != 5)
+                        case PSVRCommandId.ApplyCinematicSettings:
+                            if (data.Length != 6)
                                 client.Dispose();
                             else
                                 response = device?.Controller.ApplyCinematicSettings(data[1], data[2], data[3], data[4]) ?? false;
                             break;
-                        case 13:
+                        case PSVRCommandId.ApplyLedSettings:
                             if (data.Length != 10)
                                 client.Dispose();
                             else
@@ -314,11 +315,15 @@ namespace PSVRFramework
                     {
 
                         //Headset on? shure? maybe 0x10 is used to power up the box without powering on the headset
+                        connected = true;
 
                         device.Removed += Device_Removed;
                         device.INReport += Device_INReport;
-                        device.Controller.RequestDeviceInfo();
                         device.Controller.HeadsetOn();
+                        device.Controller.EnableVRMode();
+                        Thread.Sleep(1500);
+                        device.Controller.EnableCinematicMode();
+                        Thread.Sleep(1500);
                         device.Controller.RequestDeviceInfo();
                     }
 
@@ -355,8 +360,10 @@ namespace PSVRFramework
 
         private void Device_Removed(object sender, EventArgs e)
         {
+            connected = false;
             device = null;
             byte[] packet = PacketForger.ForgeDeviceStatus(false, serial);
+            serial = "";
 
             foreach (var client in connectedClients.Values)
             {
@@ -385,7 +392,7 @@ namespace PSVRFramework
             {
                 byte[] nameData = Encoding.ASCII.GetBytes(serial);
                 byte[] data = new byte[nameData.Length + 3];
-                data[0] = (byte)nameData.Length;
+                data[0] = (byte)(nameData.Length + 3);
                 data[1] = 3;
                 data[2] = (byte)(connected ? 1 : 0);
                 Buffer.BlockCopy(nameData, 0, data, 3, nameData.Length);
@@ -431,6 +438,24 @@ namespace PSVRFramework
         }
 
     }
+    
+    public enum PSVRCommandId : byte
+    {
+        HeadsetOn,
+        HeadsetOff,
+        EnableVRTracking,
+        EnableVRMode,
+        EnableCinematicMode,
+        LedsOn,
+        LedsOff,
+        LedsDefault,
+        ResetPose,
+        RecalibrateDevice,
+        Shutdown,
+        ApplyCinematicSettings,
+        ApplyLedSettings,
+        RequestDeviceState
+    }
 
     public class PSVRServerClient : IDisposable
     {
@@ -445,7 +470,7 @@ namespace PSVRFramework
         public Guid Id { get { return id; } }
 
         Timer pingTimer;
-        bool disposed = true;
+        bool disposed = false;
 
         int pingCount = 0;
 
@@ -457,7 +482,7 @@ namespace PSVRFramework
             client = Client;
             stream = Client.GetStream();
             source = new CancellationTokenSource();
-            StartListen(source.Token);
+            Task.Run(() => StartListen(source.Token));
             pingTimer = new Timer(PingElapsed, null, 10000, 10000);
         }
 
@@ -476,19 +501,20 @@ namespace PSVRFramework
                     if (read == 0)
                         throw new InvalidOperationException();
 
-                    while (buffer[0] <= pos)
+                    pos += read;
+
+                    while (pos != 0 && buffer[0] <= pos)
                     {
                         int packetSize = buffer[0]; 
                         byte[] data = new byte[packetSize - 1];
                         Buffer.BlockCopy(buffer, 1, data, 0, data.Length);
                         pos = pos - packetSize;
-                        Buffer.BlockCopy(buffer, packetSize, buffer, 0, pos);
+                        Buffer.BlockCopy(buffer, packetSize - 1, buffer, 0, pos);
 
-                        if (data[0] == 2 && data[1] == 0)
+                        if (packetSize == 2 && data[0] == 0)
                             ResetPing();
                         else if (Received != null)
                             Received(this, new ReceivedEventArgs { Data = data });
-                            
                     }
                 }
             }
