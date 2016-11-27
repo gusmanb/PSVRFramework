@@ -60,10 +60,7 @@ namespace PSVRToolbox
         public Keys EnableTheater { get; set; } = Keys.None;
         public Keys Recenter { get; set; } = Keys.None;
         public Keys Shutdown { get; set; } = Keys.None;
-        public bool EnableUDPBroadcast { get; set; }
-        public string UDPBroadcastAddress { get; set; } = "255.255.255.255";
-        public int UDPBroadcastPort { get; set; } = 9090;
-        public int OpenTrackPort { get; set; } = 4242;
+        public bool Standalone { get; set; } = false;
         public bool StartMinimized { get; set; } = true;
         public byte ScreenSize { get; set; } = 0x29;
         public byte ScreenDistance { get; set; } = 0x32;

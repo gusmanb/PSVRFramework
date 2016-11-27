@@ -23,7 +23,6 @@ namespace PSVRToolbox
 
         bool exit = false;
         IKeyboardMouseEvents hookedEvents;
-        SensorBroadcaster broadcaster;
 
         object locker = new object();
 
@@ -50,7 +49,7 @@ namespace PSVRToolbox
             }
             catch { }
             
-            controller = new DeviceController(System.Net.IPAddress.Parse("127.0.0.1"), 9354);
+            controller = new DeviceController(Settings.Instance.Standalone ? null : System.Net.IPAddress.Parse("127.0.0.1"), 9354);
             controller.DeviceStatusChanged += Controller_DeviceStatusChanged;
 
         }
@@ -127,17 +126,6 @@ namespace PSVRToolbox
             setFrm.ShowDialog();
             setFrm.Dispose();
             var set = Settings.Instance;
-
-            if (set.EnableUDPBroadcast && broadcaster == null)
-                broadcaster = new SensorBroadcaster(set.UDPBroadcastAddress, set.UDPBroadcastPort);
-            else if (!set.EnableUDPBroadcast && broadcaster != null)
-            {
-                lock (locker)
-                {
-                    broadcaster.Dispose();
-                    broadcaster = null;
-                }
-            }
         }
 
         private void button15_Click(object sender, EventArgs e)
@@ -284,10 +272,7 @@ namespace PSVRToolbox
                         Hide();
                 }));
             }
-
-            if (set.EnableUDPBroadcast)
-                broadcaster = new SensorBroadcaster(set.UDPBroadcastAddress, set.UDPBroadcastPort);
-
+            
             trkDistance.Value = set.ScreenDistance;
             trkSize.Value = set.ScreenSize;
             trkBrightness.Value = set.Brightness;

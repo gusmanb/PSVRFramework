@@ -245,13 +245,13 @@ namespace PSVRFramework
                             if (data.Length != 6)
                                 client.Dispose();
                             else
-                                response = device?.Controller.ApplyCinematicSettings(data[1], data[2], data[3], data[4]) ?? false;
+                                response = device?.Controller.ApplyCinematicSettings(data[2], data[3], data[4], data[5]) ?? false;
                             break;
                         case PSVRCommandId.ApplyLedSettings:
                             if (data.Length != 10)
                                 client.Dispose();
                             else
-                                response = device?.Controller.ApplyLedSettings(data, 1) ?? false;
+                                response = device?.Controller.ApplyLedSettings(data, 2) ?? false;
                             break;
                         default:
                             client.Dispose();
@@ -309,6 +309,7 @@ namespace PSVRFramework
 
                 if (device == null)
                 {
+                    broadcasted = false;
                     device = PSVRDevice.GetDevice();
 
                     if (device != null)
@@ -327,7 +328,7 @@ namespace PSVRFramework
                         device.Controller.RequestDeviceInfo();
                     }
 
-                    await Task.Delay(100, CancelToken);
+                    await Task.Delay(500, CancelToken);
                 }
                 else
                     await Task.Delay(1000, CancelToken);

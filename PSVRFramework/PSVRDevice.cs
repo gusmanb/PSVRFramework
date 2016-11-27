@@ -47,6 +47,7 @@ namespace PSVRFramework
         private PSVRDevice()
         {
             BMI055Integrator.Init(BMI055Integrator.AScale.AFS_2G, BMI055Integrator.Gscale.GFS_2000DPS);
+            BMI055Integrator.Recalibrate();
 
             if (CurrentOS.IsWindows)
             {

@@ -34,7 +34,6 @@ namespace PSVRFramework
         {
             aRes = GetAres(AccelerometerScale);
             gRes = GetGres(GyroscopeScale);
-            recalibrate = true;
             
         }
 

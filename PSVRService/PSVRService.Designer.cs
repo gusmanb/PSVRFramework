@@ -29,9 +29,9 @@
         private void InitializeComponent()
         {
             // 
-            // Service1
+            // PSVRService
             // 
-            this.ServiceName = "Service1";
+            this.ServiceName = "PSVRServer";
 
         }
 

@@ -28,7 +28,8 @@ namespace PSVRToolbox
             chkMinimized.Checked = set.StartMinimized;
             chkShift.Checked = set.ShiftModifier;
             chkStartup.Checked = Utils.IsStartupEnabled();
-            
+            chkStandalone.Checked = set.Standalone;
+
             string[] keyNames = Enum.GetNames(typeof(Keys)).OrderBy(s => s).ToArray();
 
             cbHeadsetOff.Items.AddRange(keyNames);
@@ -37,13 +38,15 @@ namespace PSVRToolbox
             cbShutdown.Items.AddRange(keyNames);
             cbTheater.Items.AddRange(keyNames);
             cbRecal.Items.AddRange(keyNames);
+            cbVR.Items.AddRange(keyNames);
 
             cbHeadsetOff.SelectedItem = set.HeadSetOff.ToString();
             cbHeadsetOn.SelectedItem = set.HeadSetOn.ToString();
             cbRecenter.SelectedItem = set.Recenter.ToString();
             cbShutdown.SelectedItem = set.Shutdown.ToString();
             cbTheater.SelectedItem = set.EnableTheater.ToString();
-            cbRecal.SelectedItem = set.EnableVR.ToString();
+            cbRecal.SelectedItem = set.Recalibrate.ToString();
+            cbVR.SelectedItem = set.EnableVR.ToString();
         }
 
         private void button2_Click(object sender, EventArgs e)
@@ -56,6 +59,7 @@ namespace PSVRToolbox
             set.ControlModifier = chkControl.Checked;
             set.StartMinimized = chkMinimized.Checked;
             set.ShiftModifier = chkShift.Checked;
+            set.Standalone = chkStandalone.Checked;
 
             if (chkStartup.Checked)
                 Utils.EnableStartup();
@@ -69,7 +73,8 @@ namespace PSVRToolbox
             set.EnableTheater = (Keys)Enum.Parse(typeof(Keys), cbTheater.SelectedItem.ToString());
             set.Recalibrate = (Keys)Enum.Parse(typeof(Keys), cbRecal.SelectedItem.ToString());
             set.Recenter = (Keys)Enum.Parse(typeof(Keys), cbRecenter.SelectedItem.ToString());
-            
+            set.EnableVR = (Keys)Enum.Parse(typeof(Keys), cbVR.SelectedItem.ToString());
+
             Settings.Instance = set;
             Settings.SaveSettings();
 

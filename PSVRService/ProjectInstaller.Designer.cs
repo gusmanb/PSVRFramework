@@ -33,6 +33,7 @@
             // 
             // psvrProcessInstaller
             // 
+            this.psvrProcessInstaller.Account = System.ServiceProcess.ServiceAccount.NetworkService;
             this.psvrProcessInstaller.Password = null;
             this.psvrProcessInstaller.Username = null;
             // 
