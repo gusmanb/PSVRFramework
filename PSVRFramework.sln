@@ -21,8 +21,6 @@ Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "PSVRToolboxSetup", "PSVRToo
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PSVRService", "PSVRService\PSVRService.csproj", "{E08877B2-ABE5-418A-9C65-9B90AEA10178}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PSVRServerTest", "PSVRServer\PSVRServerTest.csproj", "{AE49C15B-F6A7-4CC9-B978-AC4332E55347}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -91,18 +89,6 @@ Global
 		{E08877B2-ABE5-418A-9C65-9B90AEA10178}.Release|x64.Build.0 = Release|Any CPU
 		{E08877B2-ABE5-418A-9C65-9B90AEA10178}.Release|x86.ActiveCfg = Release|Any CPU
 		{E08877B2-ABE5-418A-9C65-9B90AEA10178}.Release|x86.Build.0 = Release|Any CPU
-		{AE49C15B-F6A7-4CC9-B978-AC4332E55347}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{AE49C15B-F6A7-4CC9-B978-AC4332E55347}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{AE49C15B-F6A7-4CC9-B978-AC4332E55347}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{AE49C15B-F6A7-4CC9-B978-AC4332E55347}.Debug|x64.Build.0 = Debug|Any CPU
-		{AE49C15B-F6A7-4CC9-B978-AC4332E55347}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{AE49C15B-F6A7-4CC9-B978-AC4332E55347}.Debug|x86.Build.0 = Debug|Any CPU
-		{AE49C15B-F6A7-4CC9-B978-AC4332E55347}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{AE49C15B-F6A7-4CC9-B978-AC4332E55347}.Release|Any CPU.Build.0 = Release|Any CPU
-		{AE49C15B-F6A7-4CC9-B978-AC4332E55347}.Release|x64.ActiveCfg = Release|Any CPU
-		{AE49C15B-F6A7-4CC9-B978-AC4332E55347}.Release|x64.Build.0 = Release|Any CPU
-		{AE49C15B-F6A7-4CC9-B978-AC4332E55347}.Release|x86.ActiveCfg = Release|Any CPU
-		{AE49C15B-F6A7-4CC9-B978-AC4332E55347}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
