@@ -91,7 +91,9 @@ namespace PSVRFramework
                     controlDevice.Close();
                     throw new InvalidOperationException("Device in use");
                 }
-                
+
+                controller = new PSVRController(this);
+
                 writer = controlDevice.OpenEndpointWriter(LibUsbDotNet.Main.WriteEndpointID.Ep04);
                 cmdReader = controlDevice.OpenEndpointReader(LibUsbDotNet.Main.ReadEndpointID.Ep04);
                 cmdReader.DataReceived += CmdReader_DataReceived;
@@ -100,17 +102,17 @@ namespace PSVRFramework
                 reader = sensorDevice.OpenEndpointReader(LibUsbDotNet.Main.ReadEndpointID.Ep03, 64);
                 reader.DataReceived += Reader_DataReceived;
                 reader.DataReceivedEnabled = true;
-                
+
                 aliveTimer = new Timer(is_alive);
                 aliveTimer.Change(2000, 2000);
-                
+
             }
             else
             {
                 var found = UsbDevice.AllDevices.Where(d => d.Vid == 0x54C && d.Pid == 0x09AF).FirstOrDefault();
 
                 controlDevice = found.Device;
-                
+
                 var dev = (MonoUsbDevice)controlDevice;
 
                 var handle = new MonoUsbDeviceHandle(dev.Profile.ProfileHandle);
@@ -124,22 +126,23 @@ namespace PSVRFramework
                     controlDevice.Close();
                     throw new InvalidOperationException("Device in use");
                 }
-                
+
                 if (!dev.ClaimInterface(4))
                 {
                     controlDevice.Close();
                     throw new InvalidOperationException("Device in use");
                 }
-                
+
+                controller = new PSVRController(this);
+
                 writer = dev.OpenEndpointWriter(LibUsbDotNet.Main.WriteEndpointID.Ep04);
 
                 reader = dev.OpenEndpointReader(LibUsbDotNet.Main.ReadEndpointID.Ep03, 64);
                 reader.DataReceived += Reader_DataReceived;
                 reader.DataReceivedEnabled = true;
-                       
+    
             }
-
-            controller = new PSVRController(this);
+            
         }
 
         private void CmdReader_DataReceived(object sender, LibUsbDotNet.Main.EndpointDataEventArgs e)

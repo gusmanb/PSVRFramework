@@ -37,12 +37,12 @@ namespace PSVRToolbox.Classes
         public event EventHandler<StatusEventArgs> DeviceStatusChanged;
         public event EventHandler<InputEventArgs> InputUpdate;
 
-        PSVRDevice device;
+        PSVRServer server;
         PSVRClient client;
         IPAddress address;
         int port;
 
-        public DeviceController(IPAddress ServerAddress, int Port = 0)
+        public DeviceController(IPAddress ServerAddress, int Port)
         {
             cancel = new CancellationTokenSource();
             address = ServerAddress;
@@ -51,7 +51,8 @@ namespace PSVRToolbox.Classes
             if (ServerAddress == null)
             {
                 local = true;
-                StartDeviceDetect(cancel.Token);
+                server = new PSVRServer(IPAddress.Parse("127.0.0.1"), Port);
+                StartServerConnection(cancel.Token);
             }
             else
             {
@@ -117,317 +118,139 @@ namespace PSVRToolbox.Classes
 
         }
 
-        private async void StartDeviceDetect(CancellationToken Cancel)
-        {
-            try
-            {
-                while (!Cancel.IsCancellationRequested)
-                {
-                    if (device != null)
-                        await Task.Delay(1000, Cancel);
-                    else
-                    {
-                        device = PSVRDevice.GetDevice();
-
-                        if (device == null)
-                            await Task.Delay(1000);
-                        else
-                        {
-                            device.INReport += Device_INReport;
-                            device.Removed += Device_Removed;
-                            device.Controller.RequestDeviceInfo();
-                        }
-
-                    }
-                }
-            }
-            catch { }
-        }
-
-        private void Device_Removed(object sender, EventArgs e)
-        {
-            device = null;
-            
-            if (DeviceStatusChanged != null)
-                DeviceStatusChanged(this, new StatusEventArgs { Connected = false, SerialNumber = serial });
-
-            serial = null;
-        }
-
-        private void Device_INReport(object sender, PSVRINEventArgs e)
-        {
-            if (e.Response.ReportID == 0x80)
-            {
-                PSVRReport.PSVRDeviceInfoReport dev = PSVRReport.PSVRDeviceInfoReport.ParseInfo(e.Response.Data);
-                serial = dev.SerialNumber;
-
-                if (DeviceStatusChanged != null)
-                    DeviceStatusChanged(this, new StatusEventArgs { Connected = true, SerialNumber = serial });
-                
-            }
-        }
-
-
-
-
-
-
-
-
-
-
-
-
         public async Task<bool> HeadsetOn()
         {
-            if (local)
-            {
-                if (device == null)
-                    return false;
+            if (client == null)
+                return false;
 
-                return device.Controller.HeadsetOn();
-            }
-            else
-            {
-                if (client == null)
-                    return false;
-
-                return await client.HeadsetOn();
-            }
+            return await client.HeadsetOn();
         }
 
         public async Task<bool> HeadsetOff()
         {
-            if (local)
-            {
-                if (device == null)
-                    return false;
 
-                return device.Controller.HeadsetOff();
-            }
-            else
-            {
-                if (client == null)
-                    return false;
+            if (client == null)
+                return false;
 
-                return await client.HeadsetOff();
-            }
+            return await client.HeadsetOff();
+
         }
 
         public async Task<bool> EnableVRTracking()
         {
-            if (local)
-            {
-                if (device == null)
-                    return false;
 
-                return device.Controller.EnableVRTracking();
-            }
-            else
-            {
-                if (client == null)
-                    return false;
+            if (client == null)
+                return false;
 
-                return await client.EnableVRTracking();
-            }
+            return await client.EnableVRTracking();
+
         }
 
         public async Task<bool> EnableVRMode()
         {
-            if (local)
-            {
-                if (device == null)
-                    return false;
 
-                return device.Controller.EnableVRMode();
-            }
-            else
-            {
-                if (client == null)
-                    return false;
+            if (client == null)
+                return false;
 
-                return await client.EnableVRMode();
-            }
+            return await client.EnableVRMode();
+
         }
 
         public async Task<bool> EnableCinematicMode()
         {
-            if (local)
-            {
-                if (device == null)
-                    return false;
 
-                return device.Controller.EnableCinematicMode();
-            }
-            else
-            {
-                if (client == null)
-                    return false;
+            if (client == null)
+                return false;
 
-                return await client.EnableCinematicMode();
-            }
+            return await client.EnableCinematicMode();
         }
-
+        
         public async Task<bool> Shutdown()
         {
-            if (local)
-            {
-                if (device == null)
-                    return false;
 
-                return device.Controller.Shutdown();
-            }
-            else
-            {
-                if (client == null)
-                    return false;
+            if (client == null)
+                return false;
 
-                return await client.Shutdown();
-            }
+            return await client.Shutdown();
+
         }
 
         public async Task<bool> LedsOn()
         {
-            if (local)
-            {
-                if (device == null)
-                    return false;
 
-                return device.Controller.LedsOn();
-            }
-            else
-            {
-                if (client == null)
-                    return false;
+            if (client == null)
+                return false;
 
-                return await client.LedsOn();
-            }
+            return await client.LedsOn();
+
         }
 
         public async Task<bool> LedsOff()
         {
-            if (local)
-            {
-                if (device == null)
-                    return false;
 
-                return device.Controller.LedsOff();
-            }
-            else
-            {
-                if (client == null)
-                    return false;
+            if (client == null)
+                return false;
 
-                return await client.LedsOff();
-            }
+            return await client.LedsOff();
+
         }
 
         public async Task<bool> LedsDefault()
         {
-            if (local)
-            {
-                if (device == null)
-                    return false;
+            if (client == null)
+                return false;
 
-                return device.Controller.LedsDefault();
-            }
-            else
-            {
-                if (client == null)
-                    return false;
+            return await client.LedsDefault();
 
-                return await client.LedsDefault();
-            }
         }
 
         public async Task<bool> RequestDeviceState()
         {
-            if (local)
-            {
-                if (device == null)
-                    return false;
 
-                return device.Controller.RequestDeviceInfo();
-            }
-            else
-            {
-                if (client == null)
-                    return false;
+            if (client == null)
+                return false;
 
-                return await client.RequestDeviceState();
-            }
+            return await client.RequestDeviceState();
+
         }
 
         public async Task<bool> ResetPose()
         {
-            if (local)
-            {
-                if (device == null)
-                    return false;
 
-                return device.Controller.ResetPose();
-            }
-            else
-            {
-                if (client == null)
-                    return false;
+            if (client == null)
+                return false;
 
-                return await client.ResetPose();
-            }
+            return await client.ResetPose();
+
         }
 
         public async Task<bool> RecalibrateDevice()
         {
-            if (local)
-            {
-                if (device == null)
-                    return false;
 
-                return device.Controller.RecalibrateDevice();
-            }
-            else
-            {
-                if (client == null)
-                    return false;
+            if (client == null)
+                return false;
 
-                return await client.RecalibrateDevice();
-            }
+            return await client.RecalibrateDevice();
+
         }
 
         public async Task<bool> ApplyCinematicSettings(byte ScreenDistance, byte ScreenSize, byte Brightness, byte MicFeedback)
         {
-            if (local)
-            {
-                if (device == null)
-                    return false;
+            if (client == null)
+                return false;
 
-                return device.Controller.ApplyCinematicSettings(ScreenDistance, ScreenSize, Brightness, MicFeedback);
-            }
-            else
-            {
-                if (client == null)
-                    return false;
+            return await client.ApplyCinematicSettings(ScreenDistance, ScreenSize, Brightness, MicFeedback);
 
-                return await client.ApplyCinematicSettings(ScreenDistance, ScreenSize, Brightness, MicFeedback);
-            }
         }
 
         public async Task<bool> ApplyLedSettings(byte[] Values)
         {
-            if (local)
-            {
-                if (device == null)
-                    return false;
 
-                return device.Controller.ApplyLedSettings(Values, 0);
-            }
-            else
-            {
-                if (client == null)
-                    return false;
+            if (client == null)
+                return false;
 
-                return await client.ApplyLedSettings(Values);
-            }
+            return await client.ApplyLedSettings(Values);
+
         }
         
         public void Dispose()
@@ -441,10 +264,10 @@ namespace PSVRToolbox.Classes
                 client.Dispose();
                 client = null;
             }
-            if (device != null)
+            if (server != null)
             {
-                device.Dispose();
-                device = null;
+                server.Dispose();
+                server = null;
             }
 
             DeviceStatusChanged = null;

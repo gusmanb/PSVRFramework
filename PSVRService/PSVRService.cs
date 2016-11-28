@@ -51,6 +51,17 @@ namespace PSVRService
             {
                 server.Device?.Controller.Shutdown();
                 server.Dispose();
+                server = null;
+            }
+        }
+
+        protected override void OnShutdown()
+        {
+            if (server != null)
+            {
+                server.Device?.Controller.Shutdown();
+                server.Dispose();
+                server = null;
             }
         }
     }
