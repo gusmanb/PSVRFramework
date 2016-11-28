@@ -1,4 +1,22 @@
-﻿using System;
+﻿/*
+* PSVRFramework - PlayStation VR PC framework
+* Copyright (C) 2016 Agustín Giménez Bernad <geniwab@gmail.com>
+*
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as
+* published by the Free Software Foundation, either version 3 of the
+* License, or (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
@@ -101,7 +119,6 @@ namespace PSVRFramework
         TcpListener listener;
         ConcurrentDictionary<Guid, PSVRServerClient> connectedClients = new ConcurrentDictionary<Guid, PSVRServerClient>();
         PSVRDevice device;
-        PSVRSensorReport lastReport;
 
         string serial = "";
         bool connected = false;
@@ -281,14 +298,17 @@ namespace PSVRFramework
                         {
                             Task.Run(async () =>
                             {
-                                await Task.Delay(interval, cancel.Token);
-                                var ddata = server.lastReport;
-                                if (ddata != null)
+                                while (!cancel.Token.IsCancellationRequested)
                                 {
-                                    data = PacketForger.ForgeInputState(ddata);
-                                    client.Send(data);
+                                    await Task.Delay(interval, cancel.Token);
+                                    var ddata = server.Device.CurrentState;
+                                    if (ddata != null)
+                                    {
+                                        data = PacketForger.ForgeInputState(ddata);
+                                        client.Send(data);
+                                    }
                                 }
-                            });
+                            }, cancel.Token);
                         }
 
                         client.Send(PacketForger.ForgeResponse(true));
@@ -317,7 +337,6 @@ namespace PSVRFramework
 
                         //Headset on? shure? maybe 0x10 is used to power up the box without powering on the headset
                         connected = true;
-
                         device.Removed += Device_Removed;
                         device.INReport += Device_INReport;
                         device.Controller.HeadsetOn();
@@ -370,8 +389,7 @@ namespace PSVRFramework
             {
                 client.Send(packet);
             }
-
-            lastReport = null;
+            
             device = null;
         }
 
@@ -420,13 +438,13 @@ namespace PSVRFramework
                 byte[] tmp = BitConverter.GetBytes(Report.Pose.W);
                 Buffer.BlockCopy(tmp, 0, data, 3, 4);
 
-                tmp = BitConverter.GetBytes(Report.Pose.W);
+                tmp = BitConverter.GetBytes(Report.Pose.X);
                 Buffer.BlockCopy(tmp, 0, data, 7, 4);
 
-                tmp = BitConverter.GetBytes(Report.Pose.W);
+                tmp = BitConverter.GetBytes(Report.Pose.Y);
                 Buffer.BlockCopy(tmp, 0, data, 11, 4);
 
-                tmp = BitConverter.GetBytes(Report.Pose.W);
+                tmp = BitConverter.GetBytes(Report.Pose.Z);
                 Buffer.BlockCopy(tmp, 0, data, 15, 4);
 
                 return data;

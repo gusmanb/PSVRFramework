@@ -68,16 +68,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Classes\DeviceController.cs" />
-    <Compile Include="Controls\CommandHistory.cs" />
-    <Compile Include="Controls\HextTextBox.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Controls\ShellControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Controls\ShellTextBox.cs">
-      <SubType>Component</SubType>
-    </Compile>
     <Compile Include="Forms\MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -94,9 +84,6 @@
       <DependentUpon>SettingsForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Classes\Utils.cs" />
-    <EmbeddedResource Include="Controls\ShellControl.resx">
-      <DependentUpon>ShellControl.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Forms\MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
     </EmbeddedResource>
