@@ -48,7 +48,8 @@ namespace PSVRToolbox
         //TapDetector tapper;
 
         DeviceController controller;
-        
+        PSVRMouseEmulator mouse;
+
         public MainForm()
         {
             InitializeComponent();
@@ -68,9 +69,22 @@ namespace PSVRToolbox
             
             controller = new DeviceController(Settings.Instance.Standalone ? null : System.Net.IPAddress.Parse("127.0.0.1"), 9354);
             controller.DeviceStatusChanged += Controller_DeviceStatusChanged;
+            controller.InputUpdate += Controller_InputUpdate;
+            mouse = new PSVRMouseEmulator(1920, new System.Numerics.Vector2(1920, 1200), new System.Numerics.Vector2(1920, 1200), 0.35f);
+            mouse.MouseMove += Mouse_MouseMove;
 
         }
-        
+
+        private void Controller_InputUpdate(object sender, InputEventArgs e)
+        {
+            mouse.UpdateInput(e.State.Pose);
+        }
+
+        private void Mouse_MouseMove(object sender, PSVRMouseEmulator.MouseEventArgs e)
+        {
+            Cursor.Position = new Point(e.X, e.Y);
+        }
+
         async void Recenter()
         {
             await controller.ResetPose();
@@ -259,6 +273,8 @@ namespace PSVRToolbox
                     grpLeds.Enabled = true;
 
                 }));
+
+                //controller.ChangeInputUpdates(16);
             }
             else
             {
@@ -269,6 +285,8 @@ namespace PSVRToolbox
                     grpLeds.Enabled = false;
                     lblStatus.Text = "Waiting for PS VR...";
                 }));
+
+                //controller.ChangeInputUpdates(0);
             }
         }
 
@@ -416,8 +434,58 @@ namespace PSVRToolbox
                     break;
             }
         }
-        
+
         #endregion
 
+        private void button9_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        class WINAPI
+        {
+            [DllImport("user32.dll", SetLastError = true)]
+            public static extern void mouse_event(uint dwFlags, uint dx, uint dy, uint dwData, int dwExtraInfo);
+
+            public enum MouseFlags
+            {
+                MOUSEEVENTF_ABSOLUTE = 0x8000,
+                MOUSEEVENTF_LEFTDOWN = 0x0002,
+                MOUSEEVENTF_LEFTUP = 0x0004,
+                MOUSEEVENTF_MIDDLEDOWN = 0x0020,
+                MOUSEEVENTF_MIDDLEUP = 0x0040,
+                MOUSEEVENTF_MOVE = 0x0001,
+                MOUSEEVENTF_RIGHTDOWN = 0x0008,
+                MOUSEEVENTF_RIGHTUP = 0x0010,
+                MOUSEEVENTF_WHEEL = 0x0800,
+                MOUSEEVENTF_XDOWN = 0x0080,
+                MOUSEEVENTF_XUP = 0x0100
+            }
+
+            public enum DataFlags
+            {
+                XBUTTON1 = 0x0001,
+                XBUTTON2 = 0x0002
+            }
+        }
+
+        private void chkEmulation_CheckedChanged(object sender, EventArgs e)
+        {
+            if (chkEmulation.Checked)
+            {
+                mouse.UpdateParameters(
+                    float.Parse(txtDistance.Text, System.Globalization.CultureInfo.InvariantCulture),
+                    new System.Numerics.Vector2(float.Parse(txtWidth.Text, System.Globalization.CultureInfo.InvariantCulture), float.Parse(txtHeight.Text, System.Globalization.CultureInfo.InvariantCulture)),
+                    new System.Numerics.Vector2(int.Parse(txtXRes.Text, System.Globalization.CultureInfo.InvariantCulture), int.Parse(txtYRes.Text, System.Globalization.CultureInfo.InvariantCulture)),
+                    float.Parse(txtSmoothing.Text, System.Globalization.CultureInfo.InvariantCulture)
+                );
+                controller.ChangeInputUpdates(16);
+            }
+            else
+            {
+                controller.ChangeInputUpdates(0);
+            }
+
+        }
     }
 }

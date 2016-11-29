@@ -57,6 +57,20 @@
             this.pictureBox4 = new System.Windows.Forms.PictureBox();
             this.btnSettings = new System.Windows.Forms.Button();
             this.btnDebug = new System.Windows.Forms.Button();
+            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.chkEmulation = new System.Windows.Forms.CheckBox();
+            this.label2 = new System.Windows.Forms.Label();
+            this.txtXRes = new System.Windows.Forms.TextBox();
+            this.txtDistance = new System.Windows.Forms.TextBox();
+            this.label3 = new System.Windows.Forms.Label();
+            this.txtYRes = new System.Windows.Forms.TextBox();
+            this.txtHeight = new System.Windows.Forms.TextBox();
+            this.txtWidth = new System.Windows.Forms.TextBox();
+            this.label4 = new System.Windows.Forms.Label();
+            this.label5 = new System.Windows.Forms.Label();
+            this.label6 = new System.Windows.Forms.Label();
+            this.label7 = new System.Windows.Forms.Label();
+            this.txtSmoothing = new System.Windows.Forms.TextBox();
             this.grpFunctions.SuspendLayout();
             this.grpCinematic.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox3)).BeginInit();
@@ -64,6 +78,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.grpLeds.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox4)).BeginInit();
+            this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
             // lblStatus
@@ -164,7 +179,7 @@
             // 
             // button8
             // 
-            this.button8.Location = new System.Drawing.Point(12, 268);
+            this.button8.Location = new System.Drawing.Point(12, 390);
             this.button8.Name = "button8";
             this.button8.Size = new System.Drawing.Size(364, 23);
             this.button8.TabIndex = 7;
@@ -422,17 +437,153 @@
             // 
             this.btnDebug.Location = new System.Drawing.Point(382, 6);
             this.btnDebug.Name = "btnDebug";
-            this.btnDebug.Size = new System.Drawing.Size(21, 285);
+            this.btnDebug.Size = new System.Drawing.Size(21, 407);
             this.btnDebug.TabIndex = 24;
             this.btnDebug.Text = ">";
             this.btnDebug.UseVisualStyleBackColor = true;
             this.btnDebug.Click += new System.EventHandler(this.btnDebug_Click);
             // 
+            // groupBox1
+            // 
+            this.groupBox1.Controls.Add(this.label7);
+            this.groupBox1.Controls.Add(this.txtSmoothing);
+            this.groupBox1.Controls.Add(this.label6);
+            this.groupBox1.Controls.Add(this.label5);
+            this.groupBox1.Controls.Add(this.label4);
+            this.groupBox1.Controls.Add(this.txtHeight);
+            this.groupBox1.Controls.Add(this.txtWidth);
+            this.groupBox1.Controls.Add(this.label3);
+            this.groupBox1.Controls.Add(this.chkEmulation);
+            this.groupBox1.Controls.Add(this.label2);
+            this.groupBox1.Controls.Add(this.txtYRes);
+            this.groupBox1.Controls.Add(this.txtDistance);
+            this.groupBox1.Controls.Add(this.txtXRes);
+            this.groupBox1.Location = new System.Drawing.Point(12, 268);
+            this.groupBox1.Name = "groupBox1";
+            this.groupBox1.Size = new System.Drawing.Size(364, 116);
+            this.groupBox1.TabIndex = 25;
+            this.groupBox1.TabStop = false;
+            this.groupBox1.Text = "Mouse emulation";
+            // 
+            // chkEmulation
+            // 
+            this.chkEmulation.AutoSize = true;
+            this.chkEmulation.Location = new System.Drawing.Point(119, 94);
+            this.chkEmulation.Name = "chkEmulation";
+            this.chkEmulation.Size = new System.Drawing.Size(141, 17);
+            this.chkEmulation.TabIndex = 0;
+            this.chkEmulation.Text = "Enable mouse emulation";
+            this.chkEmulation.UseVisualStyleBackColor = true;
+            this.chkEmulation.CheckedChanged += new System.EventHandler(this.chkEmulation_CheckedChanged);
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(6, 45);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(73, 13);
+            this.label2.TabIndex = 1;
+            this.label2.Text = "Screen height";
+            // 
+            // txtXRes
+            // 
+            this.txtXRes.Location = new System.Drawing.Point(271, 42);
+            this.txtXRes.Name = "txtXRes";
+            this.txtXRes.Size = new System.Drawing.Size(86, 20);
+            this.txtXRes.TabIndex = 2;
+            this.txtXRes.Text = "1920";
+            // 
+            // txtDistance
+            // 
+            this.txtDistance.Location = new System.Drawing.Point(95, 68);
+            this.txtDistance.Name = "txtDistance";
+            this.txtDistance.Size = new System.Drawing.Size(86, 20);
+            this.txtDistance.TabIndex = 4;
+            this.txtDistance.Text = "1920";
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(6, 19);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(69, 13);
+            this.label3.TabIndex = 3;
+            this.label3.Text = "Screen width";
+            // 
+            // txtYRes
+            // 
+            this.txtYRes.Location = new System.Drawing.Point(271, 68);
+            this.txtYRes.Name = "txtYRes";
+            this.txtYRes.Size = new System.Drawing.Size(86, 20);
+            this.txtYRes.TabIndex = 5;
+            this.txtYRes.Text = "1080";
+            // 
+            // txtHeight
+            // 
+            this.txtHeight.Location = new System.Drawing.Point(95, 42);
+            this.txtHeight.Name = "txtHeight";
+            this.txtHeight.Size = new System.Drawing.Size(86, 20);
+            this.txtHeight.TabIndex = 8;
+            this.txtHeight.Text = "1080";
+            // 
+            // txtWidth
+            // 
+            this.txtWidth.Location = new System.Drawing.Point(95, 16);
+            this.txtWidth.Name = "txtWidth";
+            this.txtWidth.Size = new System.Drawing.Size(86, 20);
+            this.txtWidth.TabIndex = 6;
+            this.txtWidth.Text = "1920";
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(6, 71);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(84, 13);
+            this.label4.TabIndex = 9;
+            this.label4.Text = "Screen distance";
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(198, 45);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(62, 13);
+            this.label5.TabIndex = 10;
+            this.label5.Text = "X resolution";
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(198, 71);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(62, 13);
+            this.label6.TabIndex = 11;
+            this.label6.Text = "Y resolution";
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(198, 19);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(57, 13);
+            this.label7.TabIndex = 13;
+            this.label7.Text = "Smoothing";
+            // 
+            // txtSmoothing
+            // 
+            this.txtSmoothing.Location = new System.Drawing.Point(271, 16);
+            this.txtSmoothing.Name = "txtSmoothing";
+            this.txtSmoothing.Size = new System.Drawing.Size(86, 20);
+            this.txtSmoothing.TabIndex = 12;
+            this.txtSmoothing.Text = "0.35";
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(408, 297);
+            this.ClientSize = new System.Drawing.Size(411, 422);
+            this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.btnDebug);
             this.Controls.Add(this.grpLeds);
             this.Controls.Add(this.grpCinematic);
@@ -456,6 +607,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.grpLeds.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox4)).EndInit();
+            this.groupBox1.ResumeLayout(false);
+            this.groupBox1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -489,6 +642,20 @@
         private System.Windows.Forms.ComboBox cbLeds;
         private XComponent.SliderBar.MACTrackBar trkLedIntensity;
         private System.Windows.Forms.Button btnDebug;
+        private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.TextBox txtHeight;
+        private System.Windows.Forms.TextBox txtWidth;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.TextBox txtYRes;
+        private System.Windows.Forms.TextBox txtDistance;
+        private System.Windows.Forms.TextBox txtXRes;
+        private System.Windows.Forms.CheckBox chkEmulation;
+        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.TextBox txtSmoothing;
     }
 }
 

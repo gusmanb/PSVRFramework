@@ -296,21 +296,44 @@ namespace PSVRFramework
 
                         if (interval != 0)
                         {
+
+                            if (client.internalSource != null)
+                            {
+                                client.internalSource.Cancel();
+                                client.internalSource.Dispose();
+                                client.internalSource = null;
+                            }
+
+                            client.internalSource = new CancellationTokenSource();
+
                             Task.Run(async () =>
                             {
-                                while (!cancel.Token.IsCancellationRequested)
+                                try
                                 {
-                                    await Task.Delay(interval, cancel.Token);
-                                    var ddata = server.Device.CurrentState;
-                                    if (ddata != null)
+                                    while (!client.internalSource.Token.IsCancellationRequested)
                                     {
-                                        data = PacketForger.ForgeInputState(ddata);
-                                        client.Send(data);
+                                        await Task.Delay(interval, client.internalSource.Token);
+                                        var ddata = server.Device.CurrentState;
+                                        if (ddata != null)
+                                        {
+                                            data = PacketForger.ForgeInputState(ddata);
+                                            client.Send(data);
+                                        }
                                     }
                                 }
-                            }, cancel.Token);
-                        }
+                                catch { }
 
+                            }, client.internalSource.Token);
+                        }
+                        else
+                        {
+                            if (client.internalSource != null)
+                            {
+                                client.internalSource.Cancel();
+                                client.internalSource.Dispose();
+                                client.internalSource = null;
+                            }
+                        }
                         client.Send(PacketForger.ForgeResponse(true));
                     }
 
@@ -324,34 +347,51 @@ namespace PSVRFramework
 
         async void DeviceDetect(CancellationToken CancelToken)
         {
-            while (!CancelToken.IsCancellationRequested)
+            try
             {
-
-                if (device == null)
+                while (!CancelToken.IsCancellationRequested)
                 {
-                    broadcasted = false;
-                    device = PSVRDevice.GetDevice();
 
-                    if (device != null)
+                    if (device == null)
                     {
+                        broadcasted = false;
+                        device = PSVRDevice.GetDevice();
 
-                        //Headset on? shure? maybe 0x10 is used to power up the box without powering on the headset
-                        connected = true;
-                        device.Removed += Device_Removed;
-                        device.INReport += Device_INReport;
-                        device.Controller.HeadsetOn();
-                        device.Controller.EnableVRMode();
-                        Thread.Sleep(1500);
-                        device.Controller.EnableCinematicMode();
-                        Thread.Sleep(1500);
-                        device.Controller.RequestDeviceInfo();
+                        if (device != null)
+                        {
+                            try
+                            {
+
+                                //Headset on? shure? maybe 0x10 is used to power up the box without powering on the headset
+                                connected = true;
+                                device.Removed += Device_Removed;
+                                device.INReport += Device_INReport;
+                                device.Controller.HeadsetOn();
+                                device.Controller.EnableVRMode();
+                                Thread.Sleep(1500);
+                                device.Controller.EnableCinematicMode();
+                                Thread.Sleep(1500);
+                                device.Controller.RequestDeviceInfo();
+                            }
+                            catch
+                            {
+                                try
+                                {
+                                    device.Dispose();
+                                }
+                                catch { }
+
+                                device = null;
+                            }
+                        }
+
+                        await Task.Delay(500, CancelToken);
                     }
-
-                    await Task.Delay(500, CancelToken);
+                    else
+                        await Task.Delay(1000, CancelToken);
                 }
-                else
-                    await Task.Delay(1000, CancelToken);
             }
+            catch { }
         }
         
         private void Device_INReport(object sender, PSVRINEventArgs e)
@@ -482,6 +522,7 @@ namespace PSVRFramework
         Guid id;
         NetworkStream stream;
         CancellationTokenSource source;
+        internal CancellationTokenSource internalSource;
         internal CancellationTokenSource cancelUpdateSource;
 
         public event EventHandler Closed;

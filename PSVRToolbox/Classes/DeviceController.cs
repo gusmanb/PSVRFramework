@@ -52,6 +52,7 @@ namespace PSVRToolbox.Classes
             {
                 local = true;
                 server = new PSVRServer(IPAddress.Parse("127.0.0.1"), Port);
+                address = IPAddress.Parse("127.0.0.1");
                 StartServerConnection(cancel.Token);
             }
             else
@@ -250,6 +251,16 @@ namespace PSVRToolbox.Classes
                 return false;
 
             return await client.ApplyLedSettings(Values);
+
+        }
+
+        public async Task<bool> ChangeInputUpdates(byte Interval)
+        {
+
+            if (client == null)
+                return false;
+
+            return await client.ChangeInputUpdates(Interval);
 
         }
         

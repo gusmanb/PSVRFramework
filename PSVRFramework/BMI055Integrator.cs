@@ -26,6 +26,7 @@ namespace PSVRFramework
 {
     public static class BMI055Integrator
     {
+        const int samples = 4000;
 
         static float aRes;
         static float gRes;
@@ -70,7 +71,7 @@ namespace PSVRFramework
 
             if (recalibrate)
             {
-                samplesLeft = 2000;
+                samplesLeft = samples;
                 accelOffset = Vector3.Zero;
                 gyroOffset = Vector3.Zero;
                 recalibrate = false;
@@ -116,8 +117,8 @@ namespace PSVRFramework
             else if (samplesLeft == 0)
             {
                 samplesLeft--;
-                accelOffset /= 2000;
-                gyroOffset /= 2000;
+                accelOffset /= samples;
+                gyroOffset /= samples;
                 gravityVector = Vector3.Normalize(accelOffset);
                 accelOffset -= gravityVector;
                 prevTimestamp = Timestamp;
@@ -179,7 +180,7 @@ namespace PSVRFramework
                 fusion.Update(angularAcceleration.X, angularAcceleration.Y, angularAcceleration.Z, linearAcceleration.X, linearAcceleration.Y, linearAcceleration.Z, 0.035f, interval);
                 prevTimestamp = Timestamp;
 
-                ZeroPose = Quaternion.Identity * Quaternion.Inverse(fusion.Quaternion);
+                ZeroPose = ZeroPose = Quaternion.Conjugate(fusion.Quaternion);
 
                 calibrating = false;
 
@@ -198,16 +199,16 @@ namespace PSVRFramework
                 else
                     interval = (Timestamp - prevTimestamp) / 1000000.0f;
 
-                fusion.Update(angularAcceleration.X, angularAcceleration.Y, angularAcceleration.Z, linearAcceleration.X, linearAcceleration.Y, linearAcceleration.Z, 0.035f, interval);
+                fusion.Update(angularAcceleration.X, angularAcceleration.Y, angularAcceleration.Z, linearAcceleration.X, linearAcceleration.Y, linearAcceleration.Z, 0.045f, interval);
                 prevTimestamp = Timestamp;
 
                 if (recenter)
                 {
-                    ZeroPose = Quaternion.Identity * Quaternion.Inverse(fusion.Quaternion);
+                    ZeroPose = Quaternion.Conjugate(fusion.Quaternion);
                     recenter = false;
                 }
 
-                return Quaternion.Inverse(ZeroPose * fusion.Quaternion);
+                return ZeroPose * fusion.Quaternion;
 
             }
         }

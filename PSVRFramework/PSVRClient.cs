@@ -252,8 +252,12 @@ namespace PSVRFramework
 
         public async Task Send(byte[] Packet)
         {
-            if (!disposed)
-                await stream.WriteAsync(Packet, 0, Packet.Length);
+            try
+            {
+                if (!disposed)
+                    await stream.WriteAsync(Packet, 0, Packet.Length);
+            }
+            catch { }
         }
 
         public async Task<bool> HeadsetOn()
