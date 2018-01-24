@@ -27,9 +27,9 @@ This code is published under Affero GPL license.
 
 You need the .net Framework 4.5.2 or newer installed to make it work and also need to follow the instructions on the HowTo.txt file on this repository.
 
-##UPDATES
+## UPDATES
 
-###V0.4.5
+### V0.4.5
 
 - LED control interface
 - Device information pane
@@ -37,22 +37,22 @@ You need the .net Framework 4.5.2 or newer installed to make it work and also ne
 - Command line interface
 - Debug tools
 
-###V0.4.0
+### V0.4.0
 
 - Unified driver
 - Driver and app installers
 - Linux support
 
-###V0.2.0
+### V0.2.0
 
 - Added VR Player
 
-###V0.1.1
+### V0.1.1
 
 - Added cinematic mode settings
 - Changed recenter cinematic routine
 
-###V0.1.0
+### V0.1.0
 
 - The program will start minimized and stay on a tray icon, to open it double click the icon.
 - The program can now start with Windows
@@ -62,6 +62,6 @@ You need the .net Framework 4.5.2 or newer installed to make it work and also ne
 
 
 
-####To configure the new options click the gear icon.
+#### To configure the new options click the gear icon.
 
-###Download binaries now available in the [Releases](https://github.com/gusmanb/PSVRFramework/releases) section
+### Download binaries now available in the [Releases](https://github.com/gusmanb/PSVRFramework/releases) section
