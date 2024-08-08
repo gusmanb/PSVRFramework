@@ -1,5 +1,11 @@
 # PSVR Framework
 
+# NOTICE: Discontinued
+
+This project has been discontinued as PSVR is now obsolete and makes no sense to continue its development. Project has been archived.
+
+---
+
 This is my little framework for the PS VR made from a recopilation of info I found over Internet and my own findings.
 
 This framework allows you to control the PS VR set states, turn it on/off, enter/exit VR mode, recenter theater, control box power and read the headset sensors.
